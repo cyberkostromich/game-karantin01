@@ -59,7 +59,7 @@ func apply(c: Dictionary) -> void:
 			_patrol(_units(c), _v2(c["pos"]))
 		"enter":
 			for a in _units(c):
-				_enter(a, int(c.get("target", -1)))
+				_enter(a, int(c.get("target", -1)), String(c.get("kind", "building")) == "unit")
 		"unload":
 			for a in _units(c):
 				world.units.unload(a)
@@ -176,11 +176,12 @@ func _patrol(units: Array[Agent], p: Vector2) -> void:
 		world.agents.move_to(a, p)
 
 
-func _enter(a: Agent, target: int) -> void:
-	if a.hidden:
+func _enter(a: Agent, target: int, is_unit: bool) -> void:
+	if a.hidden or (is_unit and target == a.id):
 		return
 	a.order = Agent.Order.ENTER
 	a.order_target = target
+	a.order_target_unit = is_unit
 
 
 func _leave(a: Agent) -> void:

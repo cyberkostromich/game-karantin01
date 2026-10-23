@@ -38,6 +38,7 @@ var speed_mult: float = 1.0
 # --- приказы и бой
 var order: int = Order.NONE
 var order_target: int = -1    # агент/постройка в зависимости от приказа
+var order_target_unit: bool = false  # ENTER: true — транспорт (id агента), false — постройка
 var order_pos: Vector2 = Vector2.ZERO
 var patrol_a: Vector2 = Vector2.ZERO
 var patrol_b: Vector2 = Vector2.ZERO

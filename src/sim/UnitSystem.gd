@@ -77,14 +77,14 @@ func _orders(a: Agent) -> void:
 
 
 func _try_enter(a: Agent) -> void:
-	var b := world.buildings.get_building(a.order_target)
+	var b := world.buildings.get_building(a.order_target) if not a.order_target_unit else null
 	if b != null and b.alive:
 		if a.pos.distance_to(b.rect_m.get_center()) <= b.half_extent() + Config.f("rules.sim_tuning.garrison_enter_radius_m"):
 			garrison(a, b)
 		elif not a.moving:
 			world.agents.move_to(a, b.door)
 		return
-	var v := world.agents.get_agent(a.order_target)
+	var v := world.agents.get_agent(a.order_target) if a.order_target_unit else null
 	if v != null and v.alive and v.is_unit():
 		if a.pos.distance_to(v.pos) <= v.radius + Config.f("rules.sim_tuning.transport_enter_radius_m"):
 			board(a, v)

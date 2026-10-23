@@ -46,7 +46,7 @@ func _raid(p: MapPoi, need_s: float, done_cb: Callable, radius := -1.0) -> void:
 	if not present:
 		return
 	p.progress = minf(1.0, p.progress + step_s / maxf(0.1, need_s))
-	if p.progress >= 1.0:
+	if p.progress >= 1.0 - 1e-4:  # накопление float: 30 × (1/30) = 0.99999
 		p.done = true
 		done_cb.call()
 

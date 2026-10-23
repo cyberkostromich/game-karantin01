@@ -183,7 +183,7 @@ func _right_click(sp: Vector2, queue: bool) -> void:
 			return
 		var v := pick_agent(p)
 		if v != null and v.is_unit() and world().units.transport_cap(v, false) > 0 and not s.units.has(v.id):
-			game.send({"t": "enter", "units": s.units, "target": v.id})
+			game.send({"t": "enter", "units": s.units, "target": v.id, "kind": "unit"})
 			game.marker(p, Color(0.4, 0.8, 1))
 			return
 		game.send({"t": "move", "units": s.units, "pos": p, "queue": queue, "amove": false})
