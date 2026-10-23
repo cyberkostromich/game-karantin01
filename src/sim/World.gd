@@ -113,10 +113,15 @@ func _spawn_map_civilians() -> void:
 	for k in mini(fort_n, fort.size() * 3):
 		var s: Dictionary = fort[k % fort.size()]
 		_hide_civilian(Vector2(s["x"], s["z"]) + Vector2(rng.randf_range(-2, 2), rng.randf_range(-2, 2)), "fortress")
+	var weights := PackedFloat32Array()
+	for s: Dictionary in spots:
+		weights.append(_spawn_weight(Vector2(s["x"], s["z"]).distance_to(map.hq_pos)))
 	var placed := 0
 	while placed < total and not spots.is_empty():
-		var s: Dictionary = spots[rng.randi() % spots.size()]
-		spots.erase(s)
+		var si := rng.rand_weighted(weights)
+		var s: Dictionary = spots[si]
+		spots.remove_at(si)
+		weights.remove_at(si)
 		var kind := String(s["kind"])
 		var size := mini(rng.randi_range(int(g[0]), int(g[1])), total - placed)
 		if kind == "rooftop":
@@ -127,6 +132,13 @@ func _spawn_map_civilians() -> void:
 				a.civ = Agent.Civ.ROOFTOP
 				a.hidden = true
 		placed += size
+
+
+func _spawn_weight(d: float) -> float:
+	for pair: Array in Config.a("rules.sim_tuning.civilian_spawn_weights"):
+		if d <= float(pair[0]):
+			return float(pair[1])
+	return 0.1
 
 
 func _hide_civilian(p: Vector2, kind: String) -> Agent:
@@ -217,6 +229,8 @@ func in_base(p: Vector2) -> bool:
 
 func in_build_zone(p: Vector2) -> bool:
 	if p.distance_to(map.hq_pos) <= Config.f("rules.base.build_radius_m"):
+		return true
+	if p.distance_to(map.gate_outer) <= Config.f("rules.base.apron_radius_m"):
 		return true
 	if fortress_captured:
 		var f := map.poi("novodevichy")

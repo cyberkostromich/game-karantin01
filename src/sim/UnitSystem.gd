@@ -160,11 +160,27 @@ func _pick_target(a: Agent, rng: float) -> void:
 	a.target_z = -1
 	if a.order == Agent.Order.AMOVE and not a.moving and a.pos.distance_to(a.order_pos) > 3.0:
 		world.agents.move_to(a, a.order_pos)
+	elif a.order == Agent.Order.NONE and a.kind != Agent.Kind.AIR:
+		_engage_in_vision(a)
 	if a.target_nest < 0:
 		for n in world.map.nests:
 			if n.alive and n.pos.distance_to(a.pos) <= rng + n.radius and a.order != Agent.Order.MOVE:
 				a.target_nest = n.id
 				break
+
+
+## Простаивающий боец сам идёт на зомби в поле зрения, но не дальше поводка от своей точки (GDD §7).
+func _engage_in_vision(a: Agent) -> void:
+	if a.order_pos == Vector2.ZERO:
+		a.order_pos = a.pos
+	var leash := Config.f("rules.sim_tuning.idle_engage_leash_m")
+	var j := world.zombies.hash.nearest(a.pos, world.mods.vision_of(a))
+	if j >= 0 and world.zombies.pos[j].distance_to(a.order_pos) < leash:
+		world.agents.move_to(a, world.zombies.pos[j])
+		a.order = Agent.Order.AMOVE
+		a.order_pos = a.pos
+	elif not a.moving and a.pos.distance_to(a.order_pos) > 4.0:
+		world.agents.move_to(a, a.order_pos)
 
 
 func _best_zombie(a: Agent, rng: float) -> int:

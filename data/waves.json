@@ -52,11 +52,12 @@
     ],
     "batch_size": 25,
     "batch_interval_s": 4,
-    "spawn_distance_m": 240,
+    "spawn_distance_m": 180,
     "spread_m": 35,
     "nest_share": 0.0,
     "day_ambient_respawn_s": 30,
-    "night_nest_horde": true
+    "night_nest_horde": true,
+    "_doc": "spawn_distance_m — от Штаба по направлению волны: ходок 1.6 м/с должен дойти до базы за ночь (старт на 25% ночи)."
   },
   "events": {
     "day_3": {

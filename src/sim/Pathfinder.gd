@@ -109,6 +109,12 @@ func _smooth(from: Vector2, pts: PackedVector2Array) -> PackedVector2Array:
 				best = j
 				break
 			j -= 1
+		if best == i and not grid.line_walkable(cur, pts[i]):
+			# первый узел грубой сетки не виден напрямую: идём через ближайшую проходимую точку
+			var mid := grid.nearest_walkable(cur.lerp(pts[i], 0.5), 6.0)
+			if grid.line_walkable(cur, mid):
+				out.append(mid)
+				cur = mid
 		cur = pts[best]
 		out.append(cur)
 		i = best + 1

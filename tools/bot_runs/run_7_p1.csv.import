@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://buipbm0piqq01"
+
+[deps]
+
+files=["res://tools/bot_runs/run_7_p1.food.translation", "res://tools/bot_runs/run_7_p1.wood.translation", "res://tools/bot_runs/run_7_p1.iron.translation", "res://tools/bot_runs/run_7_p1.adults.translation", "res://tools/bot_runs/run_7_p1.children.translation", "res://tools/bot_runs/run_7_p1.soldiers.translation", "res://tools/bot_runs/run_7_p1.morale.translation", "res://tools/bot_runs/run_7_p1.zombies.translation", "res://tools/bot_runs/run_7_p1.kills.translation", "res://tools/bot_runs/run_7_p1.buildings.translation", "res://tools/bot_runs/run_7_p1.power.translation", "res://tools/bot_runs/run_7_p1.ms.translation"]
+
+source_file="res://tools/bot_runs/run_7_p1.csv"
+dest_files=["res://tools/bot_runs/run_7_p1.food.translation", "res://tools/bot_runs/run_7_p1.wood.translation", "res://tools/bot_runs/run_7_p1.iron.translation", "res://tools/bot_runs/run_7_p1.adults.translation", "res://tools/bot_runs/run_7_p1.children.translation", "res://tools/bot_runs/run_7_p1.soldiers.translation", "res://tools/bot_runs/run_7_p1.morale.translation", "res://tools/bot_runs/run_7_p1.zombies.translation", "res://tools/bot_runs/run_7_p1.kills.translation", "res://tools/bot_runs/run_7_p1.buildings.translation", "res://tools/bot_runs/run_7_p1.power.translation", "res://tools/bot_runs/run_7_p1.ms.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

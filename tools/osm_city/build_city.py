@@ -490,6 +490,9 @@ def main():
     for poly, _ in c.buildings:
         for p in polys_of(poly):
             d.polygon([((x - x0) / cell, (z - z0) / cell) for x, z in p.exterior.coords], fill=0)
+    # мосты поверх зданий: станция «Воробьёвы горы» стоит на метромосту и не должна перекрывать проезд
+    if bridge_polys is not None and water_u is not None:
+        raster(d, bridge_polys.intersection(water_u.buffer(6)), 255, x0, z0, cell)
     if arena:
         raster(d, arena[2]["outer_poly"].difference(arena[1]).difference(unary_union([arena[1]])), 128, x0, z0, cell)
         raster(d, arena[1], 0, x0, z0, cell)
@@ -527,6 +530,7 @@ def main():
                                    "kind": rnd.choice(["sedan_red", "sedan_white", "sedan_burnt", "sedan_burnt", "truck", "trolleybus"]),
                                    "iron": wcfg["iron_per_node"]})
                 dd += 100 / wcfg["per_100m_road"] * rnd.uniform(0.6, 1.4)
+    _level_design(cfg, arena, nav, trees, wrecks, rnd)
     loot = []
     for x, z, t in c.shops:
         s, am = t.get("shop", ""), t.get("amenity", "")
@@ -658,6 +662,51 @@ def main():
               "arena": bool(arena), "fortress": bool(fort)}
     (out / "report.json").write_text(json.dumps(report, indent=1))
     print(json.dumps(report, indent=1))
+
+
+def _level_design(cfg, arena, nav, trees, wrecks, rnd):
+    """Рощи и брошенные машины вокруг арены (map_*.json/level_design): ближнее дерево и железо для старта."""
+    ld = cfg.get("level_design", {})
+    if not arena:
+        return
+    cx, cz = arena[2]["center"]
+    tree_cfg = cfg["resource_nodes_from_osm"]["tree"]
+    for g in ld.get("groves", []):
+        placed = 0
+        tries = 0
+        while placed < g["seeds"] and tries < g["seeds"] * 40:
+            tries += 1
+            a = _angle(g, rnd)
+            r = rnd.uniform(g["r_min"], g["r_max"])
+            sx, sz = cx + math.cos(a) * r, cz + math.sin(a) * r
+            if nav.val(sx, sz) != 128:
+                continue
+            placed += 1
+            for _ in range(g["per_seed"]):
+                x, z = sx + rnd.gauss(0, g["spread_m"] / 2), sz + rnd.gauss(0, g["spread_m"] / 2)
+                if nav.val(x, z) == 128:
+                    trees.append({"x": round(x, 1), "z": round(z, 1), "kind": rnd.choice(["linden", "linden", "birch", "poplar"]),
+                                  "wood": tree_cfg["wood_per_node"]})
+    iron = cfg["resource_nodes_from_osm"]["wreck"]["iron_per_node"]
+    for g in ld.get("wrecks", []):
+        placed = 0
+        tries = 0
+        while placed < g["count"] and tries < g["count"] * 60:
+            tries += 1
+            a = _angle(g, rnd)
+            r = rnd.uniform(g["r_min"], g["r_max"])
+            x, z = cx + math.cos(a) * r, cz + math.sin(a) * r
+            if nav.val(x, z) < g.get("min_nav", 200):
+                continue
+            placed += 1
+            wrecks.append({"x": round(x, 1), "z": round(z, 1), "rot": round(rnd.uniform(0, 360)),
+                           "kind": rnd.choice(["sedan_red", "sedan_white", "sedan_burnt", "sedan_burnt", "truck"]), "iron": iron})
+
+
+def _angle(g, rnd):
+    if "dir_deg" not in g:
+        return rnd.uniform(0, 2 * math.pi)
+    return math.radians(g["dir_deg"] + rnd.uniform(-g["arc_deg"] / 2, g["arc_deg"] / 2))
 
 
 def _dedupe(items, r):

@@ -207,11 +207,12 @@
     "population_zero": true
   },
   "base": {
-    "_doc": "База: зона стройки вокруг Штаба (GDD §10) и форта после захвата. Арена — safe_zone из map_*.json.",
-    "build_radius_m": 120,
+    "_doc": "База: зона стройки — круг вокруг Штаба (поле арены) + «предполье» у южного входа чаши (apron, центр — выход из ворот арены) + форт после захвата.",
+    "build_radius_m": 100,
     "fortress_build_radius_m": 90,
     "fortress_capture_radius_m": 60,
-    "fortress_capture_s": 20
+    "fortress_capture_s": 20,
+    "apron_radius_m": 110
   },
   "build": {
     "_doc": "Стройка (GDD §10): время = build_s / N^builders_exponent; ремонт = repair_cost_frac от цены пропорционально урону.",
@@ -251,7 +252,7 @@
     "event_morale_decay_per_day": 5
   },
   "sim_tuning": {
-    "_doc": "Технические константы симуляции (не баланс): радиусы тел, хеши, LOD, бюджеты путей.",
+    "_doc": "Технические константы симуляции (не баланс): радиусы тел, хеши, LOD, бюджеты путей. civilian_spawn_weights — [до_м, вес]: больше групп в «первом кольце» вокруг арены.",
     "zombie_radius": 0.35,
     "zombie_radius_by_type": {
       "brute": 0.7,
@@ -297,7 +298,22 @@
     "rescue_group_window_s": 10,
     "civilian_min_dist_from_hq_m": 180,
     "fortress_civilians": 15,
-    "ambient_near_nest_share": 0.3
+    "ambient_near_nest_share": 0.3,
+    "civilian_spawn_weights": [
+      [
+        600,
+        1.0
+      ],
+      [
+        1200,
+        0.45
+      ],
+      [
+        99999,
+        0.2
+      ]
+    ],
+    "idle_engage_leash_m": 30
   },
   "difficulty": {
     "_doc": "Сложность в лобби (docs/07_ui_hud.md §2): множитель размера волн",

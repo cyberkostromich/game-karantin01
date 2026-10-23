@@ -184,5 +184,46 @@
       "fallback_random_per_km2": 4
     }
   },
-  "city_dir": "res://assets/city/luzhniki"
+  "city_dir": "res://assets/city/luzhniki",
+  "level_design": {
+    "_doc": "Ручные доработки поверх OSM (docs/04_map_moscow.md §5): в OSM почти нет отдельных деревьев и машин у арены, а GDD требует ближнего дерева (парк Лужников) и железа. Генерирует build_city.py. dir_deg/arc_deg — сектор (0° = восток, 90° = юг, к выходу из чаши).",
+    "groves": [
+      {
+        "center": "arena",
+        "r_min": 150,
+        "r_max": 300,
+        "seeds": 30,
+        "per_seed": 6,
+        "spread_m": 14,
+        "dir_deg": 90,
+        "arc_deg": 110
+      },
+      {
+        "center": "arena",
+        "r_min": 160,
+        "r_max": 340,
+        "seeds": 20,
+        "per_seed": 5,
+        "spread_m": 12
+      }
+    ],
+    "wrecks": [
+      {
+        "center": "arena",
+        "r_min": 140,
+        "r_max": 300,
+        "count": 30,
+        "dir_deg": 90,
+        "arc_deg": 120,
+        "min_nav": 128
+      },
+      {
+        "center": "arena",
+        "r_min": 160,
+        "r_max": 420,
+        "count": 30,
+        "min_nav": 200
+      }
+    ]
+  }
 }

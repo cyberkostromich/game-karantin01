@@ -18,6 +18,7 @@ var zero_food_days: int = 0
 var _power_cd: float = 0.0
 var _morale_cd: float = 0.0
 var _dirty: bool = true
+var _last_off := PackedInt32Array()
 var stats: Dictionary = {}             # счётчики для отчёта рассвета и финала
 var history: Array[Dictionary] = []    # численность по дням (график финала, бот-прогон)
 
@@ -210,8 +211,11 @@ func _shutdown(consumers: Array[Building], balance: float) -> void:
 			b.powered = true
 		if was != b.powered:
 			world.on_power_changed(b)
-	if not off.is_empty():
-		world.emit("power_deficit", [off])
+	# алерт — только когда меняется набор отключённых, а не каждые 0.5 с
+	if off != _last_off:
+		_last_off = off
+		if not off.is_empty():
+			world.emit("power_deficit", [off])
 
 
 func power_balance() -> float:

@@ -15,6 +15,7 @@ var path_queue: Array[int] = []
 var paths_per_tick: int = 8
 var sep_r: float = 0.9
 var tmp := PackedInt32Array()
+const STEER: Array[float] = [0.785, -0.785, 1.571, -1.571]
 
 
 func setup(w: World) -> void:
@@ -168,10 +169,13 @@ func _follow(a: Agent, dt: float) -> void:
 		a.pos = np
 		a.stuck_t = maxf(0.0, a.stuck_t - dt)
 		return
-	if g.walkable(Vector2(np.x, a.pos.y)):
-		a.pos.x = np.x
-	elif g.walkable(Vector2(a.pos.x, np.y)):
-		a.pos.y = np.y
+	# упёрлись в угол: пробуем подрулить на ±45°/±90° (путь проходим, но угол клетки срезан)
+	for ang: float in STEER:
+		var sv := v.rotated(ang) * dt
+		if g.walkable(a.pos + sv):
+			a.pos += sv
+			a.stuck_t += dt * 0.25
+			return
 	a.stuck_t += dt
 	if a.stuck_t > 1.0:
 		a.stuck_t = 0.0

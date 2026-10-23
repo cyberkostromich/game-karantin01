@@ -24,10 +24,10 @@
  "bridges": 126,
  "water_polys": 18,
  "parks": 720,
- "trees": 3242,
- "wrecks": 650,
+ "trees": 3487,
+ "wrecks": 711,
  "loot": 105,
- "spawns": 848,
+ "spawns": 859,
  "arena": true,
  "fortress": true
 }

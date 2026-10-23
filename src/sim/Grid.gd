@@ -133,6 +133,22 @@ func rect_free(r: Rect2i) -> bool:
 	return true
 
 
+## Для стен протяжкой: клетки рельефа-препятствия (трибуны, дома) допускаются — иначе у края не закрыть щель в 1 клетку.
+## Нужна хотя бы одна проходимая клетка и ни одной нашей постройки.
+func rect_free_partial(r: Rect2i) -> bool:
+	var any := false
+	for y in range(r.position.y, r.end.y):
+		for x in range(r.position.x, r.end.x):
+			if x < 0 or y < 0 or x >= w or y >= h:
+				return false
+			var i := y * w + x
+			if occ[i] >= 0:
+				return false
+			if terrain[i] >= WALKABLE_MIN:
+				any = true
+	return any
+
+
 ## Прямая видимость/проходимость по клеткам (DDA), для сглаживания путей.
 func line_walkable(a: Vector2, b: Vector2) -> bool:
 	var d := b - a

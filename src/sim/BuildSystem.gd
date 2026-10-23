@@ -47,7 +47,8 @@ func check_place(type: String, origin_cell: Vector2i, rot: int, check_cost := tr
 	if tech != null and not world.tech.has(String(tech)):
 		return "BUILD_ERR_TECH"
 	var r := rect_for(type, origin_cell, rot)
-	if not world.grid.rect_free(r):
+	var free := world.grid.rect_free_partial(r) if bool(d.get("drag_build", false)) else world.grid.rect_free(r)
+	if not free:
 		return "BUILD_ERR_BLOCKED"
 	var c := world.grid.center_of(r.position) + Vector2(r.size - Vector2i.ONE) * world.grid.cell * 0.5
 	if not world.in_build_zone(c):
