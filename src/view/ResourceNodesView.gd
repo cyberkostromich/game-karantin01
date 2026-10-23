@@ -56,7 +56,7 @@ func rebuild() -> void:
 		mm.buffer = buf
 		var mmi := MultiMeshInstance3D.new()
 		mmi.multimesh = mm
-		mmi.material_override = Look.palette()
+		mmi.material_override = Look.palette_static()
 		mmi.visibility_range_end = 800.0
 		add_child(mmi)
 		var tk := Vector2i(key.x, key.y)

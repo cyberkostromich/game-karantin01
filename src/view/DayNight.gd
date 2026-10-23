@@ -9,6 +9,9 @@ var env := WorldEnvironment.new()
 var e := Environment.new()
 var sky_mat := ProceduralSkyMaterial.new()
 var night: float = 0.0
+## Веб (WebGL, Compatibility) светит ярче и без SSAO, а тени дают «полосы»: тени выключены, свет приглушён.
+var web := OS.has_feature("web")
+var k_light: float = 0.8 if OS.has_feature("web") else 1.0
 
 
 func setup(w: World, shadows: bool) -> void:
@@ -16,7 +19,7 @@ func setup(w: World, shadows: bool) -> void:
 	sun.rotation_degrees = Vector3(-52, -35, 0)
 	sun.light_energy = 1.1
 	sun.light_color = Color("f1ede4")
-	sun.shadow_enabled = shadows
+	sun.shadow_enabled = shadows and not web
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	sun.directional_shadow_max_distance = 260.0
 	sun.shadow_blur = 1.5
@@ -36,7 +39,7 @@ func setup(w: World, shadows: bool) -> void:
 	e.ssao_enabled = shadows
 	e.ssao_radius = 2.0
 	e.ssao_intensity = 1.4
-	e.glow_enabled = true
+	e.glow_enabled = not web
 	e.glow_intensity = 0.6
 	e.glow_bloom = 0.05
 	e.fog_enabled = true
@@ -54,9 +57,9 @@ func render(delta: float) -> void:
 	var day_sun := Color("f1ede4")
 	var night_sun := Color("6f86b8")
 	sun.light_color = day_sun.lerp(night_sun, night)
-	sun.light_energy = lerpf(1.1, 0.38, night)
+	sun.light_energy = lerpf(1.1, 0.38, night) * k_light
 	sun.rotation_degrees.x = lerpf(-52.0, -70.0, night)
-	e.ambient_light_energy = lerpf(0.9, 0.5, night)
+	e.ambient_light_energy = lerpf(0.9, 0.5, night) * k_light
 	e.ambient_light_color = Color("1b2a44").lerp(Color("5a6c8c"), 0.5)
 	sky_mat.sky_top_color = Color("8e9aa6").lerp(Color("0c1424"), night)
 	sky_mat.sky_horizon_color = Color("b9bec2").lerp(Color("1b2a44"), night)

@@ -17,6 +17,8 @@ var status: Sprite3D
 var selected: bool = false
 var meshes: Array[GeometryInstance3D] = []
 var human: HumanAnim
+var team_col := Color.WHITE
+var _last_tint: float = -1.0
 var recoil: float = 0.0
 var _last_cd: float = 0.0
 var _last_status: String = ""
@@ -38,8 +40,8 @@ func build(a: Agent, model_path: String, team: Color) -> void:
 		human = HumanAnim.new()
 		human.setup(model, a.kind == Agent.Kind.INFANTRY and Look.find(model, "weapon") != null, a.kind == Agent.Kind.CIVILIAN, a.id)
 	_collect_meshes(model)
-	for m in meshes:
-		m.set_instance_shader_parameter("team_color", team)
+	team_col = team
+	_tint(0.0)
 	phase = fmod(float(a.id) * 1.37, TAU)
 	_make_ring(a.radius)
 	if a.is_unit():
@@ -154,11 +156,18 @@ func animate(a: Agent, p: Vector2, delta: float, altitude: float) -> void:
 	if show_hp:
 		hp_fg.scale.x = maxf(0.01, frac)
 		(hp_fg.material_override as StandardMaterial3D).albedo_color = Color(0.35, 0.9, 0.4).lerp(Color(0.95, 0.3, 0.2), 1.0 - frac)
-	var tint := 0.0
-	if a.infected and a.infect_detected:
-		tint = 1.0
+	_tint(1.0 if a.infected and a.infect_detected else 0.0)
+
+
+## Цвет игрока и тинт заражения — подменой общего материала (Look.char_mat), не параметрами экземпляра.
+func _tint(t: float) -> void:
+	if t == _last_tint:
+		return
+	_last_tint = t
 	for m in meshes:
-		m.set_instance_shader_parameter("infect_tint", tint)
+		if m.material_override is ShaderMaterial:
+			var tex: Texture2D = m.get_meta("skin_tex") if m.has_meta("skin_tex") else null
+			m.material_override = Look.char_mat(tex, team_col, t > 0.0)
 
 
 ## Смерть: гуманоид падает (HumanAnim.die), техника и вертолёт исчезают сразу (взрыв рисует Fx).

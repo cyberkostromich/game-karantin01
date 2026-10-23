@@ -3,12 +3,18 @@ extends Node
 ## Отладка (аргументы после "--"): --autostart, --shot=путь.png, --shot-at=сек, --cam=x,z, --zoom=0..1,
 ## --speed=N, --reveal, --select=тип, --skip=сек, --nohud — для скриншотов и смоук-прогонов из CI.
 ## Без --autostart --shot снимает главное меню.
+## Демо-запись: --bot (за игрока командует BotPlayer — теми же командами, что человек), --record=папка
+## --record-for=сек_игры (кадр на каждый кадр движка; удобно с --fixed-fps 10), --follow — камера-режиссёр.
 
 var menu: MainMenu
 var game: Game
 var args: Dictionary = {}
 var _t: float = 0.0
 var _shot_done := false
+var bot: BotPlayer
+var _frame: int = 0
+var _rec_t0: float = -1.0
+var _cam_target := Vector2.INF
 
 
 func _ready() -> void:
@@ -44,8 +50,15 @@ func _start_game(opts: Dictionary) -> void:
 		game.speed = float(args["speed"])
 	if args.has("reveal"):
 		game.world.fog.reveal_all()
+	if args.has("bot"):
+		bot = BotPlayer.new()
+		bot.setup(game.world, 1)
+		game.hud.tutorial.enabled = false
+		game.hud.tutorial.visible = false
 	if args.has("skip"):
 		for _k in int(float(args["skip"]) / game.world.dt):
+			if bot != null:
+				bot.update(game.world.dt)
 			game.world.step()
 
 
@@ -55,6 +68,13 @@ func _process(delta: float) -> void:
 		if _t >= float(args.get("shot-at", "3")):
 			_save_shot()
 		return
+	if game != null and game.ready_to_play:
+		if bot != null:
+			bot.update(delta * game.speed)
+		if args.has("follow"):
+			_direct(delta)
+		if args.has("record"):
+			_record()
 	if not args.has("shot") or _shot_done or game == null or not game.ready_to_play:
 		return
 	_t += delta
@@ -73,7 +93,51 @@ func _process(delta: float) -> void:
 				ids.append(a.id)
 		game.selection.set_agents(ids, [])
 	if _t >= float(args.get("shot-at", "3")):
+		if args.has("dbg-inst"):
+			_dbg_instances()
 		_save_shot()
+
+
+## Сколько геометрии на каком шейдере (поиск перерасхода параметров экземпляра в WebGL).
+func _dbg_instances() -> void:
+	var cnt := {}
+	for n in get_tree().root.find_children("*", "GeometryInstance3D", true, false):
+		var m := (n as GeometryInstance3D).material_override as ShaderMaterial
+		var key := m.shader.resource_path if m != null and m.shader != null else "other"
+		cnt[key] = int(cnt.get(key, 0)) + 1
+	print("DBG ", cnt)
+
+
+## Камера-режиссёр для демо: днём — над базой, когда орда у стен — к центру схватки.
+func _direct(delta: float) -> void:
+	var w: World = game.world
+	var hq := w.map.hq_pos
+	var want := hq + Vector2(0, 40)
+	var z := w.zombies
+	var sum := Vector2.ZERO
+	var n := 0
+	for i in z.count:
+		if z.alive[i] != 0 and z.pos[i].distance_to(hq) < 170.0:
+			sum += z.pos[i]
+			n += 1
+	if n > 8:
+		want = (sum / n).lerp(hq, 0.35)
+	_cam_target = want if _cam_target == Vector2.INF else _cam_target.lerp(want, minf(1.0, delta * 0.6))
+	game.cam.focus(_cam_target)
+	if args.has("zoom"):
+		game.cam.zoom_target = float(args["zoom"])
+
+
+func _record() -> void:
+	var w: World = game.world
+	if _rec_t0 < 0.0:
+		_rec_t0 = w.time
+		DirAccess.make_dir_recursive_absolute(String(args["record"]))
+	get_viewport().get_texture().get_image().save_jpg("%s/%05d.jpg" % [args["record"], _frame], 0.9)
+	_frame += 1
+	if w.time - _rec_t0 >= float(args.get("record-for", "60")):
+		print("RECORDED ", _frame, " frames")
+		get_tree().quit()
 
 
 func _save_shot() -> void:

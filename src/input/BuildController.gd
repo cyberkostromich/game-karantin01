@@ -161,7 +161,7 @@ func _affordable(_spent: Dictionary, n: int) -> bool:
 
 func _set_ghost(n: Node, v: float) -> void:
 	if n is GeometryInstance3D:
-		(n as GeometryInstance3D).set_instance_shader_parameter("ghost", v)
+		(n as GeometryInstance3D).set_instance_shader_parameter("bstate", Vector4(0.0, v, 1.0, 0.0))
 	for c in n.get_children():
 		_set_ghost(c, v)
 

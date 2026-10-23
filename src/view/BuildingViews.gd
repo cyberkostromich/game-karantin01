@@ -16,7 +16,8 @@ func setup(w: World) -> void:
 
 func _create(b: Building) -> Node3D:
 	var root := Node3D.new()
-	var model := Look.instance(String(b.data()["model"]), Look.palette_ghost() if not b.complete() else Look.palette())
+	# готовые постройки — без параметров экземпляра (их сотни: стены), подсветка подменяет материал
+	var model := Look.instance(String(b.data()["model"]), Look.palette_ghost() if not b.complete() else Look.palette_static())
 	model.name = "Model"
 	root.add_child(model)
 	root.position = Vector3(b.pos.x, 0, b.pos.y)
@@ -123,13 +124,30 @@ func _civ_near(p: Vector2, r: float) -> bool:
 	return false
 
 
-func _set_param(n: Node, key: String, v: Variant) -> void:
+## Состояние постройки для шейдера — один vec4 bstate = (подсветка, призрак, прогресс, —).
+func _set_param(n: Node, key: String, v: float) -> void:
+	var st: Vector4 = n.get_meta("bstate", Vector4(0, 0, 1, 0))
+	match key:
+		"highlight": st.x = v
+		"ghost": st.y = v
+		"build_progress": st.z = v
+	n.set_meta("bstate", st)
+	_apply_bstate(n, st)
+
+
+func _apply_bstate(n: Node, st: Vector4) -> void:
 	if n is GeometryInstance3D:
-		(n as GeometryInstance3D).set_instance_shader_parameter(key, v)
+		(n as GeometryInstance3D).set_instance_shader_parameter("bstate", st)
 	for c in n.get_children():
-		_set_param(c, key, v)
+		_apply_bstate(c, st)
 
 
 func set_highlight(id: int, v: float) -> void:
-	if views.has(id):
-		_set_param(views[id], "highlight", v)
+	if not views.has(id):
+		return
+	var model: Node = views[id].get_node("Model")
+	var ghost := model.has_meta("bstate") and (model.get_meta("bstate") as Vector4).z < 1.0
+	if not ghost:
+		Look.apply_material(model, Look.palette() if v > 0.0 else Look.palette_static())
+	if v > 0.0 or ghost:
+		_set_param(model, "highlight", v)

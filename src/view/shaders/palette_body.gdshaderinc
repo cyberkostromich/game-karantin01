@@ -6,11 +6,31 @@ uniform sampler2D palette : source_color, filter_linear_mipmap;
 #else
 uniform sampler2D palette : source_color, filter_nearest;
 #endif
-instance uniform vec4 team_color : source_color = vec4(0.184, 0.502, 0.929, 1.0);
-instance uniform float infect_tint = 0.0;   // 0..1 — зелёный тинт инкубации после детекта
-instance uniform float highlight = 0.0;     // подсветка выделения/наведения
-instance uniform float ghost = 0.0;         // 1 — призрак постройки (зелёный), 2 — нельзя (красный)
-instance uniform float build_progress = 1.0;
+// Параметры экземпляра занимают слоты общего буфера (в WebGL 4096 ячеек, по 16 на экземпляр — то есть
+// не больше ~250 объектов): город и пропсы (STATIC) — без них; персонажи (CHAR) — параметры материала;
+// постройки — один bstate = (подсветка, призрак, прогресс стройки, —).
+#if defined(STATIC)
+const vec4 team_color = vec4(0.184, 0.502, 0.929, 1.0);
+const float infect_tint = 0.0;
+const float highlight = 0.0;
+const float ghost = 0.0;
+const float build_progress = 1.0;
+#elif defined(CHAR)
+// персонажи: цвет игрока и тинт — параметры материала (материал на команду × заражён, Look.char_mat),
+// без параметров экземпляра: в WebGL каждый такой экземпляр съедает 16 ячеек, а деталей у людей — тысячи
+uniform vec4 team_color : source_color = vec4(0.184, 0.502, 0.929, 1.0);
+uniform float infect_tint = 0.0;
+const float highlight = 0.0;
+const float ghost = 0.0;
+const float build_progress = 1.0;
+#else
+instance uniform vec4 bstate = vec4(0.0, 0.0, 1.0, 0.0);
+const vec4 team_color = vec4(0.184, 0.502, 0.929, 1.0);
+const float infect_tint = 0.0;
+#define highlight bstate.x
+#define ghost bstate.y
+#define build_progress bstate.z
+#endif
 global uniform float qm_night;
 
 varying float v_y;

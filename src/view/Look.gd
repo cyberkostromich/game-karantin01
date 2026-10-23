@@ -31,6 +31,11 @@ static func palette() -> ShaderMaterial:
 	return _shader_mat("palette", "res://src/view/shaders/palette.gdshader")
 
 
+## Палитра без параметров экземпляра (пропсы, POI, ориентиры).
+static func palette_static() -> ShaderMaterial:
+	return _shader_mat("palette_static", "res://src/view/shaders/palette_static.gdshader")
+
+
 ## Палитра снаряжения персонажей (градиент по высоте + контровой свет).
 static func palette_char() -> ShaderMaterial:
 	return _shader_mat("palette_char", "res://src/view/shaders/palette_char.gdshader")
@@ -72,6 +77,18 @@ static func skin_tex(src: Material) -> Texture2D:
 	return null
 
 
+## Материал персонажа: скин (или палитра снаряжения, tex = null) × цвет игрока × заражён — общий для всех
+## таких деталей, без параметров экземпляра (см. palette_body.gdshaderinc).
+static func char_mat(tex: Texture2D, team: Color, infected: bool) -> ShaderMaterial:
+	var key := "char_%s_%s_%s" % [str(tex.get_instance_id()) if tex != null else "pal", team.to_html(), infected]
+	if not _mats.has(key):
+		var m := (skin(tex) if tex != null else palette_char()).duplicate() as ShaderMaterial
+		m.set_shader_parameter("team_color", team)
+		m.set_shader_parameter("infect_tint", 1.0 if infected else 0.0)
+		_mats[key] = m
+	return _mats[key]
+
+
 static func skin(tex: Texture2D) -> ShaderMaterial:
 	var key := "skin_" + str(tex.get_instance_id())
 	if not _mats.has(key):
@@ -97,15 +114,16 @@ static func instance(path: String, mat: Material = null) -> Node3D:
 		return Node3D.new()
 	var n: Node3D = ps.instantiate()
 	var is_char := path.contains("/units/") or path.contains("/civilians/")
-	apply_material(n, mat if mat != null else (palette_char() if is_char else palette()))
+	apply_material(n, mat if mat != null else (palette_char() if is_char else palette_static()))
 	return n
 
 
 static func apply_material(n: Node, mat: Material) -> void:
 	if n is MeshInstance3D:
 		var mi := n as MeshInstance3D
-		var tex := skin_tex(mi.mesh.surface_get_material(0)) if (mat == palette() or mat == palette_char()) and mi.mesh != null else null
+		var tex := skin_tex(mi.mesh.surface_get_material(0)) if (mat == palette_static() or mat == palette_char()) and mi.mesh != null else null
 		if tex != null:
+			mi.set_meta("skin_tex", tex)
 			mi.material_override = skin(tex)
 		else:
 			mi.material_override = mat

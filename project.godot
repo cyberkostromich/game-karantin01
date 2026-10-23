@@ -7,7 +7,7 @@ config_version=5
 
 config/name="Карантин: Москва"
 config/description="Кооперативная RTS-выживалка. Лужники, 12 дней до эвакуации."
-config/version="0.3.0"
+config/version="0.3.1"
 run/main_scene="res://src/main/Main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://assets/app_icon.png"
