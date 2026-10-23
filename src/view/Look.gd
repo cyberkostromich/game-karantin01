@@ -47,15 +47,34 @@ static func water() -> ShaderMaterial:
 	return _shader_mat("water", "res://src/view/shaders/water.gdshader")
 
 
-static func zombie(type: String) -> ShaderMaterial:
-	var key := "zombie_" + type
+## Материал орды на тип; tex — скин Kenney поверхности (null — палитровые детали).
+static func zombie(type: String, tex: Texture2D = null) -> ShaderMaterial:
+	var key := "zombie_%s_%s" % [type, tex.resource_path if tex != null else ""]
 	if _mats.has(key):
 		return _mats[key]
 	var m := ShaderMaterial.new()
-	m.shader = load("res://src/view/shaders/zombie.gdshader")
-	m.set_shader_parameter("palette", load(PALETTE_TEX))
+	m.shader = load("res://src/view/shaders/zombie_skin.gdshader" if tex != null else "res://src/view/shaders/zombie.gdshader")
+	m.set_shader_parameter("palette", tex if tex != null else load(PALETTE_TEX))
 	_mats[key] = m
 	return m
+
+
+## Скин персонажа (D-11): материал glTF с именем tex_* несёт свою текстуру — рисуем её палитровым
+## шейдером в варианте SKIN (тинт заражения, подсветка сохраняются).
+static func skin_tex(src: Material) -> Texture2D:
+	if src is BaseMaterial3D and String(src.resource_name).begins_with("tex_"):
+		return (src as BaseMaterial3D).albedo_texture
+	return null
+
+
+static func skin(tex: Texture2D) -> ShaderMaterial:
+	var key := "skin_" + str(tex.get_instance_id())
+	if not _mats.has(key):
+		var m := ShaderMaterial.new()
+		m.shader = load("res://src/view/shaders/palette_skin.gdshader")
+		m.set_shader_parameter("palette", tex)
+		_mats[key] = m
+	return _mats[key]
 
 
 static func scene(path: String) -> PackedScene:
@@ -78,7 +97,12 @@ static func instance(path: String, mat: Material = null) -> Node3D:
 
 static func apply_material(n: Node, mat: Material) -> void:
 	if n is MeshInstance3D:
-		(n as MeshInstance3D).material_override = mat
+		var mi := n as MeshInstance3D
+		var tex := skin_tex(mi.mesh.surface_get_material(0)) if mat == palette() and mi.mesh != null else null
+		if tex != null:
+			mi.material_override = skin(tex)
+		else:
+			mi.material_override = mat
 	for c in n.get_children():
 		apply_material(c, mat)
 
@@ -93,31 +117,36 @@ static func find(n: Node, node_name: String) -> Node3D:
 	return null
 
 
-## Сливает все меши модели в один (для MultiMesh). UV2.x — индекс части (PART_NAMES) для вершинной анимации,
-## pivots — позиции узлов-частей в пространстве корня (точки вращения конечностей).
+## Сливает все меши модели в один (для MultiMesh): поверхность на материал (палитра + скин Kenney).
+## UV2.x — индекс части (PART_NAMES) для вершинной анимации, pivots — позиции узлов-частей в пространстве
+## корня (точки вращения конечностей), textures — скин каждой поверхности (null — палитра).
 static func merged(path: String) -> Dictionary:
 	var p := asset(path)
 	if _merged.has(p):
 		return _merged[p]
 	var root: Node3D = scene(p).instantiate()
-	var st := {"verts": PackedVector3Array(), "norms": PackedVector3Array(), "uvs": PackedVector2Array(), "uv2": PackedVector2Array()}
+	var groups := {}   # ключ текстуры → массивы
 	var pivots := {}
-	_collect(root, Transform3D.IDENTITY, -1, st, pivots)
-	var arr := []
-	arr.resize(Mesh.ARRAY_MAX)
-	arr[Mesh.ARRAY_VERTEX] = st["verts"]
-	arr[Mesh.ARRAY_NORMAL] = st["norms"]
-	arr[Mesh.ARRAY_TEX_UV] = st["uvs"]
-	arr[Mesh.ARRAY_TEX_UV2] = st["uv2"]
+	_collect(root, Transform3D.IDENTITY, -1, groups, pivots)
 	var mesh := ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	var textures: Array = []
+	for key: String in groups:
+		var st: Dictionary = groups[key]
+		var arr := []
+		arr.resize(Mesh.ARRAY_MAX)
+		arr[Mesh.ARRAY_VERTEX] = st["verts"]
+		arr[Mesh.ARRAY_NORMAL] = st["norms"]
+		arr[Mesh.ARRAY_TEX_UV] = st["uvs"]
+		arr[Mesh.ARRAY_TEX_UV2] = st["uv2"]
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+		textures.append(st["tex"])
 	root.free()
-	var out := {"mesh": mesh, "pivots": pivots}
+	var out := {"mesh": mesh, "pivots": pivots, "textures": textures}
 	_merged[p] = out
 	return out
 
 
-static func _collect(n: Node, xf: Transform3D, part: int, st: Dictionary, pivots: Dictionary) -> void:
+static func _collect(n: Node, xf: Transform3D, part: int, groups: Dictionary, pivots: Dictionary) -> void:
 	var my_xf := xf
 	var my_part := part
 	if n is Node3D:
@@ -127,22 +156,29 @@ static func _collect(n: Node, xf: Transform3D, part: int, st: Dictionary, pivots
 			my_part = idx
 			pivots[String(n.name)] = my_xf.origin
 	if n is MeshInstance3D:
-		var mi := n as MeshInstance3D
-		var mesh := mi.mesh
+		var mesh := (n as MeshInstance3D).mesh
 		for s in mesh.get_surface_count():
-			var a := mesh.surface_get_arrays(s)
-			var v: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
-			var nr: PackedVector3Array = a[Mesh.ARRAY_NORMAL]
-			var uv: PackedVector2Array = a[Mesh.ARRAY_TEX_UV]
-			var idx_arr: PackedInt32Array = a[Mesh.ARRAY_INDEX] if a[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
-			var order := idx_arr if not idx_arr.is_empty() else PackedInt32Array(range(v.size()))
-			for i in order:
-				st["verts"].append(my_xf * v[i])
-				st["norms"].append((my_xf.basis * nr[i]).normalized())
-				st["uvs"].append(uv[i])
-				st["uv2"].append(Vector2(maxi(my_part, 0), 0))
+			var tex := skin_tex(mesh.surface_get_material(s))
+			var key := tex.resource_path if tex != null else ""
+			if not groups.has(key):
+				groups[key] = {"verts": PackedVector3Array(), "norms": PackedVector3Array(), "uvs": PackedVector2Array(),
+					"uv2": PackedVector2Array(), "tex": tex}
+			_append(groups[key], mesh.surface_get_arrays(s), my_xf, my_part)
 	for c in n.get_children():
-		_collect(c, my_xf, my_part, st, pivots)
+		_collect(c, my_xf, my_part, groups, pivots)
+
+
+static func _append(st: Dictionary, a: Array, xf: Transform3D, part: int) -> void:
+	var v: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
+	var nr: PackedVector3Array = a[Mesh.ARRAY_NORMAL]
+	var uv: PackedVector2Array = a[Mesh.ARRAY_TEX_UV]
+	var idx_arr: PackedInt32Array = a[Mesh.ARRAY_INDEX] if a[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+	var order := idx_arr if not idx_arr.is_empty() else PackedInt32Array(range(v.size()))
+	for i in order:
+		st["verts"].append(xf * v[i])
+		st["norms"].append((xf.basis * nr[i]).normalized())
+		st["uvs"].append(uv[i])
+		st["uv2"].append(Vector2(maxi(part, 0), 0))
 
 
 static func team_color(pid: int) -> Color:

@@ -11,3 +11,4 @@ tools/osm_city/*.osm.json
 # Логи бот-прогонов
 tools/bot_runs/*.csv
 .DS_Store
+tools/asset_gen/.cache/skins/

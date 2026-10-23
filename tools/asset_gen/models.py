@@ -1061,8 +1061,8 @@ PUBLIC_META = ("unit", "city", "building", "prop", "pickup", "resource")  # сл
 
 
 def build_all():
-    import blmesh, characters, vehicles
-    characters.build_all(reg)
+    import blmesh, kenney, vehicles
+    kenney.build_all(reg)
     zmb_nest()
     vehicles.build_all(reg)
     for f in (bld_hq, bld_tent, bld_house, bld_storage, bld_kitchen, bld_greenhouse, bld_sawmill, bld_scrapyard,

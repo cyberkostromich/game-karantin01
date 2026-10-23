@@ -44,7 +44,7 @@ def _run_blender(specs: dict) -> dict:
     with tempfile.TemporaryDirectory() as td:
         src, dst = Path(td) / "in.json", Path(td) / "out.json"
         src.write_text(json.dumps(specs))
-        subprocess.run([exe, "-b", "--factory-startup", "-P", str(WORKER), "--", str(src), str(dst)],
+        subprocess.run([exe, "-b", "--factory-startup", "--python-exit-code", "1", "-P", str(WORKER), "--", str(src), str(dst)],
                        check=True, stdout=subprocess.DEVNULL)
         return json.loads(dst.read_text())
 

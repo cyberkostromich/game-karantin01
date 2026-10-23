@@ -26,12 +26,14 @@ func setup(w: World) -> void:
 	for k in w.zombies.types.size():
 		var t := w.zombies.types[k]
 		var m := Look.merged(String(Config.g("zombies.%s.model" % t)))
-		var mat := Look.zombie(t)
 		var piv: Dictionary = m["pivots"]
-		for pn: String in ["body", "head", "arm_l", "arm_r", "leg_l", "leg_r", "shin_l", "shin_r", "forearm_l", "forearm_r"]:
-			if piv.has(pn):
+		var mesh: ArrayMesh = m["mesh"]
+		for si in mesh.get_surface_count():  # палитра и скин — по материалу на поверхность
+			var mat := Look.zombie(t, m["textures"][si])
+			for pn: String in piv:
 				mat.set_shader_parameter("piv_" + pn, piv[pn])
-		mat.set_shader_parameter("stride", Config.f("zombies.%s.speed" % t) * 2.2 + 2.0)
+			mat.set_shader_parameter("stride", Config.f("zombies.%s.speed" % t) * 2.2 + 2.0)
+			mesh.surface_set_material(si, mat)
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		mm.use_custom_data = true
@@ -39,7 +41,6 @@ func setup(w: World) -> void:
 		mm.instance_count = 0
 		var mmi := MultiMeshInstance3D.new()
 		mmi.multimesh = mm
-		mmi.material_override = mat
 		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 		mmi.extra_cull_margin = 4000.0  # инстансы по всей карте; AABB сам по себе бесполезен
 		add_child(mmi)

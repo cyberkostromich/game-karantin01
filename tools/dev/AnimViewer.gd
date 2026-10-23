@@ -33,7 +33,7 @@ func _ready() -> void:
 	for r in ROWS.size():
 		for c in (ROWS[r] as Array).size():
 			var e: Array = ROWS[r][c]
-			var p := Vector2(c * 2.6 - 6.5, r * 3.4 - 3.4)
+			var p := Vector2(c * 2.6 - 6.5, r * 4.2 - 4.2)
 			if r < 2:
 				_human(String(e[0]), String(e[1]), p, r * 10 + c)
 			else:
@@ -62,7 +62,7 @@ func _stage() -> void:
 	add_child(ground)
 	var cam := Camera3D.new()
 	cam.fov = 30.0
-	cam.position = Vector3(0.0, 11.0, 19.0)
+	cam.position = Vector3(0.0, 8.0, 17.0)
 	add_child(cam)
 	cam.look_at(Vector3(0.0, 1.0, 0.2))
 
@@ -77,7 +77,7 @@ func _human(path: String, mode: String, p: Vector2, id: int) -> void:
 	a.civ = {"work": Agent.Civ.WORKING, "panic": Agent.Civ.FLEEING, "drill": Agent.Civ.TRAINING}.get(mode, Agent.Civ.IDLE)
 	var spd: float = {"walk": 2.5, "run": 6.0, "panic": 6.5}.get(mode, 0.0)
 	a.vel = Vector2(0.0, spd)
-	a.facing = 0.35
+	a.facing = 0.85
 	var v := AgentView.new()
 	add_child(v)
 	v.build(a, path, Color(0.18, 0.5, 0.93))
@@ -88,23 +88,25 @@ func _human(path: String, mode: String, p: Vector2, id: int) -> void:
 
 func _zombie(type: String, mode: String, p: Vector2) -> void:
 	var m := Look.merged(String(Config.g("zombies.%s.model" % type)))
-	var mat: ShaderMaterial = Look.zombie(type).duplicate()
 	var piv: Dictionary = m["pivots"]
-	for pn: String in piv:
-		mat.set_shader_parameter("piv_" + pn, piv[pn])
-	mat.set_shader_parameter("stride", Config.f("zombies.%s.speed" % type) * 2.2 + 2.0)
+	var mesh: ArrayMesh = m["mesh"]
+	for si in mesh.get_surface_count():
+		var mat := Look.zombie(type, m["textures"][si])
+		for pn: String in piv:
+			mat.set_shader_parameter("piv_" + pn, piv[pn])
+		mat.set_shader_parameter("stride", Config.f("zombies.%s.speed" % type) * 2.2 + 2.0)
+		mesh.surface_set_material(si, mat)
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.use_custom_data = true
 	mm.mesh = m["mesh"]
 	mm.instance_count = 1
 	var k := Config.f("rules.view.zombie_scale")
-	mm.set_instance_transform(0, Transform3D(Basis(Vector3.UP, 0.35).scaled(Vector3.ONE * k), Vector3(p.x, 0.0, p.y)))
+	mm.set_instance_transform(0, Transform3D(Basis(Vector3.UP, 0.85).scaled(Vector3.ONE * k), Vector3(p.x, 0.0, p.y)))
 	var st: float = {"attack": 3.0, "feed": 5.0, "run": 2.0, "walk": 2.0}.get(mode, 0.0)
 	var spd: float = {"walk": 0.45, "run": 1.0}.get(mode, 0.0)
 	var mmi := MultiMeshInstance3D.new()
 	mmi.multimesh = mm
-	mmi.material_override = mat
 	add_child(mmi)
 	mms.append([mm, st, spd, 1.0 if mode == "death" else 0.0])
 

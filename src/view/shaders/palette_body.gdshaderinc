@@ -1,6 +1,11 @@
 // Общее тело палитрового шейдера: подключается palette*.gdshader с разными render_mode.
 
+#ifdef SKIN
+// скин персонажа (Kenney, D-11): обычная текстура с фильтрацией вместо ячеек палитры
+uniform sampler2D palette : source_color, filter_linear_mipmap;
+#else
 uniform sampler2D palette : source_color, filter_nearest;
+#endif
 instance uniform vec4 team_color : source_color = vec4(0.184, 0.502, 0.929, 1.0);
 instance uniform float infect_tint = 0.0;   // 0..1 — зелёный тинт инкубации после детекта
 instance uniform float highlight = 0.0;     // подсветка выделения/наведения
@@ -15,15 +20,17 @@ void vertex() {
 }
 
 void fragment() {
+	vec3 c = texture(palette, UV).rgb;
+	vec3 emit = vec3(0.0);
+#ifndef SKIN
 	vec2 cell = floor(UV * 16.0);
 	float idx = cell.y * 16.0 + cell.x;
-	vec3 c = texture(palette, UV).rgb;
 	if (idx == 80.0) { c = team_color.rgb; }
-	vec3 emit = vec3(0.0);
 	// INFECT_GLOW, LIGHT_WARM, LIGHT_EMIT, GREEN_LIGHT светятся в темноте
 	if (idx == 54.0 || idx == 83.0 || idx == 84.0 || idx == 86.0) {
 		emit = c * (0.25 + qm_night * 1.6);
 	}
+#endif
 	c = mix(c, vec3(0.61, 0.9, 0.39), infect_tint * 0.35);
 #ifdef GHOST
 	// стройплощадка: выше достроенной высоты — оранжевая «плёнка»; призрак — зелёный/красный

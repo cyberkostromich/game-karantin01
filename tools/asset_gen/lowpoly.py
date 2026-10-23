@@ -116,11 +116,26 @@ def _xf(mesh: trimesh.Trimesh, pos, rot=None, scale=None) -> trimesh.Trimesh:
 
 
 class Part:
-    __slots__ = ("mesh", "color", "normals")
+    __slots__ = ("mesh", "color", "normals", "uv", "tex")
 
-    def __init__(self, mesh, color, normals=None):
+    def __init__(self, mesh, color, normals=None, uv=None, tex=None):
         self.mesh, self.color = mesh, color
         self.normals = normals  # (F,3,3) нормали по углам — гладкий шейдинг; None — плоский
+        self.uv = uv            # (F,3,2) свои UV — для деталей с текстурой tex (путь к PNG) вместо палитры
+        self.tex = tex
+
+
+_TEX_MATS: dict = {}
+
+
+def tex_material(path):
+    """Материал со своей текстурой (скины персонажей Kenney); имя tex_* — Look отличает его от палитры."""
+    path = str(path)
+    if path not in _TEX_MATS:
+        img = Image.open(path).convert("RGBA")
+        _TEX_MATS[path] = (trimesh.visual.material.PBRMaterial(
+            name="tex_" + Path(path).stem, baseColorTexture=img, metallicFactor=0.0, roughnessFactor=0.9), img)
+    return _TEX_MATS[path]
 
 
 class Node:
@@ -227,12 +242,21 @@ class Model:
         return n
 
     # ---------------- сборка ----------------
-    def _node_mesh(self, node: Node) -> trimesh.Trimesh | None:
-        if not node.parts:
-            return None
+    def _node_meshes(self, node: Node) -> list:
+        """[(суффикс, меш)]: палитровые детали — одним мешем, детали с текстурой — по мешу на текстуру."""
+        out = []
+        pal = [p for p in node.parts if p.tex is None]
+        if pal:
+            out.append(("", self._pack(node, pal, _MATERIAL)))
+        for tex in sorted({str(p.tex) for p in node.parts if p.tex is not None}):
+            parts = [p for p in node.parts if str(p.tex) == tex]
+            out.append(("_" + Path(tex).stem, self._pack(node, parts, tex_material(tex)[0])))
+        return out
+
+    def _pack(self, node: Node, parts: list, material) -> trimesh.Trimesh:
         V, F, UV, N = [], [], [], []
         off = 0
-        for p in node.parts:
+        for p in parts:
             m = p.mesh
             tri = m.vertices[m.faces]                      # (n,3,3) — расшариваем вершины → плоский шейдинг
             v = tri.reshape(-1, 3) - node.pivot            # локально относительно пивота
@@ -243,13 +267,12 @@ class Model:
                 fn /= np.maximum(np.linalg.norm(fn, axis=1, keepdims=True), 1e-12)
                 nr = np.repeat(fn, 3, axis=0)
             f = np.arange(len(v)).reshape(-1, 3) + off
-            uv = np.tile(uv_for(p.color), (len(v), 1))
+            uv = p.uv.reshape(-1, 2) if p.uv is not None else np.tile(uv_for(p.color), (len(v), 1))
             V.append(v); F.append(f); UV.append(uv); N.append(nr)
             off += len(v)
         V, F, UV, N = np.vstack(V), np.vstack(F), np.vstack(UV), np.vstack(N)
-        mesh = trimesh.Trimesh(V, F, vertex_normals=N, process=False,
-                               visual=trimesh.visual.TextureVisuals(uv=UV, material=_MATERIAL))
-        return mesh
+        return trimesh.Trimesh(V, F, vertex_normals=N, process=False,
+                               visual=trimesh.visual.TextureVisuals(uv=UV, material=material))
 
     def scene(self) -> trimesh.Scene:
         sc = trimesh.Scene()
@@ -263,12 +286,15 @@ class Model:
             T[:3, 3] = node.pivot - parent_pivot
             if node.rest_rot is not None:
                 T = T @ _rot_matrix(node.rest_rot)
-            mesh = self._node_mesh(node)
-            if mesh is not None:
-                sc.add_geometry(mesh, geom_name=f"{name}_mesh", node_name=name,
+            meshes = self._node_meshes(node)
+            if meshes and meshes[0][0] == "":
+                sc.add_geometry(meshes.pop(0)[1], geom_name=f"{name}_mesh", node_name=name,
                                 parent_node_name=parent, transform=T)
             else:
                 sc.graph.update(frame_to=name, frame_from=parent, matrix=T)
+            for suf, mesh in meshes:  # текстурные — дочерними узлами без смещения
+                sc.add_geometry(mesh, geom_name=f"{name}{suf}_mesh", node_name=f"{name}{suf}",
+                                parent_node_name=name, transform=np.eye(4))
         return sc
 
     def save(self, path: str | Path):
@@ -288,9 +314,17 @@ class Model:
             v = trimesh.transformations.transform_points(g.vertices, T)
             vn = g.vertex_normals @ T[:3, :3].T
             uv = g.visual.uv
+            mat = g.visual.material
+            img = None if getattr(mat, "name", "") == "palette" else _TEX_MATS.get(_tex_key(mat))
             for face in g.faces:
                 tris.append(v[face])
                 norms.append(vn[face])
+                if img is not None:  # текстура: цвет в центре треугольника по UV
+                    u, vv = uv[face].mean(axis=0)
+                    px = img[1].getpixel((min(img[1].width - 1, int(u % 1.0 * img[1].width)),
+                                          min(img[1].height - 1, int((1 - vv % 1.0) * img[1].height))))
+                    cols.append(px[:3])
+                    continue
                 u, vv = uv[face[0]]
                 cx = int(u * 16); cy = int((1 - vv) * 16)
                 idx = cy * 16 + cx
@@ -307,6 +341,13 @@ class Model:
 
 
 _IDX2RGB = {idx: hex_rgb(h) for _, (idx, h) in PALETTE.items()}
+
+
+def _tex_key(mat):
+    for k, (m, _) in _TEX_MATS.items():
+        if m is mat:
+            return k
+    return None
 
 
 def save_palette(path: str | Path):
