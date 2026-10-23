@@ -4,7 +4,8 @@ extends RefCounted
 ## модели по путям из data/*.json ("models/units/unit_assault.glb" → res://assets/...).
 
 const PALETTE_TEX := "res://assets/textures/palette.png"
-const PART_NAMES: PackedStringArray = ["body", "head", "arm_l", "arm_r", "leg_l", "leg_r", "weapon"]
+const PART_NAMES: PackedStringArray = ["body", "head", "arm_l", "arm_r", "leg_l", "leg_r", "weapon", "shin_l", "shin_r",
+	"forearm_l", "forearm_r"]
 
 static var _mats: Dictionary = {}
 static var _scenes: Dictionary = {}

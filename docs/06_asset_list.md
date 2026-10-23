@@ -10,34 +10,34 @@
 
 | Файл | Треуг. | Габарит, м (X×Y×Z) | Узлы | Статус |
 |---|---|---|---|---|
-| `models/units/unit_assault.glb` | 636 | 0.72×1.87×1.27 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
-| `models/units/unit_sniper.glb` | 548 | 0.72×1.9×1.62 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
-| `models/units/unit_medic.glb` | 556 | 0.72×1.87×1.1 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
-| `models/units/unit_scout.glb` | 504 | 0.72×2.12×1.23 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
+| `models/units/unit_assault.glb` | 1992 | 0.54×1.84×1.22 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r`, `weapon` | ✅ 🎨 |
+| `models/units/unit_sniper.glb` | 1636 | 0.54×1.82×1.64 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r`, `weapon` | ✅ 🎨 |
+| `models/units/unit_medic.glb` | 1660 | 0.55×1.84×1.07 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r`, `weapon` | ✅ 🎨 |
+| `models/units/unit_scout.glb` | 1584 | 0.52×1.97×1.2 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r`, `weapon` | ✅ 🎨 |
 
 ### Мирные (7)
 
 | Файл | Треуг. | Габарит, м (X×Y×Z) | Узлы | Статус |
 |---|---|---|---|---|
-| `models/civilians/civ_adult_a.glb` | 324 | 0.72×1.81×0.33 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_adult_b.glb` | 312 | 0.64×1.78×0.33 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_adult_c.glb` | 300 | 0.7×1.82×0.32 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_adult_d.glb` | 300 | 0.63×1.74×0.43 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_adult_e.glb` | 324 | 0.66×1.81×0.5 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_child.glb` | 340 | 0.47×1.3×0.36 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_worker_carry.glb` | 324 | 1.4×1.87×0.75 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
+| `models/civilians/civ_adult_a.glb` | 1058 | 0.54×1.78×0.3 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/civilians/civ_adult_b.glb` | 1148 | 0.43×1.74×0.32 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/civilians/civ_adult_c.glb` | 1004 | 0.55×1.78×0.28 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/civilians/civ_adult_d.glb` | 1030 | 0.46×1.68×0.41 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/civilians/civ_adult_e.glb` | 1152 | 0.5×1.78×0.41 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/civilians/civ_child.glb` | 1114 | 0.39×1.28×0.3 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/civilians/civ_worker_carry.glb` | 1238 | 1.41×1.83×0.72 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r`, `weapon` | ✅ 🎨 |
 
 ### Заражённые (8)
 
 | Файл | Треуг. | Габарит, м (X×Y×Z) | Узлы | Статус |
 |---|---|---|---|---|
-| `models/zombies/zmb_walker.glb` | 384 | 0.69×1.84×1.11 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_walker_armored.glb` | 532 | 0.69×1.87×1.11 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_runner.glb` | 372 | 0.64×1.76×1.19 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_brute.glb` | 420 | 1.73×2.04×0.9 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_screamer.glb` | 444 | 0.61×1.86×0.62 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_spitter.glb` | 480 | 0.71×1.83×0.85 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_giant.glb` | 412 | 2.91×3.37×1.57 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/zombies/zmb_walker.glb` | 570 | 0.5×1.77×1.01 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/zombies/zmb_walker_armored.glb` | 822 | 0.5×1.79×1.01 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/zombies/zmb_runner.glb` | 538 | 0.43×1.68×1.12 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/zombies/zmb_brute.glb` | 1462 | 1.2×2.08×1.12 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/zombies/zmb_screamer.glb` | 610 | 0.36×1.76×0.49 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/zombies/zmb_spitter.glb` | 524 | 0.54×1.8×0.75 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
+| `models/zombies/zmb_giant.glb` | 1372 | 2.08×3.31×1.92 | `leg_l`, `shin_l`, `leg_r`, `shin_r`, `body`, `head`, `arm_l`, `forearm_l`, `arm_r`, `forearm_r` | ✅ 🎨 |
 | `models/zombies/zmb_nest.glb` | 1680 | 8.4×3.05×8.4 | `body`, `pulse` | ✅ 🎨 |
 
 ### Техника (3)

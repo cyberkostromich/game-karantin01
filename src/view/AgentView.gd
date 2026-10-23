@@ -1,7 +1,7 @@
 class_name AgentView
 extends Node3D
-## Вид одного военного/мирного. Процедурная анимация по узлам модели (M0-8): шаг ногами и руками,
-## башня и ствол техники, роторы вертолёта. Узлы ищутся по именам — контракт арт-библии §5.
+## Вид одного военного/мирного. Процедурная анимация по узлам модели (M0-8): гуманоиды — HumanAnim,
+## башня, отдача ствола и покачивание техники, роторы вертолёта. Узлы ищутся по именам — контракт арт-библии §5.
 
 var agent_id: int = 0
 var kind: int = 0
@@ -16,6 +16,9 @@ var hp_fg: MeshInstance3D
 var status: Sprite3D
 var selected: bool = false
 var meshes: Array[GeometryInstance3D] = []
+var human: HumanAnim
+var recoil: float = 0.0
+var _last_cd: float = 0.0
 var _last_status: String = ""
 
 
@@ -26,11 +29,14 @@ func build(a: Agent, model_path: String, team: Color) -> void:
 	var k := Config.f("rules.view.humanoid_scale") if a.kind == Agent.Kind.INFANTRY or a.kind == Agent.Kind.CIVILIAN else Config.f("rules.view.vehicle_scale")
 	model.scale = Vector3.ONE * k
 	add_child(model)
-	for pn: String in ["leg_l", "leg_r", "arm_l", "arm_r", "head", "body", "turret", "barrel", "rotor_main", "rotor_tail", "weapon"]:
+	for pn: String in ["turret", "barrel", "rotor_main", "rotor_tail"]:
 		var n := Look.find(model, pn)
 		if n != null:
 			parts[pn] = n
-			rest[pn] = n.transform.basis
+			rest[pn] = n.transform
+	if a.kind == Agent.Kind.INFANTRY or a.kind == Agent.Kind.CIVILIAN:
+		human = HumanAnim.new()
+		human.setup(model, a.kind == Agent.Kind.INFANTRY and Look.find(model, "weapon") != null, a.kind == Agent.Kind.CIVILIAN, a.id)
 	_collect_meshes(model)
 	for m in meshes:
 		m.set_instance_shader_parameter("team_color", team)
@@ -111,14 +117,13 @@ func set_status(icon_id: String) -> void:
 func animate(a: Agent, p: Vector2, delta: float, altitude: float) -> void:
 	position = Vector3(p.x, altitude, p.y)
 	var moving := a.vel.length_squared() > 0.01
-	var spd := a.vel.length()
 	if kind == Agent.Kind.VEHICLE:
 		_vehicle(a, delta, moving)
 	elif kind == Agent.Kind.AIR:
 		_heli(a, delta)
 	else:
 		rotation.y = lerp_angle(rotation.y, a.facing, minf(1.0, delta * 12.0))
-		_walk(delta, spd, moving)
+		human.update(a, delta)
 	var frac := a.hp / maxf(1.0, a.max_hp)
 	var show_hp := selected or frac < 0.999
 	hp_bg.visible = show_hp
@@ -133,24 +138,16 @@ func animate(a: Agent, p: Vector2, delta: float, altitude: float) -> void:
 		m.set_instance_shader_parameter("infect_tint", tint)
 
 
-func _walk(delta: float, spd: float, moving: bool) -> void:
-	var amp := clampf(spd / 5.0, 0.0, 1.2) * 0.7 if moving else 0.0
-	phase += delta * (4.0 + spd * 1.6)
-	var s := sin(phase) * amp
-	_swing("leg_l", s)
-	_swing("leg_r", -s)
-	var armed := parts.has("weapon") and kind != Agent.Kind.CIVILIAN
-	_swing("arm_l", -s * (0.12 if armed else 0.6))
-	_swing("arm_r", s * (0.12 if armed else 0.6))
-	if parts.has("body"):
-		var b: Node3D = parts["body"]
-		b.position.y = absf(sin(phase)) * 0.04 * amp
-
-
-func _swing(pn: String, ang: float) -> void:
-	if parts.has(pn):
-		var n: Node3D = parts[pn]
-		n.transform.basis = Basis(Vector3.RIGHT, ang) * (rest[pn] as Basis)
+## Смерть: гуманоид падает (HumanAnim.die), техника и вертолёт исчезают сразу (взрыв рисует Fx).
+## Возвращает true, пока анимация идёт.
+func dying(delta: float) -> bool:
+	if human == null:
+		return false
+	ring.visible = false
+	hp_bg.visible = false
+	hp_fg.visible = false
+	status.visible = false
+	return human.die(model, delta)
 
 
 func _vehicle(a: Agent, delta: float, moving: bool) -> void:
@@ -160,9 +157,15 @@ func _vehicle(a: Agent, delta: float, moving: bool) -> void:
 	if parts.has("turret"):
 		var t: Node3D = parts["turret"]
 		t.rotation.y = lerp_angle(t.rotation.y, a.facing - hull_yaw, minf(1.0, delta * 5.0))
-	if parts.has("hull") or true:
-		model.rotation.x = sin(phase) * 0.01 if moving else 0.0
-		phase += delta * 8.0
+	if a.atk_cd > _last_cd + 0.01:
+		recoil = 1.0
+	_last_cd = a.atk_cd
+	recoil = maxf(0.0, recoil - delta * 4.0)
+	if parts.has("barrel"):  # откат ствола и клевок корпуса при выстреле
+		var b: Node3D = parts["barrel"]
+		b.position.z = (rest["barrel"] as Transform3D).origin.z - recoil * 0.35
+	phase += delta * 8.0
+	model.rotation.x = (sin(phase) * 0.012 if moving else 0.0) - recoil * 0.03
 
 
 func _heli(a: Agent, delta: float) -> void:

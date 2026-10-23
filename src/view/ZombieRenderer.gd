@@ -28,7 +28,7 @@ func setup(w: World) -> void:
 		var m := Look.merged(String(Config.g("zombies.%s.model" % t)))
 		var mat := Look.zombie(t)
 		var piv: Dictionary = m["pivots"]
-		for pn: String in ["head", "arm_l", "arm_r", "leg_l", "leg_r"]:
+		for pn: String in ["body", "head", "arm_l", "arm_r", "leg_l", "leg_r", "shin_l", "shin_r", "forearm_l", "forearm_r"]:
 			if piv.has(pn):
 				mat.set_shader_parameter("piv_" + pn, piv[pn])
 		mat.set_shader_parameter("stride", Config.f("zombies.%s.speed" % t) * 2.2 + 2.0)

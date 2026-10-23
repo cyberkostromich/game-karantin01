@@ -12,9 +12,20 @@ import trimesh
 from shapely.geometry import Polygon
 
 from lowpoly import ALONG_X, UP, Model, _rot_matrix
-from characters import tbox
 
 _SWAP = np.array([[0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1]], dtype=float)
+
+
+def tbox(n, bw, bd, tw, td, h, base, color, rot=None, shift=(0.0, 0.0)):
+    """Усечённая «коробка»: низ bw×bd, верх tw×td (смещён на shift по X/Z), высота h, от base вверх."""
+    sx, sz = shift
+    pts = [(-bw / 2, 0, -bd / 2), (bw / 2, 0, -bd / 2), (bw / 2, 0, bd / 2), (-bw / 2, 0, bd / 2),
+           (-tw / 2 + sx, h, -td / 2 + sz), (tw / 2 + sx, h, -td / 2 + sz), (tw / 2 + sx, h, td / 2 + sz), (-tw / 2 + sx, h, td / 2 + sz)]
+    m = trimesh.convex.convex_hull(np.asarray(pts, dtype=float))
+    if rot is not None:
+        m.apply_transform(_rot_matrix(rot))
+    m.apply_translation(base)
+    return n.add(m, color)
 
 
 def side(n, profile_zy, width, color, x=0.0):

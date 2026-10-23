@@ -1057,8 +1057,11 @@ def city_mgu():
     return reg("city", m, city="landmark_backdrop")
 
 
+PUBLIC_META = ("unit", "city", "building", "prop", "pickup", "resource")  # служебные поля сборки в манифест не идут
+
+
 def build_all():
-    import characters, vehicles
+    import blmesh, characters, vehicles
     characters.build_all(reg)
     zmb_nest()
     vehicles.build_all(reg)
@@ -1078,6 +1081,7 @@ def build_all():
     car("prop_wreck_sedan_burnt", "CAR_RED", burnt=True)
     car("prop_wreck_trolleybus", "CAR_BLUE", kind="bus"); car("prop_wreck_truck", "CAR_WHITE", kind="truck")
     props_misc(); pickups(); test_district()
+    blmesh.resolve()
 
 
 def main():
@@ -1088,13 +1092,10 @@ def main():
         p = OUT / cat / fn
         m.save(p)
         st = m.stats()
+        pub = {k: v for k, v in m.meta.items() if k in PUBLIC_META}
         manifest.append({"file": f"models/{cat}/{fn}", "category": cat, "nodes": m.order,
-                         "tris": st["tris"], "size_m": st["size_m"], **m.meta})
+                         "tris": st["tris"], "size_m": st["size_m"], **pub})
         print(f"{cat:10s} {fn:34s} tris={st['tris']:5d} size={st['size_m']}")
-    # чистим служебные мета-поля
-    for e in manifest:
-        for k in ("hip", "sh_y", "s", "w", "ax"):
-            e.pop(k, None)
     (OUT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1))
     print(len(manifest), "models")
 

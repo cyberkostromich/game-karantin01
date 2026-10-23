@@ -11,11 +11,15 @@ var views: Dictionary = {}      # id → AgentView
 var prev: Dictionary = {}       # id → Vector2 (позиция на прошлом тике)
 var selected: Dictionary = {}   # id → true
 var heli_alt: float = 25.0
+var dying: Array[AgentView] = []   # доигрывают падение после смерти
+var _died: Dictionary = {}         # id → true: убран из sim из-за смерти (а не посадки/обращения)
 
 
 func setup(w: World) -> void:
 	world = w
 	heli_alt = Config.f("rules.sim_tuning.heli_altitude_m")
+	Events.unit_died.connect(func(id: int, _t: String, _p: Vector2) -> void: _died[id] = true)
+	Events.civilian_died.connect(func(id: int, _p: Vector2) -> void: _died[id] = true)
 
 
 func on_tick() -> void:
@@ -56,10 +60,19 @@ func render(alpha: float, delta: float) -> void:
 		v.model.visible = a.kind != Agent.Kind.CIVILIAN or a.rescued or world.fog.visible(a.pos)
 	for id: int in views.keys():
 		if not seen.has(id):
-			(views[id] as AgentView).queue_free()
+			var gone: AgentView = views[id]
+			if _died.has(id) and gone.visible:
+				dying.append(gone)
+			else:
+				gone.queue_free()
+			_died.erase(id)
 			views.erase(id)
 			prev.erase(id)
 			selected.erase(id)
+	for i in range(dying.size() - 1, -1, -1):
+		if not dying[i].dying(delta):
+			dying[i].queue_free()
+			dying.remove_at(i)
 
 
 func _create(a: Agent) -> AgentView:

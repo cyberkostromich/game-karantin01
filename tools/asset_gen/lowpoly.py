@@ -4,7 +4,7 @@ lowpoly.py — мини-библиотека для процедурных low-p
 Все модели:
   * 1 ед. = 1 м, Y вверх, смотрят в +Z (конвенция glTF), pivot — центр основания;
   * один материал `palette` (assets/textures/palette.png, 256×256, 16×16 ячеек);
-  * плоский шейдинг (вершины не шарятся между гранями);
+  * плоский шейдинг (вершины не шарятся между гранями), у деталей из Blender (Node.piece) — гладкие нормали;
   * анимируемые части — отдельные узлы с пивотом в точке вращения.
 
 Использование:
@@ -116,10 +116,11 @@ def _xf(mesh: trimesh.Trimesh, pos, rot=None, scale=None) -> trimesh.Trimesh:
 
 
 class Part:
-    __slots__ = ("mesh", "color")
+    __slots__ = ("mesh", "color", "normals")
 
-    def __init__(self, mesh, color):
+    def __init__(self, mesh, color, normals=None):
         self.mesh, self.color = mesh, color
+        self.normals = normals  # (F,3,3) нормали по углам — гладкий шейдинг; None — плоский
 
 
 class Node:
@@ -132,6 +133,14 @@ class Node:
     # --- примитивы (координаты мировые, в метрах) ---
     def add(self, mesh, color):
         self.parts.append(Part(mesh, color))
+        return self
+
+    def piece(self, spec, color):
+        """Деталь, которую меширует Blender (blmesh/bl_worker): скругления и гладкие нормали."""
+        import blmesh
+        part = Part(None, color)
+        self.parts.append(part)
+        blmesh.request(spec, part)
         return self
 
     def box(self, size, pos, color, rot=None):
@@ -221,18 +230,24 @@ class Model:
     def _node_mesh(self, node: Node) -> trimesh.Trimesh | None:
         if not node.parts:
             return None
-        V, F, UV = [], [], []
+        V, F, UV, N = [], [], [], []
         off = 0
         for p in node.parts:
             m = p.mesh
             tri = m.vertices[m.faces]                      # (n,3,3) — расшариваем вершины → плоский шейдинг
             v = tri.reshape(-1, 3) - node.pivot            # локально относительно пивота
+            if p.normals is not None:
+                nr = p.normals.reshape(-1, 3)
+            else:
+                fn = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
+                fn /= np.maximum(np.linalg.norm(fn, axis=1, keepdims=True), 1e-12)
+                nr = np.repeat(fn, 3, axis=0)
             f = np.arange(len(v)).reshape(-1, 3) + off
             uv = np.tile(uv_for(p.color), (len(v), 1))
-            V.append(v); F.append(f); UV.append(uv)
+            V.append(v); F.append(f); UV.append(uv); N.append(nr)
             off += len(v)
-        V, F, UV = np.vstack(V), np.vstack(F), np.vstack(UV)
-        mesh = trimesh.Trimesh(V, F, process=False,
+        V, F, UV, N = np.vstack(V), np.vstack(F), np.vstack(UV), np.vstack(N)
+        mesh = trimesh.Trimesh(V, F, vertex_normals=N, process=False,
                                visual=trimesh.visual.TextureVisuals(uv=UV, material=_MATERIAL))
         return mesh
 
@@ -264,20 +279,24 @@ class Model:
         return path
 
     # для превью: мировые треугольники + цвета
-    def world_triangles(self):
+    def world_triangles(self, with_normals=False):
         sc = self.scene()
-        tris, cols = [], []
+        tris, cols, norms = [], [], []
         for node_name in sc.graph.nodes_geometry:
             T, geom_name = sc.graph[node_name]
             g = sc.geometry[geom_name]
             v = trimesh.transformations.transform_points(g.vertices, T)
+            vn = g.vertex_normals @ T[:3, :3].T
             uv = g.visual.uv
             for face in g.faces:
                 tris.append(v[face])
+                norms.append(vn[face])
                 u, vv = uv[face[0]]
                 cx = int(u * 16); cy = int((1 - vv) * 16)
                 idx = cy * 16 + cx
                 cols.append(_IDX2RGB.get(idx, (255, 0, 255)))
+        if with_normals:
+            return np.array(tris), cols, np.array(norms)
         return np.array(tris), cols
 
     def stats(self):
