@@ -12,6 +12,7 @@ const FILES := {
 
 var data: Dictionary = {}
 var errors: PackedStringArray = []
+var quiet: bool = false   # тесты проверяют ошибки без push_error
 
 
 func _init() -> void:
@@ -37,7 +38,8 @@ func load_all(dir: String) -> bool:
 
 func _fail(msg: String) -> void:
 	errors.append(msg)
-	push_error(msg)
+	if not quiet:
+		push_error(msg)
 
 
 ## true, если путь существует.

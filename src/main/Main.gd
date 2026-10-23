@@ -43,6 +43,9 @@ func _start_game(opts: Dictionary) -> void:
 		game.speed = float(args["speed"])
 	if args.has("reveal"):
 		game.world.fog.reveal_all()
+	if args.has("skip"):
+		for _k in int(float(args["skip"]) / game.world.dt):
+			game.world.step()
 
 
 func _process(delta: float) -> void:

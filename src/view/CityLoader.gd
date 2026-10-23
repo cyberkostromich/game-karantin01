@@ -32,7 +32,6 @@ func start(city_dir: String, bounds: Rect2, chunk_m: float) -> void:
 			var p := dir.path_join("chunks/chunk_%d_%d.glb" % [cx, cz])
 			if ResourceLoader.exists(p):
 				pending.append(p)
-				ResourceLoader.load_threaded_request(p, "PackedScene", false, ResourceLoader.CACHE_MODE_REUSE)
 	total = pending.size()
 
 
@@ -55,21 +54,14 @@ func is_done() -> bool:
 	return pending.is_empty()
 
 
-func poll(budget: int = 24) -> void:
-	var done := 0
-	var i := 0
-	while i < pending.size() and done < budget:
-		var p := pending[i]
-		var st := ResourceLoader.load_threaded_get_status(p)
-		if st == ResourceLoader.THREAD_LOAD_LOADED:
-			_add_chunk(ResourceLoader.load_threaded_get(p) as PackedScene)
-			pending.remove_at(i)
-			done += 1
-		elif st == ResourceLoader.THREAD_LOAD_FAILED or st == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
-			push_warning("CityLoader: не загрузился %s" % p)
-			pending.remove_at(i)
-		else:
-			i += 1
+## Порциями в главном потоке: фоновая загрузка glTF-сцен параллельно с загрузкой моделей
+## в главном потоке приводила к падению движка (docs/decisions.md D-9).
+func poll(budget_ms: int = 40) -> void:
+	var t0 := Time.get_ticks_msec()
+	while not pending.is_empty() and Time.get_ticks_msec() - t0 < budget_ms:
+		var p := pending[pending.size() - 1]
+		pending.remove_at(pending.size() - 1)
+		_add_chunk(load(p) as PackedScene)
 	progress_changed.emit(1.0 - float(pending.size()) / maxf(1.0, total))
 	if pending.is_empty():
 		loaded.emit()

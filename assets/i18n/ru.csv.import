@@ -6,7 +6,10 @@ uid="uid://cxt5nym04oqy3"
 
 [deps]
 
+files=["res://assets/i18n/ru. правило 9). \\n — перенос строки..translation"]
+
 source_file="res://assets/i18n/ru.csv"
+dest_files=["res://assets/i18n/ru. правило 9). \\n — перенос строки..translation"]
 
 [params]
 

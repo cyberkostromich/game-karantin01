@@ -57,8 +57,8 @@ func _collect_meshes(n: Node) -> void:
 func _make_ring(r: float) -> void:
 	ring = MeshInstance3D.new()
 	var tm := TorusMesh.new()
-	tm.inner_radius = r + 0.35
-	tm.outer_radius = r + 0.6
+	tm.inner_radius = r * 1.4 + 0.45
+	tm.outer_radius = r * 1.4 + 0.75
 	tm.rings = 24
 	tm.ring_segments = 4
 	ring.mesh = tm

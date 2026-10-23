@@ -9,6 +9,7 @@ var over: bool = false
 var victory: bool = false
 var final_score: Dictionary = {}
 var _check_cd: float = 0.0
+var checks_enabled: bool = true   # тесты и бот-прогон отключают поражение
 
 
 func setup(w: World) -> void:
@@ -57,7 +58,7 @@ func _spawn_giant() -> void:
 
 
 func update(dt: float) -> void:
-	if over:
+	if over or not checks_enabled:
 		return
 	_check_cd -= dt
 	if _check_cd > 0.0:
