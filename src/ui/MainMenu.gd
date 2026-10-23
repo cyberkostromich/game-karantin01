@@ -1,0 +1,158 @@
+class_name MainMenu
+extends CanvasLayer
+## Главное меню (M6-1): одиночная игра (выбор двух доктрин и сложности), кооп (лобби), настройки, выход.
+
+signal start_requested(opts: Dictionary)
+
+var root := Control.new()
+var pages: Dictionary = {}
+var picked: Array[String] = ["infantry", "civil_defense"]
+var difficulty: String = "normal"
+var doc_buttons: Dictionary = {}
+var lobby: Lobby
+
+
+func _ready() -> void:
+	root.theme = UiTheme.get_theme()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(root)
+	var bg := ColorRect.new()
+	bg.color = Color("1b1e23")
+	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(bg)
+	var stripe := ColorRect.new()
+	stripe.color = UiTheme.ACCENT
+	stripe.position = Vector2(80, 210)
+	stripe.size = Vector2(90, 6)
+	root.add_child(stripe)
+	var t1 := UiTheme.label(tr("TITLE_1"), 64, UiTheme.TEXT, true)
+	t1.position = Vector2(76, 70)
+	root.add_child(t1)
+	var t2 := UiTheme.label(tr("TITLE_2"), 64, UiTheme.ACCENT, true)
+	t2.position = Vector2(76, 136)
+	root.add_child(t2)
+	var sub := UiTheme.label(tr("TITLE_SUB"), 16, UiTheme.DIM)
+	sub.position = Vector2(80, 230)
+	root.add_child(sub)
+	_page_main()
+	_page_solo()
+	lobby = Lobby.new()
+	lobby.start_requested.connect(func(o: Dictionary) -> void: start_requested.emit(o))
+	lobby.back_requested.connect(func() -> void: show_page("main"))
+	root.add_child(lobby)
+	pages["lobby"] = lobby
+	show_page("main")
+
+
+func show_page(id: String) -> void:
+	for k: String in pages:
+		(pages[k] as Control).visible = k == id
+
+
+func _box(id: String) -> VBoxContainer:
+	var v := VBoxContainer.new()
+	v.position = Vector2(80, 290)
+	v.add_theme_constant_override("separation", 10)
+	root.add_child(v)
+	pages[id] = v
+	return v
+
+
+func _big(text: String, cb: Callable) -> Button:
+	var b := UiTheme.button(text, cb)
+	b.custom_minimum_size = Vector2(320, 46)
+	b.add_theme_font_size_override("font_size", 17)
+	return b
+
+
+func _page_main() -> void:
+	var v := _box("main")
+	v.add_child(_big(tr("MENU_SOLO"), func() -> void: show_page("solo")))
+	v.add_child(_big(tr("MENU_HOST"), func() -> void:
+		lobby.open(true)
+		show_page("lobby")))
+	v.add_child(_big(tr("MENU_JOIN"), func() -> void:
+		lobby.open(false)
+		show_page("lobby")))
+	var settings := SettingsPanel.new()
+	settings.build()
+	settings.visible = false
+	v.add_child(_big(tr("MENU_SETTINGS"), func() -> void: settings.visible = not settings.visible))
+	v.add_child(settings)
+	v.add_child(_big(tr("MENU_QUIT"), func() -> void: get_tree().quit()))
+	var ver := UiTheme.label("v%s · Godot %s" % [ProjectSettings.get_setting("application/config/version"), Engine.get_version_info()["string"]], 12, UiTheme.DIM)
+	ver.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	ver.position = Vector2(80, -40)
+	root.add_child(ver)
+
+
+func _page_solo() -> void:
+	var v := _box("solo")
+	v.add_child(UiTheme.label(tr("SOLO_PICK_DOCTRINES"), 18, UiTheme.TEXT, true))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	v.add_child(row)
+	for d in Config.keys_of("doctrines"):
+		row.add_child(_doctrine_card(d))
+	var diff := HBoxContainer.new()
+	diff.add_child(UiTheme.label(tr("SOLO_DIFFICULTY"), 15))
+	for dk: String in ["normal", "hard"]:
+		var b := UiTheme.button(tr("DIFF_" + dk.to_upper()), func() -> void:
+			difficulty = dk
+			_refresh())
+		b.toggle_mode = true
+		b.name = "diff_" + dk
+		diff.add_child(b)
+	v.add_child(diff)
+	pages["solo_diff"] = diff
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 10)
+	h.add_child(_big(tr("SOLO_START"), _start_solo))
+	h.add_child(_big(tr("MENU_BACK"), func() -> void: show_page("main")))
+	v.add_child(h)
+	pages.erase("solo_diff")
+	_refresh()
+
+
+func _doctrine_card(d: String) -> Control:
+	var b := Button.new()
+	b.toggle_mode = true
+	b.focus_mode = Control.FOCUS_NONE
+	b.custom_minimum_size = Vector2(250, 170)
+	var dd := Config.d("doctrines." + d)
+	var passive: PackedStringArray = []
+	for k: String in dd["passive"]:
+		passive.append("• " + k)
+	b.text = "%s\n\n%s\n\n%s: %s" % [String(dd["name_ru"]), "\n".join(passive), String(dd["ability"]["name_ru"]), String(dd["ability"]["effect"])]
+	b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+	b.add_theme_font_size_override("font_size", 12)
+	b.icon = Look.icon("doc_" + d, 64)
+	b.pressed.connect(func() -> void:
+		if picked.has(d):
+			picked.erase(d)
+		else:
+			picked.append(d)
+			while picked.size() > Config.i("rules.players.doctrines_per_player.1"):
+				picked.pop_front()
+		_refresh())
+	doc_buttons[d] = b
+	return b
+
+
+func _refresh() -> void:
+	for d: String in doc_buttons:
+		(doc_buttons[d] as Button).button_pressed = picked.has(d)
+	var solo := pages["solo"] as Control
+	for dk: String in ["normal", "hard"]:
+		var b := solo.find_child("diff_" + dk, true, false) as Button
+		if b != null:
+			b.button_pressed = difficulty == dk
+
+
+func _start_solo() -> void:
+	if picked.size() < Config.i("rules.players.doctrines_per_player.1"):
+		return
+	start_requested.emit({"mode": "solo", "pid": 1, "difficulty": difficulty, "seed": randi(),
+		"players": [{"pid": 1, "name": Settings.player_name, "doctrines": picked.duplicate()}]})

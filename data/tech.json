@@ -1,0 +1,190 @@
+{
+  "_doc": "Дерево технологий. Исследуется в Мастерской (workers=2). research_s — при 2 работниках. Одновременно одно исследование на Мастерскую. mods — машиночитаемые эффекты (src/sim/Mods.gd); effect — текст для UI.",
+  "silencers": {
+    "name_ru": "Глушители",
+    "tier": 1,
+    "cost": {
+      "iron": 40
+    },
+    "research_s": 60,
+    "requires": [],
+    "effect": "scout,sniper,assault noise_attack ×0.5",
+    "mods": {
+      "noise_attack_mult": {
+        "scout": 0.5,
+        "sniper": 0.5,
+        "assault": 0.5
+      }
+    }
+  },
+  "concrete_walls": {
+    "name_ru": "Бетонные блоки",
+    "tier": 1,
+    "cost": {
+      "iron": 50,
+      "wood": 30
+    },
+    "research_s": 60,
+    "requires": [],
+    "effect": "unlock wall_concrete",
+    "mods": {}
+  },
+  "heavy_armor": {
+    "name_ru": "Тяжёлая техника",
+    "tier": 1,
+    "cost": {
+      "iron": 80
+    },
+    "research_s": 90,
+    "requires": [],
+    "effect": "unlock tank",
+    "mods": {}
+  },
+  "solar": {
+    "name_ru": "Солнечная энергетика",
+    "tier": 1,
+    "cost": {
+      "iron": 40,
+      "wood": 20
+    },
+    "research_s": 60,
+    "requires": [],
+    "effect": "unlock solar",
+    "mods": {}
+  },
+  "field_medicine": {
+    "name_ru": "Полевая медицина",
+    "tier": 1,
+    "cost": {
+      "food": 30,
+      "iron": 20
+    },
+    "research_s": 60,
+    "requires": [],
+    "effect": "medic heal ×1.5, antidote cooldown ×0.7",
+    "mods": {
+      "medic_heal_mult": 1.5,
+      "antidote_cd_mult": 0.7
+    }
+  },
+  "aviation": {
+    "name_ru": "Авиация",
+    "tier": 2,
+    "cost": {
+      "iron": 120,
+      "wood": 40
+    },
+    "research_s": 120,
+    "requires": [
+      "heavy_armor"
+    ],
+    "effect": "unlock helipad, heli",
+    "mods": {}
+  },
+  "batteries": {
+    "name_ru": "Аккумуляторы",
+    "tier": 2,
+    "cost": {
+      "iron": 60
+    },
+    "research_s": 90,
+    "requires": [
+      "solar"
+    ],
+    "effect": "unlock battery",
+    "mods": {}
+  },
+  "hydroponics": {
+    "name_ru": "Гидропоника",
+    "tier": 2,
+    "cost": {
+      "iron": 40,
+      "wood": 40
+    },
+    "research_s": 90,
+    "requires": [
+      "solar"
+    ],
+    "effect": "greenhouse yield ×1.5",
+    "mods": {
+      "greenhouse_yield_mult": 1.5
+    }
+  },
+  "thermal_optics": {
+    "name_ru": "Тепловизоры",
+    "tier": 2,
+    "cost": {
+      "iron": 70
+    },
+    "research_s": 90,
+    "requires": [
+      "silencers"
+    ],
+    "effect": "units ignore night vision penalty",
+    "mods": {
+      "ignore_night_vision": true
+    }
+  },
+  "body_armor": {
+    "name_ru": "Бронежилеты",
+    "tier": 2,
+    "cost": {
+      "iron": 80
+    },
+    "research_s": 90,
+    "requires": [
+      "field_medicine"
+    ],
+    "effect": "infantry hp ×1.25, infect chance ×0.7",
+    "mods": {
+      "infantry_hp_mult": 1.25,
+      "infect_chance_mult": 0.7
+    }
+  },
+  "vaccine": {
+    "name_ru": "Вакцина",
+    "tier": 3,
+    "cost": {
+      "food": 80,
+      "iron": 60
+    },
+    "research_s": 150,
+    "requires": [
+      "body_armor",
+      "hydroponics"
+    ],
+    "effect": "civilians in base: infect chance 0.5 (instead of 1.0)",
+    "mods": {
+      "base_civilian_infect_chance": 0.5
+    }
+  },
+  "napalm": {
+    "name_ru": "Напалм",
+    "tier": 3,
+    "cost": {
+      "iron": 100,
+      "wood": 60
+    },
+    "research_s": 120,
+    "requires": [
+      "aviation"
+    ],
+    "effect": "unlock heli ability napalm",
+    "mods": {}
+  },
+  "radio_intercept": {
+    "name_ru": "Радиоперехват",
+    "tier": 3,
+    "cost": {
+      "iron": 60
+    },
+    "research_s": 90,
+    "requires": [
+      "thermal_optics"
+    ],
+    "effect": "next wave composition+direction shown from day start",
+    "mods": {
+      "wave_info_from_day_start": true
+    }
+  }
+}

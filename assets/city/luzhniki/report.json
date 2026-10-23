@@ -1,0 +1,33 @@
+{
+ "bounds_m": [
+  -1536.2,
+  -1381.7,
+  1849.8,
+  1271.2
+ ],
+ "size_m": [
+  3386,
+  2653
+ ],
+ "navgrid_px": [
+  1693,
+  1327
+ ],
+ "cell_m": 2.0,
+ "chunk_m": 128.0,
+ "buildings": 1167,
+ "building_fail": 22,
+ "chunks": 585,
+ "tris": 186296,
+ "roads": 2389,
+ "footways": 4556,
+ "bridges": 126,
+ "water_polys": 18,
+ "parks": 720,
+ "trees": 3242,
+ "wrecks": 650,
+ "loot": 105,
+ "spawns": 848,
+ "arena": true,
+ "fortress": true
+}

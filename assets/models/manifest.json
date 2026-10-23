@@ -1,0 +1,1190 @@
+[
+ {
+  "file": "models/units/unit_assault.glb",
+  "category": "units",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r",
+   "weapon"
+  ],
+  "tris": 252,
+  "size_m": [
+   1.1,
+   1.88,
+   1.22
+  ],
+  "unit": "assault"
+ },
+ {
+  "file": "models/units/unit_sniper.glb",
+  "category": "units",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r",
+   "weapon"
+  ],
+  "tris": 268,
+  "size_m": [
+   1.1,
+   1.91,
+   1.45
+  ],
+  "unit": "sniper"
+ },
+ {
+  "file": "models/units/unit_medic.glb",
+  "category": "units",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r",
+   "weapon"
+  ],
+  "tris": 228,
+  "size_m": [
+   0.82,
+   1.88,
+   1.13
+  ],
+  "unit": "medic"
+ },
+ {
+  "file": "models/units/unit_scout.glb",
+  "category": "units",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r",
+   "weapon"
+  ],
+  "tris": 252,
+  "size_m": [
+   1.1,
+   1.89,
+   1.06
+  ],
+  "unit": "scout"
+ },
+ {
+  "file": "models/civilians/civ_adult_a.glb",
+  "category": "civilians",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 168,
+  "size_m": [
+   0.76,
+   1.81,
+   0.35
+  ],
+  "unit": "civilian"
+ },
+ {
+  "file": "models/civilians/civ_adult_b.glb",
+  "category": "civilians",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 168,
+  "size_m": [
+   0.76,
+   1.81,
+   0.35
+  ],
+  "unit": "civilian"
+ },
+ {
+  "file": "models/civilians/civ_adult_c.glb",
+  "category": "civilians",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 168,
+  "size_m": [
+   0.76,
+   1.81,
+   0.35
+  ],
+  "unit": "civilian"
+ },
+ {
+  "file": "models/civilians/civ_adult_d.glb",
+  "category": "civilians",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 168,
+  "size_m": [
+   0.76,
+   1.81,
+   0.35
+  ],
+  "unit": "civilian"
+ },
+ {
+  "file": "models/civilians/civ_adult_e.glb",
+  "category": "civilians",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 168,
+  "size_m": [
+   0.76,
+   1.81,
+   0.35
+  ],
+  "unit": "civilian"
+ },
+ {
+  "file": "models/civilians/civ_child.glb",
+  "category": "civilians",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 156,
+  "size_m": [
+   0.53,
+   1.25,
+   0.3
+  ],
+  "unit": "child"
+ },
+ {
+  "file": "models/civilians/civ_worker_carry.glb",
+  "category": "civilians",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r",
+   "weapon"
+  ],
+  "tris": 184,
+  "size_m": [
+   1.4,
+   1.88,
+   0.65
+  ],
+  "unit": "civilian_worker"
+ },
+ {
+  "file": "models/zombies/zmb_walker.glb",
+  "category": "zombies",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 204,
+  "size_m": [
+   0.79,
+   1.87,
+   1.12
+  ],
+  "unit": "walker"
+ },
+ {
+  "file": "models/zombies/zmb_walker_armored.glb",
+  "category": "zombies",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 240,
+  "size_m": [
+   0.79,
+   1.9,
+   1.12
+  ],
+  "unit": "walker_armored"
+ },
+ {
+  "file": "models/zombies/zmb_runner.glb",
+  "category": "zombies",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 180,
+  "size_m": [
+   0.72,
+   1.75,
+   1.2
+  ],
+  "unit": "runner"
+ },
+ {
+  "file": "models/zombies/zmb_brute.glb",
+  "category": "zombies",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 216,
+  "size_m": [
+   1.78,
+   2.23,
+   0.93
+  ],
+  "unit": "brute"
+ },
+ {
+  "file": "models/zombies/zmb_screamer.glb",
+  "category": "zombies",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 192,
+  "size_m": [
+   0.68,
+   1.84,
+   0.64
+  ],
+  "unit": "screamer"
+ },
+ {
+  "file": "models/zombies/zmb_spitter.glb",
+  "category": "zombies",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 316,
+  "size_m": [
+   0.82,
+   1.83,
+   0.94
+  ],
+  "unit": "spitter"
+ },
+ {
+  "file": "models/zombies/zmb_giant.glb",
+  "category": "zombies",
+  "nodes": [
+   "leg_l",
+   "leg_r",
+   "body",
+   "head",
+   "arm_l",
+   "arm_r"
+  ],
+  "tris": 250,
+  "size_m": [
+   2.98,
+   3.67,
+   1.68
+  ],
+  "unit": "giant"
+ },
+ {
+  "file": "models/zombies/zmb_nest.glb",
+  "category": "zombies",
+  "nodes": [
+   "body",
+   "pulse"
+  ],
+  "tris": 1680,
+  "size_m": [
+   8.4,
+   3.05,
+   8.4
+  ],
+  "unit": "nest"
+ },
+ {
+  "file": "models/vehicles/veh_bmp.glb",
+  "category": "vehicles",
+  "nodes": [
+   "hull",
+   "turret",
+   "barrel"
+  ],
+  "tris": 632,
+  "size_m": [
+   3.2,
+   2.15,
+   7.1
+  ],
+  "unit": "bmp"
+ },
+ {
+  "file": "models/vehicles/veh_tank.glb",
+  "category": "vehicles",
+  "nodes": [
+   "hull",
+   "turret",
+   "barrel"
+  ],
+  "tris": 836,
+  "size_m": [
+   3.7,
+   4.2,
+   9.45
+  ],
+  "unit": "tank"
+ },
+ {
+  "file": "models/vehicles/veh_heli.glb",
+  "category": "vehicles",
+  "nodes": [
+   "body",
+   "rotor_main",
+   "rotor_tail"
+  ],
+  "tris": 420,
+  "size_m": [
+   15.71,
+   4.16,
+   17.79
+  ],
+  "unit": "heli"
+ },
+ {
+  "file": "models/buildings/bld_hq.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 1220,
+  "size_m": [
+   16.0,
+   13.41,
+   16.0
+  ],
+  "building": "hq"
+ },
+ {
+  "file": "models/buildings/bld_tent.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 44,
+  "size_m": [
+   5.6,
+   2.6,
+   5.6
+  ],
+  "building": "tent"
+ },
+ {
+  "file": "models/buildings/bld_house.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 312,
+  "size_m": [
+   8.09,
+   5.4,
+   12.72
+  ],
+  "building": "house"
+ },
+ {
+  "file": "models/buildings/bld_storage.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 156,
+  "size_m": [
+   9.8,
+   9.6,
+   11.34
+  ],
+  "building": "storage"
+ },
+ {
+  "file": "models/buildings/bld_kitchen.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 244,
+  "size_m": [
+   7.8,
+   3.9,
+   7.8
+  ],
+  "building": "kitchen"
+ },
+ {
+  "file": "models/buildings/bld_greenhouse.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 548,
+  "size_m": [
+   9.6,
+   3.7,
+   15.6
+  ],
+  "building": "greenhouse"
+ },
+ {
+  "file": "models/buildings/bld_sawmill.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 440,
+  "size_m": [
+   9.6,
+   4.4,
+   9.6
+  ],
+  "building": "sawmill"
+ },
+ {
+  "file": "models/buildings/bld_scrapyard.glb",
+  "category": "buildings",
+  "nodes": [
+   "body",
+   "crane_arm"
+  ],
+  "tris": 288,
+  "size_m": [
+   9.7,
+   5.25,
+   9.65
+  ],
+  "building": "scrapyard"
+ },
+ {
+  "file": "models/buildings/bld_generator.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 264,
+  "size_m": [
+   5.6,
+   4.0,
+   5.6
+  ],
+  "building": "generator"
+ },
+ {
+  "file": "models/buildings/bld_solar.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 108,
+  "size_m": [
+   5.0,
+   1.42,
+   5.48
+  ],
+  "building": "solar"
+ },
+ {
+  "file": "models/buildings/bld_battery.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 72,
+  "size_m": [
+   3.6,
+   2.15,
+   3.6
+  ],
+  "building": "battery"
+ },
+ {
+  "file": "models/buildings/bld_medpost.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 104,
+  "size_m": [
+   7.6,
+   3.94,
+   10.9
+  ],
+  "building": "medpost"
+ },
+ {
+  "file": "models/buildings/bld_quarantine.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 132,
+  "size_m": [
+   7.6,
+   2.7,
+   7.6
+  ],
+  "building": "quarantine"
+ },
+ {
+  "file": "models/buildings/bld_checkpoint.glb",
+  "category": "buildings",
+  "nodes": [
+   "body",
+   "barrier"
+  ],
+  "tris": 240,
+  "size_m": [
+   4.59,
+   2.8,
+   7.0
+  ],
+  "building": "checkpoint"
+ },
+ {
+  "file": "models/buildings/bld_barracks.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 488,
+  "size_m": [
+   11.6,
+   7.0,
+   11.6
+  ],
+  "building": "barracks"
+ },
+ {
+  "file": "models/buildings/bld_motorpool.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 376,
+  "size_m": [
+   15.6,
+   7.0,
+   16.5
+  ],
+  "building": "motorpool"
+ },
+ {
+  "file": "models/buildings/bld_helipad.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 476,
+  "size_m": [
+   15.6,
+   4.02,
+   15.6
+  ],
+  "building": "helipad"
+ },
+ {
+  "file": "models/buildings/bld_workshop.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 164,
+  "size_m": [
+   9.6,
+   9.0,
+   12.2
+  ],
+  "building": "workshop"
+ },
+ {
+  "file": "models/buildings/bld_wall_wood.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 108,
+  "size_m": [
+   4.05,
+   2.8,
+   0.52
+  ],
+  "building": "wall_wood"
+ },
+ {
+  "file": "models/buildings/bld_wall_concrete.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 60,
+  "size_m": [
+   4.0,
+   2.51,
+   0.8
+  ],
+  "building": "wall_concrete"
+ },
+ {
+  "file": "models/buildings/bld_gate.glb",
+  "category": "buildings",
+  "nodes": [
+   "body",
+   "door_l",
+   "door_r"
+  ],
+  "tris": 120,
+  "size_m": [
+   6.7,
+   3.4,
+   0.5
+  ],
+  "building": "gate"
+ },
+ {
+  "file": "models/buildings/bld_tower.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 236,
+  "size_m": [
+   4.0,
+   8.7,
+   4.1
+  ],
+  "building": "tower"
+ },
+ {
+  "file": "models/buildings/bld_floodlight.glb",
+  "category": "buildings",
+  "nodes": [
+   "body",
+   "lamp"
+  ],
+  "tris": 60,
+  "size_m": [
+   0.9,
+   5.43,
+   0.89
+  ],
+  "building": "floodlight"
+ },
+ {
+  "file": "models/buildings/bld_siren.glb",
+  "category": "buildings",
+  "nodes": [
+   "body",
+   "speakers"
+  ],
+  "tris": 96,
+  "size_m": [
+   1.91,
+   5.75,
+   1.65
+  ],
+  "building": "siren"
+ },
+ {
+  "file": "models/buildings/bld_sandbags.glb",
+  "category": "buildings",
+  "nodes": [
+   "body"
+  ],
+  "tris": 216,
+  "size_m": [
+   4.13,
+   0.82,
+   0.36
+  ],
+  "building": "sandbags"
+ },
+ {
+  "file": "models/city/city_panel_9fl.glb",
+  "category": "city",
+  "nodes": [
+   "body"
+  ],
+  "tris": 4200,
+  "size_m": [
+   39.2,
+   28.0,
+   13.1
+  ],
+  "city": "residential"
+ },
+ {
+  "file": "models/city/city_panel_17fl.glb",
+  "category": "city",
+  "nodes": [
+   "body"
+  ],
+  "tris": 3720,
+  "size_m": [
+   18.2,
+   50.4,
+   17.1
+  ],
+  "city": "residential"
+ },
+ {
+  "file": "models/city/city_khrushchevka_5fl.glb",
+  "category": "city",
+  "nodes": [
+   "body"
+  ],
+  "tris": 2940,
+  "size_m": [
+   48.2,
+   16.8,
+   13.1
+  ],
+  "city": "residential"
+ },
+ {
+  "file": "models/city/city_stalinka.glb",
+  "category": "city",
+  "nodes": [
+   "body"
+  ],
+  "tris": 1624,
+  "size_m": [
+   42.8,
+   43.0,
+   16.8
+  ],
+  "city": "landmark"
+ },
+ {
+  "file": "models/city/city_shop.glb",
+  "category": "city",
+  "nodes": [
+   "body"
+  ],
+  "tris": 60,
+  "size_m": [
+   12.2,
+   4.3,
+   8.3
+  ],
+  "city": "poi_grocery"
+ },
+ {
+  "file": "models/city/city_metro_entrance.glb",
+  "category": "city",
+  "nodes": [
+   "body"
+  ],
+  "tris": 200,
+  "size_m": [
+   14.0,
+   7.35,
+   10.5
+  ],
+  "city": "poi_metro"
+ },
+ {
+  "file": "models/city/city_substation.glb",
+  "category": "city",
+  "nodes": [
+   "body"
+  ],
+  "tris": 228,
+  "size_m": [
+   20.05,
+   9.0,
+   14.03
+  ],
+  "city": "poi_substation"
+ },
+ {
+  "file": "models/props/prop_tree_birch.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 84,
+  "size_m": [
+   2.55,
+   7.88,
+   2.55
+  ],
+  "prop": "tree",
+  "resource": {
+   "wood": 40
+  }
+ },
+ {
+  "file": "models/props/prop_tree_poplar.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 38,
+  "size_m": [
+   3.04,
+   12.5,
+   3.12
+  ],
+  "prop": "tree",
+  "resource": {
+   "wood": 40
+  }
+ },
+ {
+  "file": "models/props/prop_tree_linden.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 124,
+  "size_m": [
+   5.2,
+   7.56,
+   5.2
+  ],
+  "prop": "tree",
+  "resource": {
+   "wood": 40
+  }
+ },
+ {
+  "file": "models/props/prop_tree_pine.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 66,
+  "size_m": [
+   3.8,
+   7.7,
+   3.9
+  ],
+  "prop": "tree",
+  "resource": {
+   "wood": 40
+  }
+ },
+ {
+  "file": "models/props/prop_wreck_sedan_red.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 176,
+  "size_m": [
+   1.9,
+   1.52,
+   4.1
+  ],
+  "prop": "wreck",
+  "resource": {
+   "iron": 60
+  }
+ },
+ {
+  "file": "models/props/prop_wreck_sedan_white.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 176,
+  "size_m": [
+   1.9,
+   1.52,
+   4.1
+  ],
+  "prop": "wreck",
+  "resource": {
+   "iron": 60
+  }
+ },
+ {
+  "file": "models/props/prop_wreck_sedan_burnt.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 176,
+  "size_m": [
+   1.9,
+   1.52,
+   4.1
+  ],
+  "prop": "wreck",
+  "resource": {
+   "iron": 60
+  }
+ },
+ {
+  "file": "models/props/prop_wreck_trolleybus.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 244,
+  "size_m": [
+   2.52,
+   5.31,
+   11.54
+  ],
+  "prop": "wreck",
+  "resource": {
+   "iron": 60
+  }
+ },
+ {
+  "file": "models/props/prop_wreck_truck.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 228,
+  "size_m": [
+   2.4,
+   3.1,
+   7.35
+  ],
+  "prop": "wreck",
+  "resource": {
+   "iron": 60
+  }
+ },
+ {
+  "file": "models/props/prop_streetlight.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 48,
+  "size_m": [
+   0.4,
+   8.07,
+   2.17
+  ],
+  "prop": "decor"
+ },
+ {
+  "file": "models/props/prop_hedgehog.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 36,
+  "size_m": [
+   1.8,
+   1.8,
+   0.15
+  ],
+  "prop": "barricade"
+ },
+ {
+  "file": "models/props/prop_concrete_block.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 24,
+  "size_m": [
+   2.0,
+   1.05,
+   0.8
+  ],
+  "prop": "barricade"
+ },
+ {
+  "file": "models/props/prop_bus_stop.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 60,
+  "size_m": [
+   4.0,
+   2.66,
+   1.6
+  ],
+  "prop": "decor"
+ },
+ {
+  "file": "models/props/prop_dumpster.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 24,
+  "size_m": [
+   1.85,
+   1.39,
+   1.17
+  ],
+  "prop": "decor"
+ },
+ {
+  "file": "models/props/prop_bench.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 48,
+  "size_m": [
+   1.8,
+   0.95,
+   0.52
+  ],
+  "prop": "decor"
+ },
+ {
+  "file": "models/props/prop_fence_section.glb",
+  "category": "props",
+  "nodes": [
+   "body"
+  ],
+  "tris": 36,
+  "size_m": [
+   3.08,
+   2.0,
+   0.08
+  ],
+  "prop": "decor"
+ },
+ {
+  "file": "models/pickups/pickup_food.glb",
+  "category": "pickups",
+  "nodes": [
+   "body"
+  ],
+  "tris": 36,
+  "size_m": [
+   1.11,
+   1.1,
+   0.81
+  ],
+  "pickup": "food"
+ },
+ {
+  "file": "models/pickups/pickup_wood.glb",
+  "category": "pickups",
+  "nodes": [
+   "body"
+  ],
+  "tris": 120,
+  "size_m": [
+   0.9,
+   0.53,
+   1.6
+  ],
+  "pickup": "wood"
+ },
+ {
+  "file": "models/pickups/pickup_iron.glb",
+  "category": "pickups",
+  "nodes": [
+   "body"
+  ],
+  "tris": 84,
+  "size_m": [
+   1.01,
+   0.67,
+   0.88
+  ],
+  "pickup": "iron"
+ },
+ {
+  "file": "models/pickups/pickup_antidote.glb",
+  "category": "pickups",
+  "nodes": [
+   "body"
+  ],
+  "tris": 36,
+  "size_m": [
+   0.6,
+   0.39,
+   0.4
+  ],
+  "pickup": "antidote"
+ },
+ {
+  "file": "models/city/city_test_district.glb",
+  "category": "city",
+  "nodes": [
+   "ground",
+   "buildings",
+   "trees",
+   "wrecks"
+  ],
+  "tris": 2472,
+  "size_m": [
+   120.0,
+   51.0,
+   120.0
+  ],
+  "city": "test_district"
+ }
+]

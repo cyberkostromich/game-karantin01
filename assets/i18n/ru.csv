@@ -1,0 +1,251 @@
+# key;text — русская локаль интерфейса (CLAUDE.md, правило 9). \n — перенос строки.
+GAME_TITLE;Карантин: Москва
+TITLE_1;КАРАНТИН:
+TITLE_2;МОСКВА
+TITLE_SUB;Кооперативная RTS-выживалка. Держите Лужники 12 дней до эвакуации.
+LOADING_CITY;Собираем Хамовники из OpenStreetMap…
+MENU_SOLO;Одиночная игра
+MENU_HOST;Создать кооп (хост)
+MENU_JOIN;Подключиться
+MENU_SETTINGS;Настройки
+MENU_QUIT;Выход
+MENU_BACK;Назад
+MENU_PAUSE;Пауза
+MENU_CONTINUE;Продолжить
+MENU_HELP;Управление
+MENU_TO_MAIN;В главное меню
+SOLO_PICK_DOCTRINES;Выберите две доктрины
+SOLO_DIFFICULTY;Сложность:
+SOLO_START;В бой
+DIFF_NORMAL;Нормально
+DIFF_HARD;Тяжело (волны ×1.3)
+LOBBY_SOON;Кооп скоро будет доступен.
+SET_MASTER;Общая громкость
+SET_MUSIC;Музыка
+SET_SFX;Эффекты
+SET_EDGE;Прокрутка краем экрана
+SET_SHADOWS;Тени и SSAO (после перезапуска матча)
+SET_FULLSCREEN;Полный экран
+HUD_MENU;Меню (Esc)
+HUD_DAY;День
+PHASE_DAWN;рассвет
+PHASE_DAY;день
+PHASE_DUSK;сумерки
+PHASE_NIGHT;ночь
+HUD_WAVE_FROM;Волна:
+DIR_N;с севера
+DIR_S;с юга
+DIR_E;с востока
+DIR_W;с запада
+RES_FOOD;Еда
+RES_WOOD;Дерево
+RES_IRON;Железо
+RES_POWER;Энергия
+RES_PEOPLE;Люди
+RES_MORALE;Мораль
+RES_ANTIDOTE;антидот
+HUD_FOOD_AT_DAWN;спишется на рассвете
+HUD_POWER_PROD;выработка
+HUD_POWER_USE;потребление
+HUD_BATTERY;аккумуляторы
+HUD_ADULTS;взрослые
+HUD_CHILDREN;дети
+HUD_SOLDIERS;солдаты
+HUD_HOUSING;жильё
+HUD_FREE_RECRUITS;свободных взрослых (рекрутов)
+HUD_ANTIDOTE;Заряды антидота из аптек
+HUD_ZOMBIES;зомби
+HUD_SELECTED;Выделено: %d
+HUD_OWNER;владелец
+HUD_FUEL;топливо
+HUD_PASSENGERS;пассажиры
+HUD_TEMP;исчезнет через %d с
+HUD_CONSTRUCTION;стройка %d%% · строителей %d
+HUD_UPGRADING;улучшение %d%%
+HUD_REPAIRING;ремонт
+HUD_POWERED;⚡ питание есть
+HUD_UNPOWERED;⚡✕ обесточено
+HUD_WORKERS;Работники
+HUD_TRAINING;Обучение: %s (в очереди %d)
+HUD_RESEARCHING;Исследование: %s
+HUD_GARRISON;Гарнизон: %d / %d
+HUD_QUARANTINE;В карантине: %d / %d
+HUD_RECRUITS;Рекрутов
+UNIT_SEC;с
+ST_INFECTED;ЗАРАЖЁН — обратится через %d с
+MORALE_HOUSING_OK;жилья хватает
+MORALE_TENTS;живут в палатках
+MORALE_KITCHEN_STAFFED;кухня работает
+MORALE_POWER_OK_AT_NIGHT;свет ночью
+MORALE_MEDPOST_STAFFED;медпункт работает
+MORALE_FOOD_SHORTAGE;нехватка еды
+MORALE_EV_DEATHS;гибель мирных
+MORALE_EV_OUTBREAK;вспышка в базе
+MORALE_EV_NIGHT;ночь без прорыва
+MORALE_EV_RESCUED;спасённые группы
+MORALE_EV_STARVATION;голод
+MORALE_EV_NEST;зачищено гнездо
+MORALE_EV_COWARD;паникёр в армии
+CIV_UNAWARE;прячется
+CIV_FOLLOWING;идёт за бойцом
+CIV_FLEEING;в панике
+CIV_HEADING_TO_BASE;идёт на базу
+CIV_CHECKPOINT;на КПП
+CIV_IDLE;свободен
+CIV_WORKING;работает
+CIV_BUILDING;строит
+CIV_TRAINING;проходит обучение
+CIV_QUARANTINED;в карантине
+CIV_ROOFTOP;на крыше — только вертолёт
+CMD_COMMAND;Командование
+CMD_UNITS;Приказы
+CMD_BUILD;Стройка
+CMD_BUILD_MENU;Стройка (Esc — назад)
+CMD_BUILD_TIP;Постройки в радиусе базы. ЛКМ — поставить, R — повернуть, Shift — ещё, протяжка — стены.
+CMD_TECH;Наука
+CMD_TECH_TIP;Дерево технологий (нужна Мастерская с работниками)
+CMD_IDLE_CIVS;Свободные
+CMD_IDLE_TIP;Выделить всех свободных мирных (.)
+CMD_TO_BASE;К базе
+CMD_AMOVE;Атака-марш
+CMD_AMOVE_TIP;Идти, останавливаясь для боя
+CMD_STOP;Стоп
+CMD_HOLD;Держать
+CMD_HOLD_TIP;Стоять на месте и стрелять
+CMD_PATROL;Патруль
+CMD_UNLOAD;Высадить
+CMD_CANCEL;Отменить
+CMD_CANCEL_TIP;Отменить стройку (вернётся 75% ресурсов)
+CMD_CANCEL_TRAIN;Отменить обучение
+CMD_WORKER_MINUS;Снять работника
+CMD_WORKER_PLUS;Назначить ближайшего свободного
+CMD_SIREN;Сирена
+CMD_SIREN_TIP;Мирные в 200 м сами идут на базу — без охраны, через зомби. Очень громко!
+CMD_UPGRADE;Бетон
+CMD_REPAIR;Ремонт
+CMD_REPAIR_TIP;Строители чинят за 25% цены пропорционально урону
+CMD_POWER_OFF;Выключить
+CMD_POWER_ON;Включить
+CMD_POWER_TIP;Ручное отключение потребителя
+CMD_DEMOLISH;Снести
+CMD_DEMOLISH_TIP;Снести постройку (вернётся 50%)
+CMD_POI_REPAIR;Починить
+BUILD_ERR_TYPE;Это нельзя построить
+BUILD_ERR_UNIQUE;Уже построено
+BUILD_ERR_TECH;Нужна технология
+BUILD_ERR_BLOCKED;Место занято
+BUILD_ERR_ZONE;Вне зоны стройки базы
+BUILD_ERR_COST;Не хватает ресурсов
+TRAIN_ERR_BUILDING;Здание не готово
+TRAIN_ERR_POWER;Нет питания
+TRAIN_ERR_TECH;Нужна технология
+TRAIN_ERR_ALSO_MEDPOST;Нужен Медпункт
+TRAIN_ERR_MORALE;Люди отказываются идти (мораль < 15)
+TRAIN_ERR_RECRUITS;Нет свободных взрослых
+TRAIN_ERR_COST;Не хватает ресурсов
+TECH_ERR_UNKNOWN;Нет такой технологии
+TECH_ERR_DONE;Уже изучено
+TECH_ERR_REQUIRES;Сначала изучите предыдущие
+TECH_ERR_COST;Не хватает ресурсов
+TECH_NO_WORKSHOP;нет свободной Мастерской
+TECH_TITLE;Дерево технологий
+TECH_TIER;Уровень %d
+TECH_REQUIRES;требует
+TECH_START;Исследовать
+TECH_DONE;✓ Изучено
+TECH_IN_PROGRESS;Идёт исследование…
+ABIL_ERR_NONE;Нет такой способности
+ABIL_ERR_CD;Перезарядка
+ABIL_ERR_TECH;Нужна технология
+ABIL_GRENADE_TIP;Граната: 80 урона в 4 м. Шум 60 м
+ABIL_AIMED_SHOT_TIP;Прицельный: следующий выстрел ×3 по особым зомби
+ABIL_ANTIDOTE_TIP;Антидот: снять заражение рядом
+ABIL_FLARE_TIP;Сигнальная ракета: уводит орду на 15 с (шум 100 м)
+ABIL_CAMO_TIP;Маскировка: зомби не замечают, пока не вплотную
+ABIL_SMOKE_TIP;Дымовая завеса: зомби теряют цель
+ABIL_RAM_TIP;Таран: скорость ×1.5, давка ×3
+ABIL_NAPALM_TIP;Напалм: полоса огня 30 м (нужна технология)
+ALERT_BITE_BASE;Укус внутри базы!
+ALERT_DETECTED_CHECKPOINT;КПП: выявлен заражённый
+ALERT_DETECTED_MEDIC;Медик: выявлен заражённый
+ALERT_DETECTED_SYMPTOMS;Симптомы заражения!
+ALERT_OUTBREAK;ВСПЫШКА В БАЗЕ!
+ALERT_ATTACK;Атака на постройку
+ALERT_FOUND;Найдены выжившие
+ALERT_RESCUED;Мирный на базе
+ALERT_POWER;Дефицит энергии — здания отключены
+ALERT_RESEARCH;Исследовано: %s
+ALERT_WAVE;Орда ночи %d пошла!
+ALERT_TRAINED;Готов: %s
+ALERT_BUILT;Построено: %s
+ALERT_NEST;Гнездо зачищено!
+ALERT_LOOT;Рейд: %s
+ALERT_UNIT_DIED;Погиб: %s
+ALERT_RADIO_GROUP;Радио: выжившие ждут
+ALERT_HELI_FUEL;Вертолёт возвращается на дозаправку
+ALERT_NO_QUARANTINE;Заражённого некуда изолировать — постройте Карантин
+ALERT_REPAIRED_SUBSTATION;Подстанция восстановлена: +20 энергии
+ALERT_REPAIRED_RADIO_TOWER;Радиовышка работает: состав волн известен
+ALERT_FORTRESS;Новодевичий монастырь наш: можно строить у стен
+RADIO_DUSK;Сумерки. Ночь %d — орда идёт %s. Включайте прожекторы!
+GOALS_TITLE;Цели
+GOAL_QUOTA;Собрать на арене ≥ %d человек к рассвету после ночи %d (сейчас %d)
+GOAL_SUBSTATION;Восстановить подстанцию (+20 энергии)
+GOAL_EVACUATION;Эвакуация: продержаться до рассвета после 12-й ночи
+GOAL_METRO_SPORTIVNAYA;Гнездо в м. Спортивная
+GOAL_METRO_FRUNZENSKAYA;Гнездо в м. Фрунзенская
+GOAL_METRO_VOROBYOVY;Гнездо на метромосту
+GOAL_RADIO_TOWER;Радиовышка
+GOAL_NOVODEVICHY;Новодевичий монастырь
+REPORT_TITLE;Ночь %d пережита
+REPORT_KILLS;Убито зомби: %d
+REPORT_LOSSES;Потери: %d мирных, %d бойцов
+REPORT_BIRTHS;Родилось детей: %d
+REPORT_RESCUED;Спасено: %d
+REPORT_FOOD;Еда: %+d
+POI_GROCERY;Продуктовый
+POI_PHARMACY;Аптека
+POI_CAR_SERVICE;Автосервис
+POI_HARDWARE;Стройрынок
+POI_SUBSTATION;Подстанция
+POI_RADIO_TOWER;Радиовышка
+POI_FORTRESS;Новодевичий монастырь
+POI_NEST;Гнездо в метро
+POI_GROCERY_TIP;Рейд: отряд стоит рядом без боя ~15 с → еда
+POI_PHARMACY_TIP;Рейд ~10 с → 3 заряда антидота
+POI_CAR_SERVICE_TIP;Рейд ~20 с → железо
+POI_HARDWARE_TIP;Рейд ~20 с → дерево и железо
+POI_SUBSTATION_TIP;Оплатите ремонт и держите рядом юнита 60 с → +20 энергии
+POI_RADIO_TOWER_TIP;Оплатите ремонт и держите рядом юнита → видно состав волн
+POI_FORTRESS_TIP;Каменные стены и 15 мирных. Удержите двор 20 с без зомби — откроется зона стройки
+POI_NEST_TIP;Спавнит ходоков (ночью чаще). Танк + пехота. +50 очков и мораль
+POI_DONE;✓ Выполнено
+GAME_WIN;ЭВАКУАЦИЯ!
+GAME_LOSE;ГАРНИЗОН ПАЛ
+VICTORY;Борты сели на поле арены. Вы вывезли людей.
+DEFEAT_HQ;Штаб уничтожен
+DEFEAT_PEOPLE;Людей не осталось
+DEFEAT_QUOTA;На арене меньше 30 человек — эвакуацию отменили
+SCORE_CIVILIANS;Мирные ×10
+SCORE_CHILDREN;Дети ×15
+SCORE_SOLDIERS;Солдаты ×5
+SCORE_NESTS;Гнёзда ×50
+SCORE_OBJECTIVES;Цели ×100
+SCORE_TOTAL;Итого
+SCORE_KILLS;Убито зомби
+SCORE_CHART;Люди по дням (взрослые · дети · солдаты)
+MEDAL_NO_OUTBREAK;Ни одной вспышки
+MEDAL_NO_TANKS;Без танков
+MEDAL_ALL_NESTS;Все гнёзда
+TUT_TITLE;Обучение
+TUT_SKIP;Пропустить
+TUT_SCOUT;Выделите разведчика (ЛКМ по бойцу с антенной). Камера — стрелки, край экрана, колесо — зум, СКМ — тянуть.
+TUT_FIND;Отправьте разведчика к домам (ПКМ). Он видит выживших сквозь туман на 60 м — «?» на карте. Подойдите ближе 15 м — мирные пойдут за ним.
+TUT_BRING;Приведите мирных на арену (вход — с юга). Не стреляйте зря: шум зовёт зомби.
+TUT_CHECKPOINT;Кто-то из спасённых может быть заражён! Постройте КПП (B → КПП) у входа на поле — он проверит входящих.
+TUT_SAWMILL;Нужно дерево: постройте Лесопилку у парка южнее арены — деревья должны быть в 70 м.
+TUT_ASSIGN;Выделите Лесопилку и нажмите «+», чтобы назначить работников. Свободные взрослые сами строят новые здания.
+TUT_WALL;Перекройте вход стеной (протяжка ЛКМ) и поставьте прожекторы — свет замедляет зомби на 10%.
+TUT_DUSK;Близятся сумерки: радио скажет, откуда пойдёт орда. Держите бойцов у входа и ждите.
+TUT_DONE;Хорошо! Дальше: Казарма → рекруты, Мастерская → наука, рейды на магазины. Удачи, командир.
+HELP_CONTROLS;ЛКМ — выделить, рамка, Shift — добавить, двойной клик — все такие. ПКМ — приказ (земля — идти, гнездо — атака, вышка/БМП — сесть, здание — работать). A — атака-марш, S — стоп, H — держать, P — патруль, Q W E R — способности, U — высадка. Ctrl+1..9 — группы. B — стройка, T — наука, «.» — свободные мирные, Home — к базе, Пробел — к событию, Alt+ЛКМ — пинг, +/− — скорость, Pause — пауза.

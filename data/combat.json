@@ -1,0 +1,36 @@
+{
+  "_doc": "Типы урона × классы брони. final_damage = base_damage * mult[damage_type][armor_class]. Шум: радиус (м), в котором Idle-зомби переходят в Investigate.",
+  "armor_classes": ["none", "light", "heavy", "air", "structure"],
+  "damage_types": {
+    "bullet":    { "none": 1.0, "light": 1.0, "heavy": 0.2,  "air": 0.6, "structure": 0.25 },
+    "explosive": { "none": 1.5, "light": 1.0, "heavy": 0.8,  "air": 1.0, "structure": 1.0 },
+    "melee":     { "none": 1.0, "light": 0.9, "heavy": 0.35, "air": 0.0, "structure": 0.6 },
+    "smash":     { "none": 1.0, "light": 1.0, "heavy": 1.0,  "air": 0.0, "structure": 2.0 },
+    "acid":      { "none": 1.0, "light": 1.0, "heavy": 1.5,  "air": 1.5, "structure": 1.2 },
+    "crush":     { "none": 1.0, "light": 1.0, "heavy": 0.0,  "air": 0.0, "structure": 0.0 }
+  },
+  "noise_events": {
+    "_doc": "Радиусы шума в метрах. Шум одного события живёт 1 тик; постоянный шум (двигатель) — пока условие выполняется.",
+    "construction": 25,
+    "gather_wood": 15,
+    "gather_iron": 30,
+    "siren": 200,
+    "flare": 100,
+    "grenade": 60,
+    "scream": 200,
+    "building_destroyed": 80,
+    "door_breach": 20
+  },
+  "light": {
+    "floodlight_radius_m": 25,
+    "unit_vision_in_light_mult": 1.0,
+    "unit_vision_dark_mult": 0.6,
+    "zombie_speed_in_light_mult": 0.9
+  },
+  "target_priority": {
+    "_doc": "Чем больше число, тем раньше юнит выбирает цель. Зомби предпочитают мирных (запах).",
+    "zombie_vs": { "civilian": 10, "child": 10, "infantry": 6, "vehicle": 3, "building": 1 },
+    "sniper_vs": { "screamer": 10, "spitter": 9, "brute": 8, "runner": 4, "walker": 2 },
+    "default_vs": { "brute": 5, "spitter": 5, "screamer": 5, "runner": 4, "walker": 3, "nest": 1 }
+  }
+}

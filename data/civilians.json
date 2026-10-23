@@ -1,0 +1,32 @@
+{
+  "_doc": "Мирные. Взрослый может: строить (любой свободный), работать в здании (добыча/кухня/медпункт/теплица/мастерская), быть рекрутом. Ребёнок — только живёт и ест; через rules.birth.child_grows_up_days становится взрослым.",
+  "adult": {
+    "name_ru": "Мирный", "hp": 50, "armor": "none", "speed": 3.5, "vision": 15,
+    "build_rate": 1.0,
+    "carry_capacity": { "wood": 8, "iron": 4, "food": 6 },
+    "states": ["unaware", "following", "fleeing", "heading_to_base", "idle", "working", "building", "training", "infected", "dead"],
+    "models": ["models/civilians/civ_adult_a.glb", "models/civilians/civ_adult_b.glb", "models/civilians/civ_adult_c.glb"],
+    "icon": "icons/svg/civ_adult.svg"
+  },
+  "child": {
+    "name_ru": "Ребёнок", "hp": 30, "armor": "none", "speed": 3.0, "vision": 10,
+    "model": "models/civilians/civ_child.glb", "icon": "icons/svg/civ_child.svg"
+  },
+  "traits": {
+    "_doc": "Выпадают с шансом rules.trait_chance при спавне мирного. Видны в карточке выбора.",
+    "ex_military": { "name_ru": "Бывший военный", "weight": 3, "effects": { "train_time_mult": 0.5, "as_soldier_hp_mult": 1.2, "as_soldier_damage_mult": 1.1 } },
+    "doctor":      { "name_ru": "Врач",           "weight": 3, "effects": { "medpost_heal_mult": 2.0, "cure_time_mult": 0.5, "as_medic_heal_mult": 1.3 } },
+    "engineer":    { "name_ru": "Инженер",        "weight": 3, "effects": { "build_rate_mult": 1.5, "research_mult": 1.5, "repair_mult": 1.5 } },
+    "cook":        { "name_ru": "Повар",          "weight": 2, "effects": { "kitchen_counts_as": 2 } },
+    "farmer":      { "name_ru": "Фермер",         "weight": 2, "effects": { "greenhouse_yield_mult": 1.5 } },
+    "driver":      { "name_ru": "Водитель",       "weight": 2, "effects": { "as_crew_vehicle_speed_mult": 1.1, "as_crew_vehicle_hp_mult": 1.1 } },
+    "lumberjack":  { "name_ru": "Работяга",       "weight": 3, "effects": { "gather_rate_mult": 1.4 } },
+    "coward":      { "name_ru": "Паникёр",        "weight": 2, "negative": true, "effects": { "flee_radius_mult": 2.0, "recruit_morale_cost": 2 } }
+  },
+  "spawn_groups": {
+    "_doc": "Мирные на карте прячутся группами в POI-зданиях",
+    "group_size": [1, 5],
+    "poi_types": ["residential", "shop", "school", "hospital", "metro_exit", "rooftop"],
+    "rooftop_only_reachable_by": "heli"
+  }
+}

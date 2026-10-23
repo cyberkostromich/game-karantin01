@@ -1,0 +1,59 @@
+; Engine configuration file.
+; Карантин: Москва — Godot 4.6
+
+config_version=5
+
+[application]
+
+config/name="Карантин: Москва"
+config/description="Кооперативная RTS-выживалка. Лужники, 12 дней до эвакуации."
+config/version="0.2.0"
+run/main_scene="res://src/main/Main.tscn"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/icon="res://assets/icons/png/128/st_infected.png"
+boot_splash/bg_color=Color(0.105882, 0.117647, 0.137255, 1)
+boot_splash/show_image=false
+
+[autoload]
+
+Config="*res://src/autoload/Config.gd"
+Events="*res://src/autoload/Events.gd"
+I18n="*res://src/autoload/I18n.gd"
+Settings="*res://src/autoload/Settings.gd"
+Sfx="*res://src/autoload/Sfx.gd"
+Net="*res://src/net/Net.gd"
+
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[gui]
+
+theme/custom_font="res://assets/fonts/Inter-Regular.ttf"
+
+[internationalization]
+
+locale/fallback="ru"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=1
+textures/default_filters/anisotropic_filtering_level=2
+anti_aliasing/quality/screen_space_aa=1
+lights_and_shadows/directional_shadow/size=4096
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=1
+environment/defaults/default_clear_color=Color(0.28, 0.3, 0.33, 1)
+
+[shader_globals]
+
+qm_night={
+"type": "float",
+"value": 0.0
+}
+qm_time={
+"type": "float",
+"value": 0.0
+}

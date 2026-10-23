@@ -1,0 +1,158 @@
+{
+  "_doc": "Постройки. footprint — в клетках по 2 м (w×d). build_s — время при 1 строителе; при N строителях: build_s / (N^0.8). power: + производит, − потребляет (баланс сети). workers — слоты под мирных. yield_per_worker_per_day — выход при 100% эффективности.",
+  "hq": {
+    "name_ru": "Штаб", "prebuilt": true, "unique": true,
+    "footprint": [8, 8], "hp": 3000, "armor": "structure",
+    "cost": {}, "build_s": 0, "power": 5,
+    "storage_cap": 500, "housing": 6,
+    "provides": ["radio", "rally_point", "base_build_radius_60"],
+    "model": "models/buildings/bld_hq.glb", "icon": "icons/svg/bld_hq.svg"
+  },
+  "tent": {
+    "name_ru": "Палатка", "footprint": [3, 3], "hp": 150, "armor": "structure",
+    "cost": { "wood": 20 }, "build_s": 10, "power": 0, "housing": 4, "morale_if_over_half_housing": -5,
+    "model": "models/buildings/bld_tent.glb", "icon": "icons/svg/bld_tent.svg"
+  },
+  "house": {
+    "name_ru": "Жилой модуль", "footprint": [4, 6], "hp": 500, "armor": "structure",
+    "cost": { "wood": 60, "iron": 10 }, "build_s": 30, "power": -1, "housing": 8,
+    "model": "models/buildings/bld_house.glb", "icon": "icons/svg/bld_house.svg"
+  },
+  "storage": {
+    "name_ru": "Склад", "footprint": [5, 5], "hp": 600, "armor": "structure",
+    "cost": { "wood": 50, "iron": 20 }, "build_s": 25, "power": 0, "storage_cap": 400,
+    "model": "models/buildings/bld_storage.glb", "icon": "icons/svg/bld_storage.svg"
+  },
+  "kitchen": {
+    "name_ru": "Полевая кухня", "footprint": [4, 4], "hp": 400, "armor": "structure",
+    "cost": { "wood": 40, "iron": 10 }, "build_s": 20, "power": -1, "workers": 2,
+    "effect": "food_consumption_mult_0.7_and_morale_+5_if_staffed",
+    "model": "models/buildings/bld_kitchen.glb", "icon": "icons/svg/bld_kitchen.svg"
+  },
+  "greenhouse": {
+    "name_ru": "Теплица", "footprint": [5, 8], "hp": 300, "armor": "structure",
+    "cost": { "wood": 60, "iron": 30 }, "build_s": 35, "power": -2, "workers": 3,
+    "yield_per_worker_per_day": { "food": 4 },
+    "model": "models/buildings/bld_greenhouse.glb", "icon": "icons/svg/bld_greenhouse.svg"
+  },
+  "sawmill": {
+    "name_ru": "Лесопилка", "footprint": [5, 5], "hp": 400, "armor": "structure",
+    "cost": { "wood": 30, "iron": 10 }, "build_s": 20, "power": 0, "workers": 4,
+    "work_radius": 70, "gathers_from": "tree", "noise_while_working": 15,
+    "yield_per_worker_per_day": { "wood": 40 },
+    "model": "models/buildings/bld_sawmill.glb", "icon": "icons/svg/bld_sawmill.svg"
+  },
+  "scrapyard": {
+    "name_ru": "Металлоразборка", "footprint": [5, 5], "hp": 500, "armor": "structure",
+    "cost": { "wood": 40 }, "build_s": 25, "power": 0, "workers": 3,
+    "work_radius": 80, "gathers_from": "wreck", "noise_while_working": 30,
+    "yield_per_worker_per_day": { "iron": 15 },
+    "model": "models/buildings/bld_scrapyard.glb", "icon": "icons/svg/bld_scrapyard.svg"
+  },
+  "generator": {
+    "name_ru": "Дизель-генератор (на дровах)", "footprint": [3, 3], "hp": 350, "armor": "structure",
+    "cost": { "wood": 20, "iron": 30 }, "build_s": 20, "power": 6, "workers": 1,
+    "upkeep_per_day": { "wood": 15 }, "noise_while_working": 20,
+    "model": "models/buildings/bld_generator.glb", "icon": "icons/svg/bld_generator.svg"
+  },
+  "solar": {
+    "name_ru": "Солнечные панели", "footprint": [3, 3], "hp": 150, "armor": "structure",
+    "cost": { "iron": 40 }, "build_s": 15, "power_day": 3, "power_night": 0,
+    "requires_tech": "solar",
+    "model": "models/buildings/bld_solar.glb", "icon": "icons/svg/bld_solar.svg"
+  },
+  "battery": {
+    "name_ru": "Аккумуляторный блок", "footprint": [2, 2], "hp": 200, "armor": "structure",
+    "cost": { "iron": 50 }, "build_s": 15, "power_storage": 20,
+    "requires_tech": "batteries",
+    "model": "models/buildings/bld_battery.glb", "icon": "icons/svg/bld_battery.svg"
+  },
+  "medpost": {
+    "name_ru": "Медпункт", "footprint": [4, 5], "hp": 450, "armor": "structure",
+    "cost": { "wood": 40, "iron": 20 }, "build_s": 25, "power": -2, "workers": 2,
+    "heal_aura": { "hps": 5, "radius": 10 }, "cures_infection": true,
+    "unlocks": ["medic"],
+    "model": "models/buildings/bld_medpost.glb", "icon": "icons/svg/bld_medpost.svg"
+  },
+  "quarantine": {
+    "name_ru": "Карантинный блок", "footprint": [4, 4], "hp": 600, "armor": "structure",
+    "cost": { "wood": 30, "iron": 20 }, "build_s": 20, "power": 0, "capacity": 4,
+    "model": "models/buildings/bld_quarantine.glb", "icon": "icons/svg/bld_quarantine.svg"
+  },
+  "checkpoint": {
+    "name_ru": "КПП", "footprint": [3, 4], "hp": 600, "armor": "structure",
+    "cost": { "wood": 20, "iron": 20 }, "build_s": 15, "power": -1, "scan_radius": 8,
+    "effect": "detects_infected_entering_base",
+    "model": "models/buildings/bld_checkpoint.glb", "icon": "icons/svg/bld_checkpoint.svg"
+  },
+  "barracks": {
+    "name_ru": "Военкомат / Казарма", "footprint": [6, 6], "hp": 800, "armor": "structure",
+    "cost": { "wood": 60, "iron": 30 }, "build_s": 35, "power": -2,
+    "trains": ["assault", "sniper", "scout", "medic"],
+    "model": "models/buildings/bld_barracks.glb", "icon": "icons/svg/bld_barracks.svg"
+  },
+  "motorpool": {
+    "name_ru": "Автопарк", "footprint": [8, 8], "hp": 1200, "armor": "structure",
+    "cost": { "wood": 40, "iron": 120 }, "build_s": 45, "power": -4,
+    "trains": ["bmp", "tank"], "repair_hps": 15,
+    "model": "models/buildings/bld_motorpool.glb", "icon": "icons/svg/bld_motorpool.svg"
+  },
+  "helipad": {
+    "name_ru": "Вертолётная площадка", "footprint": [8, 8], "hp": 800, "armor": "structure",
+    "cost": { "wood": 20, "iron": 150 }, "build_s": 45, "power": -5,
+    "trains": ["heli"], "requires_tech": "aviation",
+    "model": "models/buildings/bld_helipad.glb", "icon": "icons/svg/bld_helipad.svg"
+  },
+  "workshop": {
+    "name_ru": "Мастерская (НИОКР)", "footprint": [5, 6], "hp": 600, "armor": "structure",
+    "cost": { "wood": 50, "iron": 50 }, "build_s": 35, "power": -3, "workers": 2,
+    "research": true,
+    "model": "models/buildings/bld_workshop.glb", "icon": "icons/svg/bld_workshop.svg"
+  },
+  "wall_wood": {
+    "name_ru": "Стена (дерево)", "footprint": [2, 1], "hp": 300, "armor": "structure",
+    "cost": { "wood": 10 }, "build_s": 5, "drag_build": true, "upgrade_to": "wall_concrete",
+    "model": "models/buildings/bld_wall_wood.glb", "icon": "icons/svg/bld_wall.svg"
+  },
+  "wall_concrete": {
+    "name_ru": "Стена (бетонные блоки)", "footprint": [2, 1], "hp": 900, "armor": "structure",
+    "cost": { "iron": 15 }, "build_s": 8, "drag_build": true, "requires_tech": "concrete_walls",
+    "model": "models/buildings/bld_wall_concrete.glb", "icon": "icons/svg/bld_wall.svg"
+  },
+  "gate": {
+    "name_ru": "Ворота", "footprint": [3, 1], "hp": 700, "armor": "structure",
+    "cost": { "wood": 20, "iron": 10 }, "build_s": 10, "auto_open_for_allies": true,
+    "model": "models/buildings/bld_gate.glb", "icon": "icons/svg/bld_gate.svg"
+  },
+  "tower": {
+    "name_ru": "Вышка", "footprint": [2, 2], "hp": 400, "armor": "structure",
+    "cost": { "wood": 30 }, "build_s": 15, "garrison": 2, "garrison_range_bonus": 5, "vision": 40,
+    "model": "models/buildings/bld_tower.glb", "icon": "icons/svg/bld_tower.svg"
+  },
+  "floodlight": {
+    "name_ru": "Прожектор", "footprint": [1, 1], "hp": 120, "armor": "structure",
+    "cost": { "iron": 10 }, "build_s": 5, "power_night": -1, "light_radius": 25,
+    "model": "models/buildings/bld_floodlight.glb", "icon": "icons/svg/bld_floodlight.svg"
+  },
+  "siren": {
+    "name_ru": "Громкоговоритель", "footprint": [1, 1], "hp": 120, "armor": "structure",
+    "cost": { "iron": 15 }, "build_s": 5, "power": -1,
+    "active_ability": { "cooldown_s": 60, "call_civilians_radius": 200, "noise": 200 },
+    "model": "models/buildings/bld_siren.glb", "icon": "icons/svg/bld_siren.svg"
+  },
+  "sandbags": {
+    "name_ru": "Мешки с песком", "footprint": [2, 1], "hp": 200, "armor": "structure",
+    "cost": { "wood": 5 }, "build_s": 4, "drag_build": true, "cover_damage_mult": 0.7, "blocks_zombies": false,
+    "model": "models/buildings/bld_sandbags.glb", "icon": "icons/svg/bld_sandbags.svg"
+  },
+  "map_poi": {
+    "_doc": "Объекты на карте, не строятся игроком",
+    "substation": { "name_ru": "Подстанция", "repair_cost": { "iron": 100 }, "repair_s": 60, "power_when_repaired": 20, "objective": true },
+    "radio_tower": { "name_ru": "Радиовышка", "repair_cost": { "iron": 60, "wood": 40 }, "effect": "reveals_wave_composition", "objective": true },
+    "grocery": { "name_ru": "Продуктовый", "loot": { "food": [40, 80] }, "search_s": 15 },
+    "car_service": { "name_ru": "Автосервис", "loot": { "iron": [50, 100] }, "search_s": 20 },
+    "hardware": { "name_ru": "Стройрынок", "loot": { "wood": [60, 120], "iron": [20, 40] }, "search_s": 20 },
+    "pharmacy": { "name_ru": "Аптека", "loot": { "effect": "antidote_charges_+3" }, "search_s": 10 },
+    "metro_station": { "name_ru": "Станция метро", "contains": "nest" }
+  }
+}

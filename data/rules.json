@@ -1,0 +1,319 @@
+{
+  "_doc": "Глобальные правила симуляции. Единицы: метры, секунды, 'день' = один полный цикл день+ночь. Всё время — игровое (при скорости 1x совпадает с реальным). Разделы base/build/power/economy/sim_tuning добавлены в v0.2 (см. docs/decisions.md).",
+  "version": "0.2.0",
+  "sim": {
+    "tick_hz": 20,
+    "snapshot_hz": 10,
+    "interp_delay_ms": 100,
+    "grid_cell_m": 2.0,
+    "flowfield_sector_cells": 32
+  },
+  "players": {
+    "min": 1,
+    "max": 4,
+    "doctrines_per_player": {
+      "1": 2,
+      "2": 1,
+      "3": 1,
+      "4": 1
+    },
+    "team_colors": [
+      "#2F80ED",
+      "#F2994A",
+      "#27AE9F",
+      "#F2C94C"
+    ],
+    "shared_resources": true,
+    "shared_buildings": true,
+    "units_owned_by_trainer": true,
+    "unit_transfer_allowed": true
+  },
+  "difficulty_scaling_by_players": {
+    "_doc": "Множитель размера ночных волн и плотности зомби в городе",
+    "1": 1.0,
+    "2": 1.6,
+    "3": 2.1,
+    "4": 2.6
+  },
+  "day_cycle": {
+    "day_s": 240,
+    "dusk_s": 20,
+    "night_s": 150,
+    "dawn_s": 20,
+    "days_total": 12,
+    "night_vision_mult": 0.6,
+    "night_ambient_spawn_mult": 3.0,
+    "horde_launch_at_night_fraction": 0.25,
+    "wave_direction_reveal_at": "dusk"
+  },
+  "start": {
+    "_doc": "Стартовые значения = base + per_player * N",
+    "resources": {
+      "food": {
+        "base": 100,
+        "per_player": 40
+      },
+      "wood": {
+        "base": 150,
+        "per_player": 30
+      },
+      "iron": {
+        "base": 60,
+        "per_player": 20
+      }
+    },
+    "civilians_in_base": {
+      "base": 8,
+      "per_player": 3
+    },
+    "units_per_player": {
+      "assault": 2,
+      "scout": 1
+    },
+    "map_civilians": {
+      "base": 60,
+      "per_player": 25
+    },
+    "map_ambient_zombies": {
+      "base": 260,
+      "per_player": 70
+    },
+    "storage_cap_hq": 500
+  },
+  "consumption_per_day": {
+    "_doc": "Списывается на рассвете (dawn). Кухня с поварами умножает потребление на kitchen_mult.",
+    "civilian_adult": 1.0,
+    "child": 0.5,
+    "soldier": 1.5,
+    "kitchen_mult": 0.7,
+    "cooks_per_people": 10
+  },
+  "starvation": {
+    "morale_per_missing_food": -0.5,
+    "deaths_if_zero_food_days": 2,
+    "death_fraction_per_day": 0.1
+  },
+  "morale": {
+    "base": 50,
+    "min": 0,
+    "max": 100,
+    "modifiers": {
+      "housing_ok": 10,
+      "kitchen_staffed": 5,
+      "power_ok_at_night": 5,
+      "medpost_staffed": 5,
+      "food_shortage": -15,
+      "civilian_death_each": -5,
+      "civilian_death_decay_per_day": 5,
+      "outbreak_inside_base": -10,
+      "night_survived_without_breach": 3,
+      "rescued_group_arrives": 2
+    },
+    "effects": [
+      {
+        "min": 70,
+        "work_speed_mult": 1.15,
+        "birth_enabled": true
+      },
+      {
+        "min": 60,
+        "work_speed_mult": 1.0,
+        "birth_enabled": true
+      },
+      {
+        "min": 30,
+        "work_speed_mult": 1.0,
+        "birth_enabled": false
+      },
+      {
+        "min": 15,
+        "work_speed_mult": 0.75,
+        "birth_enabled": false
+      },
+      {
+        "min": 0,
+        "work_speed_mult": 0.6,
+        "birth_enabled": false,
+        "recruitment_blocked": true
+      }
+    ]
+  },
+  "birth": {
+    "_doc": "Проверка на рассвете для каждого жилого блока/палатки",
+    "min_adults_in_house": 2,
+    "min_morale": 60,
+    "min_food_days_reserve": 2,
+    "chance_per_house_per_day": 0.25,
+    "child_grows_up_days": 3,
+    "children_can_be_recruited": false,
+    "children_can_work": false
+  },
+  "infection": {
+    "incubation_civilian_s": [
+      20,
+      40
+    ],
+    "incubation_soldier_s": [
+      35,
+      55
+    ],
+    "civilian_hit_infect_chance": 1.0,
+    "soldier_infect_chance_base": 0.15,
+    "vehicle_infect": false,
+    "turned_civilian_becomes": "walker",
+    "turned_soldier_becomes": "walker_armored",
+    "medpost_cure_time_s": 15,
+    "quarantine_turn_result": "dies",
+    "checkpoint_detects_infected": true,
+    "infected_visible_to_players": "only_after_detection_or_symptoms",
+    "symptoms_visible_last_s": 10
+  },
+  "civilian_ai": {
+    "contact_radius_m": 15,
+    "flee_radius_m": 10,
+    "max_followers_per_unit": 10,
+    "scout_follow_speed_mult": 1.5,
+    "siren_radius_m": 200,
+    "panic_speed_mult": 1.3,
+    "follow_distance_m": 2.5,
+    "checkpoint_scan_s": 2.0,
+    "idle_wander_m": 10,
+    "panic_hide_s": 15,
+    "workers_shelter_at_night": true,
+    "gather_trip_efficiency": 0.7,
+    "leader_lost_panic": true,
+    "rooftop_pickup_radius_m": 10,
+    "base_entry_radius_m": 150,
+    "wander_cd_s": [
+      4,
+      10
+    ]
+  },
+  "trait_chance": 0.25,
+  "victory": {
+    "survive_days": 12,
+    "evacuation_event_day": 10,
+    "evacuation_quota_people": 30,
+    "score": {
+      "per_civilian_evacuated": 10,
+      "per_child_evacuated": 15,
+      "per_soldier_alive": 5,
+      "per_nest_cleared": 50,
+      "per_objective": 100
+    }
+  },
+  "defeat": {
+    "hq_destroyed": true,
+    "population_zero": true
+  },
+  "base": {
+    "_doc": "База: зона стройки вокруг Штаба (GDD §10) и форта после захвата. Арена — safe_zone из map_*.json.",
+    "build_radius_m": 120,
+    "fortress_build_radius_m": 90,
+    "fortress_capture_radius_m": 60,
+    "fortress_capture_s": 20
+  },
+  "build": {
+    "_doc": "Стройка (GDD §10): время = build_s / N^builders_exponent; ремонт = repair_cost_frac от цены пропорционально урону.",
+    "builders_exponent": 0.8,
+    "site_start_hp_frac": 0.1,
+    "cancel_refund_frac": 0.75,
+    "builder_reach_m": 3.0,
+    "repair_cost_frac": 0.25,
+    "repair_speed_mult": 2.0,
+    "max_builders_per_site": 4,
+    "assign_interval_s": 1.0,
+    "auto_assign_radius_m": 260,
+    "demolish_refund_frac": 0.5
+  },
+  "power": {
+    "_doc": "Энергосеть (GDD §5): баланс раз в update_interval_s. Аккумулятор: заряд в единицах «баланс×минута».",
+    "update_interval_s": 0.5,
+    "battery_rate_per_min": 1.0,
+    "shutdown_priority": [
+      "workshop",
+      "helipad",
+      "motorpool",
+      "greenhouse",
+      "barracks",
+      "kitchen",
+      "house",
+      "medpost",
+      "checkpoint",
+      "siren",
+      "floodlight"
+    ]
+  },
+  "economy": {
+    "_doc": "Непрерывная экономика",
+    "greenhouse_tick_s": 1.0,
+    "morale_update_s": 1.0,
+    "event_morale_decay_per_day": 5
+  },
+  "sim_tuning": {
+    "_doc": "Технические константы симуляции (не баланс): радиусы тел, хеши, LOD, бюджеты путей.",
+    "zombie_radius": 0.35,
+    "zombie_radius_by_type": {
+      "brute": 0.7,
+      "giant": 1.4
+    },
+    "zombie_hash_cell_m": 8,
+    "agent_hash_cell_m": 8,
+    "zombie_separation": 1.6,
+    "zombie_wake_radius": 70,
+    "camo_detect_radius": 2.5,
+    "screamer_keep_distance": 9,
+    "paths_per_tick": 8,
+    "agent_separation_radius": 0.9,
+    "unit_radius": {
+      "infantry": 0.4,
+      "vehicle": 2.4,
+      "air": 3.0,
+      "civilian": 0.35
+    },
+    "building_attack_alert_s": 6,
+    "continuous_noise_interval_s": 1.0,
+    "path_coarse_scale": 2,
+    "path_smooth_lookahead": 12,
+    "flowfield_radius_m": 380,
+    "flowfield_wall_cost_mult": 8,
+    "fog_cell_m": 4,
+    "fog_update_ticks": 4,
+    "light_cell_m": 4,
+    "ambient_min_dist_from_hq_m": 260,
+    "scan_interval_s": 0.25,
+    "unit_fire_height_m": 1.4,
+    "heli_altitude_m": 25,
+    "vehicle_crush_radius_extra": 0.6,
+    "garrison_enter_radius_m": 4,
+    "transport_enter_radius_m": 5,
+    "raid_radius_m": 14,
+    "ejected_crew_hp_frac": 0.5,
+    "heli_return_fuel_frac": 0.2,
+    "default_repair_s": 40,
+    "nest_radius_m": 5,
+    "high_ground_radius_m": 160,
+    "building_vision_m": 15,
+    "rescue_group_window_s": 10,
+    "civilian_min_dist_from_hq_m": 180,
+    "fortress_civilians": 15,
+    "ambient_near_nest_share": 0.3
+  },
+  "difficulty": {
+    "_doc": "Сложность в лобби (docs/07_ui_hud.md §2): множитель размера волн",
+    "normal": {
+      "wave_mult": 1.0
+    },
+    "hard": {
+      "wave_mult": 1.3
+    }
+  },
+  "view": {
+    "_doc": "Только представление (не баланс): визуальный масштаб моделей — читаемость с высоты камеры (арт-библия §2).",
+    "humanoid_scale": 1.4,
+    "vehicle_scale": 1.15,
+    "zombie_scale": 1.4,
+    "camera_default_zoom": 0.22,
+    "fog_unexplored_brightness": 0.22
+  }
+}

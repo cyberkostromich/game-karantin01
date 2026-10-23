@@ -1,0 +1,93 @@
+{
+  "_doc": "Ночные волны. count(type, n) = round(f(n) * players_mult), n — номер ночи 1..12. Таблица по ночам генерируется tools/balance_report.py в docs/03_balance.md.",
+  "formulas": {
+    "walker": {
+      "from_night": 1,
+      "a": 20,
+      "b": 12,
+      "p": 1.35,
+      "f": "a + b * n^p"
+    },
+    "runner": {
+      "from_night": 2,
+      "a": 0,
+      "b": 2,
+      "p": 1.3,
+      "f": "b * (n-1)^p"
+    },
+    "screamer": {
+      "from_night": 3,
+      "f": "floor(n/3)"
+    },
+    "brute": {
+      "from_night": 4,
+      "f": "floor((n-2)/2)"
+    },
+    "spitter": {
+      "from_night": 5,
+      "f": "floor((n-3)/2)"
+    },
+    "giant": {
+      "from_night": 12,
+      "f": "1 (не масштабируется)",
+      "scale": false
+    }
+  },
+  "spawn": {
+    "directions": [
+      "N",
+      "E",
+      "S",
+      "W"
+    ],
+    "directions_per_night": {
+      "1": 1,
+      "4": 2,
+      "8": 3,
+      "12": 4
+    },
+    "sources": [
+      "map_edge",
+      "metro_nests"
+    ],
+    "batch_size": 25,
+    "batch_interval_s": 4,
+    "spawn_distance_m": 240,
+    "spread_m": 35,
+    "nest_share": 0.0,
+    "day_ambient_respawn_s": 30,
+    "night_nest_horde": true
+  },
+  "events": {
+    "day_3": {
+      "type": "radio",
+      "text_ru": "Сигнал: в районе Нескучного сада группа выживших (12 чел.)",
+      "spawn_civilians": 12,
+      "poi": "neskuchny_sad"
+    },
+    "day_5": {
+      "type": "objective",
+      "text_ru": "Подстанция «Лужники» повреждена. Восстановите — получите +20 энергии.",
+      "poi": "substation"
+    },
+    "day_7": {
+      "type": "horde_migration",
+      "text_ru": "Крупная орда движется по Комсомольскому проспекту",
+      "extra_walkers_mult": 0.5
+    },
+    "day_10": {
+      "type": "evacuation",
+      "text_ru": "Эвакуация через 2 дня. Борты сядут на арене Лужников. Нужно не менее 30 человек."
+    },
+    "day_1": {
+      "type": "tutorial",
+      "text_ru": "Гарнизон, держите арену до эвакуации. Разведчиком найдите выживших — дом с «?».",
+      "poi": "luzhniki_arena"
+    },
+    "day_12": {
+      "type": "final",
+      "text_ru": "Последняя ночь. С юга идёт Великан. На рассвете — эвакуация с поля арены.",
+      "poi": "luzhniki_arena"
+    }
+  }
+}

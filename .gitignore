@@ -1,0 +1,13 @@
+# Godot
+.godot/
+*.translation
+export/
+build/
+# Python
+__pycache__/
+*.pyc
+# OSM raw dumps (большие, пересобираются скриптом)
+tools/osm_city/*.osm.json
+# Логи бот-прогонов
+tools/bot_runs/*.csv
+.DS_Store

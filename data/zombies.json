@@ -1,0 +1,69 @@
+{
+  "_doc": "Заражённые. hearing_mult — множитель к радиусу шума, который они 'слышат'. infect_chance — шанс заразить пехотинца при попадании (умножается на unit.infect_resist⁻¹... см. docs/03). Мирных заражает любое попадание.",
+  "walker": {
+    "name_ru": "Ходок", "first_night": 1,
+    "hp": 60, "armor": "none", "speed": 1.6, "sight": 12, "hearing_mult": 1.0,
+    "attack": { "damage_type": "melee", "damage": 8, "rof": 1.0, "range": 1.2 },
+    "infect_chance": 0.15,
+    "model": "models/zombies/zmb_walker.glb", "icon": "icons/svg/zmb_walker.svg"
+  },
+  "walker_armored": {
+    "name_ru": "Зомби-боец", "first_night": 1, "spawn_only_from": "turned_soldier",
+    "hp": 150, "armor": "light", "speed": 1.8, "sight": 12, "hearing_mult": 1.0,
+    "attack": { "damage_type": "melee", "damage": 10, "rof": 1.0, "range": 1.2 },
+    "infect_chance": 0.15,
+    "model": "models/zombies/zmb_walker_armored.glb", "icon": "icons/svg/zmb_walker.svg"
+  },
+  "runner": {
+    "name_ru": "Бегун", "first_night": 2,
+    "hp": 40, "armor": "none", "speed": 5.5, "sight": 18, "hearing_mult": 1.2,
+    "attack": { "damage_type": "melee", "damage": 6, "rof": 1.5, "range": 1.2 },
+    "infect_chance": 0.2,
+    "model": "models/zombies/zmb_runner.glb", "icon": "icons/svg/zmb_runner.svg"
+  },
+  "screamer": {
+    "name_ru": "Крикун", "first_night": 3,
+    "hp": 80, "armor": "none", "speed": 3.0, "sight": 20, "hearing_mult": 1.0,
+    "attack": null,
+    "scream": { "interval_s": 10, "noise": 200, "buff_radius": 15, "buff_speed_mult": 1.2 },
+    "infect_chance": 0.0,
+    "model": "models/zombies/zmb_screamer.glb", "icon": "icons/svg/zmb_screamer.svg"
+  },
+  "brute": {
+    "name_ru": "Громила", "first_night": 4,
+    "hp": 600, "armor": "light", "speed": 2.2, "sight": 12, "hearing_mult": 0.8,
+    "attack": { "damage_type": "smash", "damage": 60, "rof": 0.6, "range": 1.8, "knockback": 3 },
+    "infect_chance": 0.3,
+    "model": "models/zombies/zmb_brute.glb", "icon": "icons/svg/zmb_brute.svg"
+  },
+  "spitter": {
+    "name_ru": "Плевун", "first_night": 5,
+    "hp": 90, "armor": "none", "speed": 2.5, "sight": 22, "hearing_mult": 1.0,
+    "attack": { "damage_type": "acid", "damage": 25, "rof": 0.5, "range": 20, "dot_dps": 5, "dot_s": 4, "can_hit_air": true },
+    "infect_chance": 0.0,
+    "model": "models/zombies/zmb_spitter.glb", "icon": "icons/svg/zmb_spitter.svg"
+  },
+  "nest": {
+    "name_ru": "Гнездо (в метро)", "first_night": 0, "static": true,
+    "hp": 3000, "armor": "structure",
+    "spawn": { "type": "walker", "interval_s": 20, "night_interval_s": 8, "ambient_cap_contrib": 60 },
+    "on_destroyed": { "score": 50, "morale": 5 },
+    "model": "models/zombies/zmb_nest.glb", "icon": "icons/svg/zmb_nest.svg"
+  },
+  "giant": {
+    "name_ru": "Великан (босс финальной ночи)", "first_night": 12,
+    "hp": 6000, "armor": "heavy", "speed": 2.0, "sight": 25, "hearing_mult": 1.0,
+    "attack": { "damage_type": "smash", "damage": 200, "rof": 0.4, "range": 3.0, "knockback": 6 },
+    "infect_chance": 0.0,
+    "model": "models/zombies/zmb_giant.glb", "icon": "icons/svg/zmb_brute.svg"
+  },
+  "ai": {
+    "states": ["idle", "investigate", "chase", "attack", "horde", "feeding"],
+    "idle_wander_radius": 15,
+    "investigate_timeout_s": 20,
+    "lose_target_s": 6,
+    "feeding_on_corpse_s": 8,
+    "horde_target": "hq",
+    "building_attack_when_blocked_s": 2
+  }
+}

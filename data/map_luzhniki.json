@@ -1,0 +1,188 @@
+{
+  "_doc": "Карта MVP: Хамовники / Лужники, Москва. Координаты WGS84 приблизительные — сверить в OSM при сборке. Локальная система: начало (0,0) = center, X → восток, Z → юг (в glTF/Godot -Z = север), 1 ед. = 1 м.",
+  "id": "luzhniki",
+  "name_ru": "Хамовники: Лужники",
+  "center": {
+    "lat": 55.7175,
+    "lon": 37.5625
+  },
+  "bbox_full": {
+    "south": 55.7,
+    "west": 37.53,
+    "north": 55.735,
+    "east": 37.605
+  },
+  "bbox_mvp": {
+    "south": 55.706,
+    "west": 37.538,
+    "north": 55.73,
+    "east": 37.592
+  },
+  "safe_zone": {
+    "poi": "luzhniki_arena",
+    "radius_m": 160,
+    "hq_offset_m": [
+      0,
+      0,
+      22
+    ],
+    "_doc": "Штаб — на поле арены у южной трибуны; вход в чашу один (юг). radius_m — зона «база» для КПП и счёта людей."
+  },
+  "pois": [
+    {
+      "id": "luzhniki_arena",
+      "name_ru": "Арена «Лужники»",
+      "lat": 55.7158,
+      "lon": 37.5537,
+      "type": "safe_zone",
+      "note": "Стартовая база, огорожена, внутри — поле для эвакуации"
+    },
+    {
+      "id": "novodevichy",
+      "name_ru": "Новодевичий монастырь",
+      "lat": 55.7262,
+      "lon": 37.5562,
+      "type": "fortress",
+      "note": "Каменные стены — второй укреплённый пункт, 15 мирных внутри"
+    },
+    {
+      "id": "metro_sportivnaya",
+      "name_ru": "м. Спортивная",
+      "lat": 55.7225,
+      "lon": 37.562,
+      "type": "metro_station",
+      "nest": true
+    },
+    {
+      "id": "metro_frunzenskaya",
+      "name_ru": "м. Фрунзенская",
+      "lat": 55.7275,
+      "lon": 37.5803,
+      "type": "metro_station",
+      "nest": true
+    },
+    {
+      "id": "metro_vorobyovy",
+      "name_ru": "м. Воробьёвы горы (на мосту)",
+      "lat": 55.7101,
+      "lon": 37.5592,
+      "type": "metro_station",
+      "nest": true,
+      "note": "Метромост — узкое место через реку"
+    },
+    {
+      "id": "neskuchny_sad",
+      "name_ru": "Нескучный сад",
+      "lat": 55.7185,
+      "lon": 37.5925,
+      "type": "forest",
+      "note": "Главный источник дерева; событие дня 3"
+    },
+    {
+      "id": "luzhniki_park",
+      "name_ru": "Парковая зона Лужников",
+      "lat": 55.713,
+      "lon": 37.565,
+      "type": "forest"
+    },
+    {
+      "id": "vorobyovy_gory",
+      "name_ru": "Воробьёвы горы (смотровая)",
+      "lat": 55.7104,
+      "lon": 37.5437,
+      "type": "high_ground",
+      "note": "+20% дальности снайперам, видна вся Лужнецкая пойма"
+    },
+    {
+      "id": "substation",
+      "name_ru": "Подстанция",
+      "lat": 55.7195,
+      "lon": 37.57,
+      "type": "substation",
+      "note": "Точка условная, поставить в ближайшую промзону/здание по OSM"
+    },
+    {
+      "id": "radio_tower",
+      "name_ru": "Радиовышка",
+      "lat": 55.724,
+      "lon": 37.572,
+      "type": "radio_tower",
+      "note": "Условная точка"
+    },
+    {
+      "id": "komsomolsky",
+      "name_ru": "Комсомольский проспект",
+      "lat": 55.725,
+      "lon": 37.576,
+      "type": "road_main",
+      "note": "Магистраль на север — направление орды дня 7"
+    },
+    {
+      "id": "ttk_overpass",
+      "name_ru": "Эстакада ТТК",
+      "lat": 55.7205,
+      "lon": 37.559,
+      "type": "chokepoint"
+    },
+    {
+      "id": "andreevsky_bridge",
+      "name_ru": "Андреевский мост",
+      "lat": 55.7206,
+      "lon": 37.585,
+      "type": "chokepoint"
+    },
+    {
+      "id": "mgu",
+      "name_ru": "Главное здание МГУ",
+      "lat": 55.7033,
+      "lon": 37.5302,
+      "type": "landmark",
+      "note": "За пределами MVP-bbox, виден как силуэт на горизонте"
+    }
+  ],
+  "spawn_edges": {
+    "N": "Комсомольский пр-т / Садовое кольцо",
+    "E": "Фрунзенская наб. / Нескучный сад",
+    "S": "Воробьёвы горы / метромост",
+    "W": "Новодевичья наб. / Лужнецкий мост"
+  },
+  "resource_nodes_from_osm": {
+    "tree": {
+      "from": [
+        "natural=tree",
+        "leisure=park",
+        "landuse=forest",
+        "natural=wood"
+      ],
+      "wood_per_node": 40,
+      "park_density_per_100m2": 0.6
+    },
+    "wreck": {
+      "from": [
+        "highway=primary|secondary|tertiary"
+      ],
+      "per_100m_road": 1.2,
+      "iron_per_node": 60
+    },
+    "grocery": {
+      "from": [
+        "shop=supermarket|convenience"
+      ],
+      "fallback_random_per_km2": 8
+    },
+    "car_service": {
+      "from": [
+        "shop=car_repair",
+        "amenity=fuel"
+      ],
+      "fallback_random_per_km2": 3
+    },
+    "pharmacy": {
+      "from": [
+        "amenity=pharmacy"
+      ],
+      "fallback_random_per_km2": 4
+    }
+  },
+  "city_dir": "res://assets/city/luzhniki"
+}
