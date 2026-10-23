@@ -1,0 +1,71 @@
+# Веб-версия игры на GitHub Pages: тесты GUT → экспорт Web (WebGL 2, без потоков) → публикация.
+# Однократно: Settings → Pages → Source: «GitHub Actions». Ссылка: https://<owner>.github.io/<repo>/
+name: Web build → GitHub Pages
+
+on:
+  push:
+    branches: ["claude/amazing-cannon-4bt4d4", "main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: "4.6"
+  GODOT_URL: https://github.com/godotengine/godot-builds/releases/download/4.6-stable
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Godot и шаблоны экспорта (кеш)
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-stable
+
+      - name: Скачать Godot
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          curl -sSL -o godot.zip "$GODOT_URL/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip -d ~/godot && mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          curl -sSL -o tpl.tpz "$GODOT_URL/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q tpl.tpz -d tpl && mv tpl/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/
+
+      - name: Импорт ассетов
+        run: ~/godot/godot --headless --import || true
+
+      - name: Тесты GUT
+        run: ~/godot/godot --headless -s addons/gut/gut_cmdln.gd   # GUT выходит с кодом 1 при падениях
+
+      - name: Экспорт Web
+        run: |
+          mkdir -p export/web
+          ~/godot/godot --headless --export-release "Web" export/web/index.html
+          ls -la export/web
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: export/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
