@@ -42,6 +42,7 @@ signal building_destroyed(id: int, type: String, pos: Vector2)
 signal building_attacked(id: int, pos: Vector2)
 signal research_completed(tech: String)
 signal power_deficit(shut_off: PackedInt32Array)
+signal resource_delivered(res: String, amount: float, pos: Vector2)
 signal loot_collected(poi: String, loot: Dictionary, pos: Vector2)
 signal alert(kind: String, text: String, pos: Vector2)
 

@@ -40,10 +40,10 @@ func setup(g: Node) -> void:
 	row.add_child(spacer2)
 	row.add_child(players_box)
 	_players()
+	players_box.visible = game.world.players.size() > 1   # в одиночной игре плашка игроков — лишняя
 	speed_l = UiTheme.caps("", 13, UiTheme.DIM)
 	speed_l.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	row.add_child(speed_l)
-	row.add_child(UiTheme.icon_button("bld_workshop", "T", tr("CMD_TECH_TIP"), func() -> void: game.hud.toggle_tech(), 40))
 	var menu := UiTheme.button(tr("HUD_MENU_SHORT").to_upper(), func() -> void: game.hud.toggle_pause_menu(), tr("HUD_MENU"))
 	menu.custom_minimum_size = Vector2(72, 40)
 	row.add_child(menu)
@@ -159,7 +159,8 @@ func _process(delta: float) -> void:
 	phase_icon.texture = Look.icon("st_night" if c.is_dark() else "st_day")
 	phase_bar.add_theme_stylebox_override("fill", UiTheme.fill(UiTheme.INFO if c.is_night() else UiTheme.WARN))
 	wave_l.text = _wave_text(w)
-	speed_l.text = (tr("HUD_PAUSED") if game.paused else "×%d" % int(game.speed)) if w.players.size() == 1 else ""
+	speed_l.text = (tr("HUD_PAUSED").to_upper() if game.paused else ("×%d" % int(game.speed) if game.speed != 1.0 else "")) \
+		if w.players.size() == 1 else ""
 
 
 func _put(key: String, text: String, tip: String, col: Color, sub: String = "") -> void:

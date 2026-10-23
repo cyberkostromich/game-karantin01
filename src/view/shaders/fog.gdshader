@@ -28,8 +28,10 @@ void fragment() {
 	float grey = dot(scene, vec3(0.3, 0.59, 0.11));
 	float explored = smoothstep(0.02, 0.43, v);
 	float visible = smoothstep(0.55, 0.95, v);
-	vec3 dim = mix(vec3(grey), scene, 0.35) * 0.42;
-	vec3 dark = mix(vec3(grey), scene, 0.2) * unexplored;
+	// разведанное вне обзора — чуть приглушено (как «серый» город в AoE), неразведанное — тёмная, но читаемая карта:
+	// при отдалении игрок должен видеть город, а не чёрный экран
+	vec3 dim = mix(vec3(grey), scene, 0.7) * 0.72;
+	vec3 dark = mix(vec3(grey), scene, 0.45) * unexplored;
 	vec3 col = mix(dark, dim, explored);
 	col = mix(col, scene, visible);
 	ALBEDO = mix(scene, col, enabled);

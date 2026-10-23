@@ -71,6 +71,10 @@ func work(a: Agent, dt: float) -> void:
 		_gather(a, b, d, dt)
 	elif not a.moving and a.pos.distance_to(b.door) > 3.0:
 		world.agents.move_to(a, b.door)
+	elif not a.moving:
+		# работники цехов (генератор, кухня, теплица…) — внутри здания, а не толпой в дверях
+		a.hidden = true
+		a.container = b.id
 
 
 func _gather(a: Agent, b: Building, d: Dictionary, dt: float) -> void:
@@ -89,7 +93,8 @@ func _gather(a: Agent, b: Building, d: Dictionary, dt: float) -> void:
 				world.agents.move_to(a, b.door)
 				return
 			if a.carry.has(res):
-				world.economy.add(res, float(a.carry[res]))
+				var got := world.economy.add(res, float(a.carry[res]))
+				world.emit("resource_delivered", [res, got, b.door])
 				a.carry = {}
 			if shelter or not b.working():
 				return

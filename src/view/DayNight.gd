@@ -57,9 +57,9 @@ func render(delta: float) -> void:
 	var day_sun := Color("f1ede4")
 	var night_sun := Color("6f86b8")
 	sun.light_color = day_sun.lerp(night_sun, night)
-	sun.light_energy = lerpf(1.1, 0.38, night) * k_light
+	sun.light_energy = lerpf(1.1, 0.55, night) * k_light   # ночь тёмная, но играбельная
 	sun.rotation_degrees.x = lerpf(-52.0, -70.0, night)
-	e.ambient_light_energy = lerpf(0.9, 0.5, night) * k_light
+	e.ambient_light_energy = lerpf(0.9, 0.68, night) * k_light
 	e.ambient_light_color = Color("1b2a44").lerp(Color("5a6c8c"), 0.5)
 	sky_mat.sky_top_color = Color("8e9aa6").lerp(Color("0c1424"), night)
 	sky_mat.sky_horizon_color = Color("b9bec2").lerp(Color("1b2a44"), night)

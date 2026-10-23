@@ -35,6 +35,7 @@ func setup(w: World, camera: RtsCamera) -> void:
 	tm.vertex_color_use_as_albedo = true
 	tm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	tm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	tm.render_priority = Look.AFTER_FOG
 	tracer_mi.material_override = tm
 	tracer_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	tracer_mi.extra_cull_margin = 16384.0

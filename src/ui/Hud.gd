@@ -44,6 +44,7 @@ func setup(g: Node) -> void:
 	fps.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	fps.add_theme_font_size_override("font_size", 11)
 	fps.add_theme_color_override("font_color", UiTheme.DIM)
+	fps.visible = OS.is_debug_build()   # счётчик — только для разработки
 	root.add_child(fps)
 	var rep := radio.report_node()
 	rep.set_anchors_preset(Control.PRESET_CENTER_TOP)

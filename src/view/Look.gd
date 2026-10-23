@@ -45,8 +45,15 @@ static func palette_double() -> ShaderMaterial:
 	return _shader_mat("palette_double", "res://src/view/shaders/palette_double.gdshader")
 
 
+## Прозрачное рисуется после прохода тумана (FogRenderer, priority 5): пост-эффект берёт кадр до прозрачных
+## объектов и затёр бы их — призраки стройки, трассеры, дым, кольца пропадали.
+const AFTER_FOG := 6
+
+
 static func palette_ghost() -> ShaderMaterial:
-	return _shader_mat("ghost", "res://src/view/shaders/palette_ghost.gdshader")
+	var m := _shader_mat("ghost", "res://src/view/shaders/palette_ghost.gdshader")
+	m.render_priority = AFTER_FOG
+	return m
 
 
 static func city() -> ShaderMaterial:
@@ -230,6 +237,7 @@ static func unlit(color: Color, no_depth := false) -> StandardMaterial3D:
 	m.albedo_color = color
 	if color.a < 1.0:
 		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.render_priority = AFTER_FOG
 	m.no_depth_test = no_depth
 	m.cull_mode = BaseMaterial3D.CULL_DISABLED
 	return m

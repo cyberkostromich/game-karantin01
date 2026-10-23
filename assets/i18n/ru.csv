@@ -263,3 +263,7 @@ HUD_STAT_DMG;урон
 HUD_STAT_RANGE;дальность, м
 HUD_STAT_SPEED;скорость
 HUD_STAT_VISION;обзор, м
+BUILD_TAB_CORE;База
+BUILD_TAB_PROD;Добыча
+BUILD_TAB_MED;Службы
+BUILD_TAB_DEF;Оборона

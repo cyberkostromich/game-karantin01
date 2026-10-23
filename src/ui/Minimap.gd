@@ -28,7 +28,7 @@ func setup(g: Node) -> void:
 	tex_rect.custom_minimum_size = size_px
 	tex_rect.stretch_mode = TextureRect.STRETCH_SCALE
 	var sh := Shader.new()
-	sh.code = "shader_type canvas_item;\nuniform sampler2D fog_tex : filter_linear;\nvoid fragment() {\n\tvec4 c = texture(TEXTURE, UV);\n\tfloat v = texture(fog_tex, UV).r;\n\tCOLOR = vec4(c.rgb * mix(0.4, 1.0, smoothstep(0.0, 0.45, v)) * mix(0.6, 1.0, smoothstep(0.5, 0.95, v)), 1.0);\n}\n"
+	sh.code = "shader_type canvas_item;\nuniform sampler2D fog_tex : filter_linear;\nvoid fragment() {\n\tvec4 c = texture(TEXTURE, UV);\n\tfloat v = texture(fog_tex, UV).r;\n\tCOLOR = vec4(c.rgb * mix(0.62, 1.0, smoothstep(0.0, 0.45, v)) * mix(0.75, 1.0, smoothstep(0.5, 0.95, v)), 1.0);\n}\n"
 	fog_mat.shader = sh
 	tex_rect.material = fog_mat
 	add_child(tex_rect)

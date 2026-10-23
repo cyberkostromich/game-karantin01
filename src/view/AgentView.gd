@@ -17,6 +17,7 @@ var status: Sprite3D
 var selected: bool = false
 var meshes: Array[GeometryInstance3D] = []
 var human: HumanAnim
+var load_node: MeshInstance3D   # ноша рабочего (дерево/железо) — видно, что лесопилка реально добывает
 var team_col := Color.WHITE
 var _last_tint: float = -1.0
 var recoil: float = 0.0
@@ -47,6 +48,8 @@ func build(a: Agent, model_path: String, team: Color) -> void:
 	if a.is_unit():
 		_make_team_disc(a.radius, team)
 	_make_hp(a)
+	if a.kind == Agent.Kind.CIVILIAN:
+		_make_load()
 	status = Sprite3D.new()
 	status.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	status.pixel_size = 0.012
@@ -80,6 +83,35 @@ func _make_ring(r: float) -> void:
 	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	ring.visible = false
 	add_child(ring)
+
+
+func _make_load() -> void:
+	load_node = MeshInstance3D.new()
+	load_node.position = Vector3(0, 1.1, 0.32)
+	load_node.visible = false
+	model.add_child(load_node)
+
+
+func _update_load(a: Agent) -> void:
+	var res := "" if a.carry.is_empty() else String(a.carry.keys()[0])
+	if res == String(load_node.get_meta("res", "")):
+		return
+	load_node.set_meta("res", res)
+	load_node.visible = res != ""
+	if res == "wood":
+		var c := CylinderMesh.new()
+		c.top_radius = 0.09
+		c.bottom_radius = 0.09
+		c.height = 0.9
+		load_node.mesh = c
+		load_node.rotation = Vector3(0, 0, PI * 0.5)
+		load_node.material_override = Look.unlit(Color("7a5536"))
+	elif res != "":
+		var bx := BoxMesh.new()
+		bx.size = Vector3(0.35, 0.22, 0.3)
+		load_node.mesh = bx
+		load_node.rotation = Vector3.ZERO
+		load_node.material_override = Look.unlit(Color("8d969e"))
 
 
 ## Диск цвета игрока под своими юнитами (как в CoH/AoE IV): в коопе на 4 игроков видно, чьи бойцы,
@@ -149,6 +181,8 @@ func animate(a: Agent, p: Vector2, delta: float, altitude: float) -> void:
 	else:
 		rotation.y = lerp_angle(rotation.y, a.facing, minf(1.0, delta * 12.0))
 		human.update(a, delta)
+		if load_node != null:
+			_update_load(a)
 	var frac := a.hp / maxf(1.0, a.max_hp)
 	var show_hp := selected or frac < 0.999
 	hp_bg.visible = show_hp

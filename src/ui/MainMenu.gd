@@ -130,22 +130,40 @@ func _doctrine_card(d: String) -> Control:
 	var b := Button.new()
 	b.toggle_mode = true
 	b.focus_mode = Control.FOCUS_NONE
-	b.custom_minimum_size = Vector2(270, 190)
+	b.custom_minimum_size = Vector2(290, 250)
 	b.add_theme_stylebox_override("pressed", UiTheme.skin("btn_active", 12))
 	b.add_theme_stylebox_override("normal", UiTheme.skin("btn", 12))
 	b.add_theme_stylebox_override("hover", UiTheme.skin("btn_hover", 12))
-	b.add_theme_font_override("font", UiTheme.font_r)
 	var dd := Config.d("doctrines." + d)
-	var passive: PackedStringArray = []
-	for k: String in dd["passive"]:
-		passive.append("• " + k)
-	b.text = "%s\n\n%s\n\n%s: %s" % [String(dd["name_ru"]), "\n".join(passive), String(dd["ability"]["name_ru"]), String(dd["ability"]["effect"])]
-	b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-	b.add_theme_font_size_override("font_size", 13)
-	b.add_theme_color_override("font_pressed_color", UiTheme.TEXT)
-	b.icon = Look.icon("doc_" + d, 64)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 6)
+	v.set_anchors_preset(Control.PRESET_FULL_RECT)
+	v.offset_left = 14
+	v.offset_top = 12
+	v.offset_right = -12
+	v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.add_child(v)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 10)
+	head.add_child(UiTheme.icon_rect("doc_" + d, 40))
+	var nv := VBoxContainer.new()
+	nv.add_theme_constant_override("separation", -2)
+	nv.add_child(UiTheme.caps(String(dd["name_ru"]), 19, UiTheme.TEXT))
+	nv.add_child(UiTheme.label(String(dd.get("tagline_ru", "")), 13, UiTheme.DIM))
+	head.add_child(nv)
+	v.add_child(head)
+	for line: String in dd.get("passive_ru", []):
+		var l := UiTheme.label("— " + line, 14, UiTheme.TEXT)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(260, 0)
+		v.add_child(l)
+	v.add_child(UiTheme.caps(String(dd["ability"]["name_ru"]), 13, UiTheme.ACCENT))
+	var ab := UiTheme.label(String(dd.get("ability_ru", dd["ability"]["effect"])), 13, UiTheme.DIM)
+	ab.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	ab.custom_minimum_size = Vector2(260, 0)
+	v.add_child(ab)
+	for c in v.find_children("*", "Control", true, false):
+		(c as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.pressed.connect(func() -> void:
 		if picked.has(d):
 			picked.erase(d)

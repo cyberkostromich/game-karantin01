@@ -71,12 +71,12 @@
       "scout": 1
     },
     "map_civilians": {
-      "base": 60,
-      "per_player": 25
+      "base": 110,
+      "per_player": 35
     },
     "map_ambient_zombies": {
-      "base": 260,
-      "per_player": 70
+      "base": 480,
+      "per_player": 110
     },
     "storage_cap_hq": 500
   },
@@ -281,7 +281,7 @@
     "fog_cell_m": 4,
     "fog_update_ticks": 4,
     "light_cell_m": 4,
-    "ambient_min_dist_from_hq_m": 260,
+    "ambient_min_dist_from_hq_m": 170,
     "scan_interval_s": 0.25,
     "unit_fire_height_m": 1.4,
     "heli_altitude_m": 25,
@@ -330,6 +330,6 @@
     "vehicle_scale": 1.15,
     "zombie_scale": 1.4,
     "camera_default_zoom": 0.22,
-    "fog_unexplored_brightness": 0.22
+    "fog_unexplored_brightness": 0.45
   }
 }

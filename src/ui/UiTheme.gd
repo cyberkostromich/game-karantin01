@@ -214,20 +214,28 @@ static func button(text: String, cb: Callable, tooltip: String = "") -> Button:
 	return b
 
 
-## Квадратная кнопка-пластина с глифом и горячей клавишей в углу (командная карта как в RTS).
-static func icon_button(icon_id: String, hotkey: String, tooltip: String, cb: Callable, px: int = 60) -> Button:
+## Кнопка-пластина с глифом, горячей клавишей в углу и (опционально) короткой подписью внизу.
+static func icon_button(icon_id: String, hotkey: String, tooltip: String, cb: Callable, px: int = 60, caption := "") -> Button:
 	var b := Button.new()
 	b.custom_minimum_size = Vector2(px, px)
 	b.focus_mode = Control.FOCUS_NONE
 	b.tooltip_text = tooltip
 	b.pressed.connect(cb)
 	if icon_id != "":
-		var ic := icon_rect(icon_id, int(px * 0.62))
-		ic.set_anchors_preset(Control.PRESET_CENTER)
-		ic.position = -ic.custom_minimum_size * 0.5
+		var isz := int(px * (0.46 if caption != "" else 0.62))
+		var ic := icon_rect(icon_id, isz)
+		ic.position = Vector2((px - isz) * 0.5, 6 if caption != "" else (px - isz) * 0.5)
 		ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		ic.name = "Icon"
 		b.add_child(ic)
+	if caption != "":
+		var c := caps(caption, 10, TEXT)
+		c.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		c.clip_text = true
+		c.position = Vector2(2, px - 19)
+		c.size = Vector2(px - 4, 16)
+		c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(c)
 	if hotkey != "":
 		var k := caps(hotkey, 11, ACCENT)
 		k.position = Vector2(5, 2)

@@ -9,10 +9,16 @@ const BUILD_GROUPS := [
 	["med", ["medpost", "quarantine", "checkpoint", "barracks", "motorpool", "helipad", "workshop"]],
 	["def", ["wall_wood", "wall_concrete", "gate", "tower", "floodlight", "siren", "sandbags"]],
 ]
-const BUILD_KEYS := "QWERTYUIASDFGHJKZXCVBNM"
+const BUILD_KEYS := "QWERTASDFG"
+const TAB_NAMES := ["BUILD_TAB_CORE", "BUILD_TAB_PROD", "BUILD_TAB_MED", "BUILD_TAB_DEF"]
+const PX := 58
+const COLS := 5   # 2 ряда по 5 влезают в консоль (CONSOLE_H): 4+4 способности+высадка+доктрины
 
 var game: Node
 var grid := GridContainer.new()
+var note: Label                   # почему кнопка серая (без наведения на подсказку): «нет свободных рекрутов»
+var tabs := HBoxContainer.new()   # вкладки меню стройки (как в AoE): база / добыча / службы / оборона
+var build_tab: int = 0
 var title: Label
 var build_mode: bool = false
 var ability_ids: Array[String] = []
@@ -24,17 +30,24 @@ func setup(g: Node) -> void:
 	game = g
 	set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
 	add_theme_stylebox_override("panel", StyleBoxEmpty.new())
-	custom_minimum_size = Vector2(4 * 62 + 3 * 6, 204)
+	custom_minimum_size = Vector2(COLS * PX + (COLS - 1) * 6, 204)
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 6)
 	add_child(v)
 	var tp := UiTheme.tape("", 12)
 	title = tp.get_child(0)
 	v.add_child(tp)
-	grid.columns = 4
+	tabs.add_theme_constant_override("separation", 4)
+	tabs.visible = false
+	v.add_child(tabs)
+	grid.columns = COLS
 	grid.add_theme_constant_override("h_separation", 6)
 	grid.add_theme_constant_override("v_separation", 6)
 	v.add_child(grid)
+	note = UiTheme.label("", 13, UiTheme.WARN)
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	note.custom_minimum_size = Vector2(COLS * PX + (COLS - 1) * 6, 0)
+	v.add_child(note)
 	game.selection.changed.connect(func() -> void:
 		build_mode = false
 		_sig = "")
@@ -56,12 +69,13 @@ func _process(delta: float) -> void:
 		_rebuild()
 	else:
 		_refresh()
+	note.text = note_text
 
 
 func _signature() -> String:
 	var s: Selection = game.selection
 	var w: World = game.world
-	var parts: PackedStringArray = [str(build_mode), str(s.units.size()), str(s.civs.size()), str(s.building), str(s.poi)]
+	var parts: PackedStringArray = [str(build_mode), str(build_tab), str(s.units.size()), str(s.civs.size()), str(s.building), str(s.poi)]
 	if s.building >= 0:
 		var b := w.buildings.get_building(s.building)
 		if b != null:
@@ -69,8 +83,13 @@ func _signature() -> String:
 	return "|".join(parts)
 
 
+var _n: int = 0   # кнопок в текущей карте (старые ещё в дереве до конца кадра)
+
+
 func _clear() -> void:
+	_n = 0
 	for c in grid.get_children():
+		grid.remove_child(c)
 		c.queue_free()
 	ability_ids.clear()
 
@@ -78,7 +97,7 @@ func _clear() -> void:
 ## Кнопка-пластина: глиф + горячая клавиша; название и цена — в подсказке (как в RTS: сетка без подписей).
 ## text показывается мелко внизу только если короткий (±1 работник) — иначе одинаковые глифы не различить.
 func _btn(text: String, icon_id: String, key: String, cb: Callable, tip: String, err: String = "") -> Button:
-	var px := 54 if build_mode else 62
+	var px := PX
 	var lines: PackedStringArray = []
 	if text.length() > 3 and not tip.begins_with(text):
 		lines.append(text.to_upper())
@@ -88,14 +107,9 @@ func _btn(text: String, icon_id: String, key: String, cb: Callable, tip: String,
 		lines.append("[%s]" % key)
 	if err != "":
 		lines.append(tr(err))
-	var b := UiTheme.icon_button(icon_id, key, "\n".join(lines), cb, px)
+	var b := UiTheme.icon_button(icon_id, key, "\n".join(lines), cb, px, _short(text))
+	_n += 1
 	b.disabled = err != ""
-	if text.length() <= 3 and text != "":
-		var t := UiTheme.caps(text, 13, UiTheme.TEXT)
-		t.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-		t.position = Vector2(px - 18, px - 20)
-		t.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		b.add_child(t)
 	var cd := UiTheme.digits("", 22, Color.WHITE)
 	cd.name = "CD"
 	cd.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -108,7 +122,8 @@ func _btn(text: String, icon_id: String, key: String, cb: Callable, tip: String,
 
 func _rebuild() -> void:
 	_clear()
-	game.hud.call_deferred("_layout_bottom")
+	_tabs()
+	call_deferred("_fit")
 	var s: Selection = game.selection
 	var w: World = game.world
 	if build_mode:
@@ -132,10 +147,45 @@ func _rebuild() -> void:
 		_doctrine_buttons()
 
 
+## Не больше двух рядов — иначе третий вылезает за консоль: при избытке кнопок сетка шире.
+func _fit() -> void:
+	grid.columns = maxi(COLS, ceili(_n / 2.0))
+	custom_minimum_size.x = grid.columns * PX + (grid.columns - 1) * 6
+	game.hud._layout_bottom()
+
+
+## Подпись на кнопке: первое слово, без «Деревянная/Бетонная» — их различает глиф и вкладка.
+func _short(text: String) -> String:
+	var t := text.strip_edges()
+	if t.length() <= 9:
+		return t
+	var w := t.get_slice(" ", 0)
+	return w if w.length() <= 9 else w.substr(0, 8) + "."
+
+
+func _tabs() -> void:
+	for c in tabs.get_children():
+		c.queue_free()
+	tabs.visible = build_mode
+	if not build_mode:
+		return
+	for i in TAB_NAMES.size():
+		var b := UiTheme.button(tr(TAB_NAMES[i]).to_upper(), func() -> void:
+			build_tab = i
+			_sig = "")
+		b.add_theme_font_size_override("font_size", 12)
+		b.custom_minimum_size = Vector2(0, 26)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.tooltip_text = "[%d]" % (i + 1)
+		if i == build_tab:
+			b.add_theme_stylebox_override("normal", UiTheme.skin("btn_active", 4))
+		tabs.add_child(b)
+
+
 func _build_menu() -> void:
 	var w: World = game.world
 	var ki := 0
-	for grp: Array in BUILD_GROUPS:
+	for grp: Array in [BUILD_GROUPS[build_tab]]:
 		for t: String in grp[1]:
 			var d := Config.d("buildings." + t)
 			var err := ""
@@ -148,13 +198,13 @@ func _build_menu() -> void:
 			var b := _btn(String(d["name_ru"]).get_slice(" ", 0), String(d["icon"]).get_file().get_basename(), key,
 				func() -> void: game.begin_build(t), _cost_tip(String(d["name_ru"]), d.get("cost", {}), d), err)
 			b.set_meta("build", t)
-	grid.columns = 6
-	custom_minimum_size.x = 6 * 54 + 5 * 6
+	grid.columns = COLS
+	custom_minimum_size.x = COLS * PX + (COLS - 1) * 6
 
 
 func _units() -> void:
-	grid.columns = 4
-	custom_minimum_size.x = 4 * 62 + 3 * 6
+	grid.columns = COLS
+	custom_minimum_size.x = COLS * PX + (COLS - 1) * 6
 	var sel: SelectionController = game.select_ctl
 	_btn(tr("CMD_AMOVE"), "st_wave", "A", func() -> void: sel.set_mode(SelectionController.Mode.AMOVE), tr("CMD_AMOVE_TIP"))
 	_btn(tr("CMD_STOP"), "st_day", "S", func() -> void: game.send({"t": "stop", "units": game.selection.units}), "")
@@ -201,8 +251,8 @@ func _doctrine_buttons() -> void:
 
 
 func _building(b: Building) -> void:
-	grid.columns = 4
-	custom_minimum_size.x = 4 * 62 + 3 * 6
+	grid.columns = COLS
+	custom_minimum_size.x = COLS * PX + (COLS - 1) * 6
 	var w: World = game.world
 	var d := b.data()
 	if not b.complete():
@@ -265,6 +315,7 @@ func _cost_tip(name: String, cost: Dictionary, d: Dictionary) -> String:
 ## Кулдауны и доступность без пересборки кнопок.
 func _refresh() -> void:
 	var w: World = game.world
+	note_text = ""
 	for c in grid.get_children():
 		var b := c as Button
 		if b == null:
@@ -287,15 +338,28 @@ func _refresh() -> void:
 			if bl != null:
 				var err := w.training.check(bl, String(b.get_meta("train")), game.pid)
 				b.disabled = err != ""
+				if err != "" and note_text == "":
+					note_text = tr(err)
+				var n := 0
+				for q: Dictionary in bl.queue:
+					n += 1 if String(q["unit"]) == String(b.get_meta("train")) else 0
+				cd.text = "%d" % n if n > 0 else ""   # сколько таких в очереди
 		elif b.has_meta("build"):
 			var t := String(b.get_meta("build"))
 			var d := Config.d("buildings." + t)
 			b.disabled = (d.get("requires_tech") != null and not w.tech.has(String(d["requires_tech"]))) or not w.economy.can_afford(d.get("cost", {}))
 
 
+var note_text: String = ""
+
+
 func build_hotkey(k: int) -> bool:
 	if not build_mode:
 		return false
+	if k >= KEY_1 and k <= KEY_4:   # 1–4 — вкладки меню стройки
+		build_tab = k - KEY_1
+		_sig = ""
+		return true
 	var ch := OS.get_keycode_string(k)
 	var i := BUILD_KEYS.find(ch)
 	if i < 0 or i >= grid.get_child_count():
