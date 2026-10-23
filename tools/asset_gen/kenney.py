@@ -301,11 +301,27 @@ def shell(m, r, color, brow=0.05, tilt=0.35, thick=0.022, lower=None):
     return c, s
 
 
-def helmet(m, r, color="HELMET", gear=True):
+def helmet(m, r, color="HELMET", gear=True, team=True):
+    """team — обод цвета игрока (палитра TEAM): сверху это главный опознавательный знак, как цвет команды
+    на наплечниках в RTS; у заражённых в касках обод обычный."""
     c, s = shell(m, r, color, brow=0.06, thick=0.045)
-    ell(m.node("head"), c + [0, s[1] * 0.07, -0.005], [s[0] * 0.58, 0.022, s[2] * 0.6], color, tris=56)   # обод каски
+    ell(m.node("head"), c + [0, s[1] * 0.07, -0.005], [s[0] * 0.64, 0.036, s[2] * 0.66], "TEAM" if team else color, tris=56)
     if gear:
         rbox(m.node("head"), (0.08, 0.05, 0.035), c + [0, s[1] * 0.3, s[2] * 0.5 + 0.03], "GUNMETAL")  # крепление ПНВ
+
+
+def glow_eyes(m, r, k=1.0):
+    """Светящиеся глаза заражённых (палитра INFECT_GLOW — emission ночью): враг читается в темноте."""
+    d = r.res["nodes"]["head"]
+    v = np.asarray(d["v"], float).reshape(-1, 3)
+    c, s = r.head()
+    lo, hi = r.box["head"]
+    ey = lo[1] + (hi[1] - lo[1]) * 0.52
+    for sx in (-1, 1):
+        ex = sx * s[0] * 0.2
+        near = v[(np.abs(v[:, 1] - ey) < s[1] * 0.08) & (np.abs(v[:, 0] - ex) < s[0] * 0.1)]
+        ez = (near[:, 2].max() if len(near) else c[2] + s[2] * 0.5) - 0.004
+        ell(m.node("head"), (ex, ey, ez), (0.035 * k, 0.025 * k, 0.012), "INFECT_GLOW", tris=12)
 
 
 def vest(m, r, color="OLIVE_D", pouches="OLIVE_L"):
@@ -423,11 +439,16 @@ def civilians(R, reg):
 
 def zombies(R, reg):
     ZL = 0.55
+    base_reg = reg
+
+    def reg(cat, m, **kw):   # всем заражённым — светящиеся глаза
+        glow_eyes(m, m.meta["rig"], 1.6 if kw.get("unit") in ("brute", "giant") else 1.0)
+        return base_reg(cat, m, **kw)
     m, r = build("zmb_walker", R["zmb_walker"], make_skin("zmb_walker", "zombieA", R["zmb_walker"], {}), ZL)
     reg("zombies", m, unit="walker")
     n = "zmb_walker_armored"
     m, r = build(n, R[n], _uniform(R[n], n, "zombieA", camo(EMR, seed=8), camo(EMR, seed=9), dirt=1.0), ZL)
-    helmet(m, r, "OLIVE_D", gear=False); vest(m, r, pouches=None)
+    helmet(m, r, "OLIVE_D", gear=False, team=False); vest(m, r, pouches=None)
     reg("zombies", m, unit="walker_armored")
     m, r = build("zmb_runner", R["zmb_runner"], make_skin("zmb_runner", "zombieC", R["zmb_runner"], {}), ZL)
     reg("zombies", m, unit="runner")

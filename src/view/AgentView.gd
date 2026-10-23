@@ -42,6 +42,8 @@ func build(a: Agent, model_path: String, team: Color) -> void:
 		m.set_instance_shader_parameter("team_color", team)
 	phase = fmod(float(a.id) * 1.37, TAU)
 	_make_ring(a.radius)
+	if a.is_unit():
+		_make_team_disc(a.radius, team)
 	_make_hp(a)
 	status = Sprite3D.new()
 	status.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -69,11 +71,32 @@ func _make_ring(r: float) -> void:
 	tm.ring_segments = 4
 	ring.mesh = tm
 	ring.scale = Vector3(1, 0.05, 1)
-	ring.position.y = 0.05
-	ring.material_override = Look.unlit(Color(0.35, 1.0, 0.45, 0.9))
+	ring.position.y = 0.09
+	var rm := Look.unlit(Color(0.35, 1.0, 0.45, 0.9))
+	rm.render_priority = 7
+	ring.material_override = rm
 	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	ring.visible = false
 	add_child(ring)
+
+
+## Диск цвета игрока под своими юнитами (как в CoH/AoE IV): в коопе на 4 игроков видно, чьи бойцы,
+## и отряд не теряется на траве. Выделение — отдельное кольцо поверх.
+func _make_team_disc(r: float, team: Color) -> void:
+	var d := MeshInstance3D.new()
+	var cm := CylinderMesh.new()
+	cm.top_radius = r * 1.2 + 0.35
+	cm.bottom_radius = cm.top_radius
+	cm.height = 0.02
+	cm.radial_segments = 20
+	cm.rings = 1
+	d.mesh = cm
+	d.position.y = 0.08   # дороги и поле арены лежат на 0.02–0.06 м — диск чуть выше, но ниже щиколоток
+	var dm := Look.unlit(Color(team.r, team.g, team.b, 0.24))
+	dm.render_priority = 6   # после туманного прохода (priority 5) — иначе пост-эффект тумана затирает прозрачное
+	d.material_override = dm
+	d.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(d)
 
 
 func _make_hp(a: Agent) -> void:

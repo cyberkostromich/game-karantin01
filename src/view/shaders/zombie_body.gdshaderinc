@@ -25,6 +25,7 @@ uniform float sway = 1.0;
 global uniform float qm_night;
 
 varying float v_dead;
+varying float v_h;
 
 mat3 rot_x(float a) { float c = cos(a), s = sin(a); return mat3(vec3(1, 0, 0), vec3(0, c, s), vec3(0, -s, c)); }
 mat3 rot_y(float a) { float c = cos(a), s = sin(a); return mat3(vec3(c, 0, -s), vec3(0, 1, 0), vec3(s, 0, c)); }
@@ -92,6 +93,7 @@ void vertex() {
 		v.y -= max(0.0, die - 0.7) * 1.5;
 	}
 	v_dead = die;
+	v_h = v.y;
 	VERTEX = v;
 	NORMAL = n;
 }
@@ -104,6 +106,9 @@ void fragment() {
 	float idx = cell.y * 16.0 + cell.x;
 	if (idx == 54.0 && v_dead <= 0.0) { emit = c * (0.6 + qm_night * 2.2); }
 #endif
+	c *= mix(0.62, 1.06, smoothstep(0.05, 2.0, v_h));   // ноги в тени, головы светлее — орда читается массой
+	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
+	emit += vec3(0.75, 0.95, 0.6) * rim * (0.1 + qm_night * 0.18) * (1.0 - v_dead);   // мертвенный контур
 	ALBEDO = c * (1.0 - v_dead * 0.4);
 	EMISSION = emit;
 	ROUGHNESS = 0.95;

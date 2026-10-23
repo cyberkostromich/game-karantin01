@@ -14,9 +14,11 @@ instance uniform float build_progress = 1.0;
 global uniform float qm_night;
 
 varying float v_y;
+varying float v_wy;
 
 void vertex() {
 	v_y = VERTEX.y;
+	v_wy = (MODEL_MATRIX * vec4(VERTEX, 1.0)).y;
 }
 
 void fragment() {
@@ -32,6 +34,13 @@ void fragment() {
 	}
 #endif
 	c = mix(c, vec3(0.61, 0.9, 0.39), infect_tint * 0.35);
+#ifdef CHAR
+	// Читаемость персонажей сверху (приём Blizzard/Relic): «нарисованный» свет — ноги темнее, голова и плечи
+	// светлее (фальшивая AO у земли), и тонкий тёплый контур по краю силуэта — юнит отделяется от земли.
+	c *= mix(0.68, 1.08, smoothstep(0.05, 2.3, v_wy));
+	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
+	emit += vec3(1.0, 0.9, 0.75) * rim * (0.2 + qm_night * 0.06);
+#endif
 #ifdef GHOST
 	// стройплощадка: выше достроенной высоты — оранжевая «плёнка»; призрак — зелёный/красный
 	float a = 1.0;

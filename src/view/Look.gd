@@ -31,6 +31,11 @@ static func palette() -> ShaderMaterial:
 	return _shader_mat("palette", "res://src/view/shaders/palette.gdshader")
 
 
+## Палитра снаряжения персонажей (градиент по высоте + контровой свет).
+static func palette_char() -> ShaderMaterial:
+	return _shader_mat("palette_char", "res://src/view/shaders/palette_char.gdshader")
+
+
 static func palette_double() -> ShaderMaterial:
 	return _shader_mat("palette_double", "res://src/view/shaders/palette_double.gdshader")
 
@@ -91,14 +96,15 @@ static func instance(path: String, mat: Material = null) -> Node3D:
 		push_error("Look: нет модели %s" % path)
 		return Node3D.new()
 	var n: Node3D = ps.instantiate()
-	apply_material(n, mat if mat != null else palette())
+	var is_char := path.contains("/units/") or path.contains("/civilians/")
+	apply_material(n, mat if mat != null else (palette_char() if is_char else palette()))
 	return n
 
 
 static func apply_material(n: Node, mat: Material) -> void:
 	if n is MeshInstance3D:
 		var mi := n as MeshInstance3D
-		var tex := skin_tex(mi.mesh.surface_get_material(0)) if mat == palette() and mi.mesh != null else null
+		var tex := skin_tex(mi.mesh.surface_get_material(0)) if (mat == palette() or mat == palette_char()) and mi.mesh != null else null
 		if tex != null:
 			mi.material_override = skin(tex)
 		else:
