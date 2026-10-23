@@ -34,7 +34,7 @@ func test_stream_spawns_far_packs_heading_to_base() -> void:
 	for i in w.zombies.count:
 		if w.zombies.alive[i] == 1:
 			assert_eq(w.zombies.state[i], ZombieSystem.S.HORDE, "сразу идут на базу")
-			if w.zombies.pos[i].length() < Config.f("waves.stream.spawn_distance_m") * 0.6:
+			if w.zombies.home[i].length() < Config.f("waves.stream.spawn_distance_m") * 0.9:   # точка появления
 				near += 1
 	assert_eq(near, 0, "появляются далеко от Штаба")
 
