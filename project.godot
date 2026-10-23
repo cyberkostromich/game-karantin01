@@ -7,10 +7,10 @@ config_version=5
 
 config/name="Карантин: Москва"
 config/description="Кооперативная RTS-выживалка. Лужники, 12 дней до эвакуации."
-config/version="0.2.0"
+config/version="0.3.0"
 run/main_scene="res://src/main/Main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://assets/icons/png/128/st_infected.png"
+config/icon="res://assets/app_icon.png"
 boot_splash/bg_color=Color(0.105882, 0.117647, 0.137255, 1)
 boot_splash/show_image=false
 
