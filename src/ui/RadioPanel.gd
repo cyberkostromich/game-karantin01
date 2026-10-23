@@ -36,11 +36,12 @@ func setup(g: Node) -> void:
 	Events.objective_updated.connect(func(id: String, st: String) -> void:
 		goals[id] = st
 		_goals())
-	Events.wave_announced.connect(func(n: int, dirs: PackedStringArray, _c: Dictionary) -> void:
-		var names: PackedStringArray = []
-		for d in dirs:
-			names.append(tr("DIR_" + d))
-		say(tr("RADIO_DUSK") % [n, ", ".join(names)], UiTheme.DANGER))
+	Events.horde_updated.connect(func(n: int, comp: Dictionary) -> void:
+		var total := 0
+		for t: String in comp:
+			total += int(comp[t])
+		if n > 1:
+			say(tr("RADIO_HORDE_GROWS") % [n, total], UiTheme.DANGER))
 	goals["quota"] = "active"
 	_goals()
 

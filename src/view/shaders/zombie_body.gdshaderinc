@@ -23,6 +23,7 @@ uniform vec3 piv_shin_r = vec3(0.09, 0.52, 0.0);
 uniform float stride = 6.0;
 uniform float sway = 1.0;
 global uniform float qm_night;
+#include "res://src/view/shaders/fog.gdshaderinc"
 
 varying float v_dead;
 varying float v_h;
@@ -109,7 +110,8 @@ void fragment() {
 	c *= mix(0.62, 1.06, smoothstep(0.05, 2.0, v_h));   // ноги в тени, головы светлее — орда читается массой
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
 	emit += vec3(0.75, 0.95, 0.6) * rim * (0.1 + qm_night * 0.18) * (1.0 - v_dead);   // мертвенный контур
-	ALBEDO = c * (1.0 - v_dead * 0.4);
-	EMISSION = emit;
+	vec2 fe = fog_vis((INV_VIEW_MATRIX * vec4(VERTEX, 1.0)).xyz);
+	ALBEDO = fog_color(c * (1.0 - v_dead * 0.4), fe);
+	EMISSION = emit * fog_glow(fe);
 	ROUGHNESS = 0.95;
 }

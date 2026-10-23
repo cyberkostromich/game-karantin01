@@ -68,7 +68,7 @@ func _build_scene() -> void:
 	fx.setup(world, cam)
 	add_child(popups)
 	popups.setup(world)
-	cam.add_child(fog_view)
+	add_child(fog_view)
 	fog_view.setup(world)
 	add_child(build)
 	build.game = self
@@ -137,7 +137,8 @@ func _unhandled_input(ev: InputEvent) -> void:
 	if not (ev is InputEventKey) or not ev.pressed or ev.echo:
 		return
 	var k := ev as InputEventKey
-	if hud.command_card.build_hotkey(k.physical_keycode):
+	# пока ставим здание, R — поворот (BuildController), а не горячая клавиша меню стройки
+	if not build.active() and hud.command_card.build_hotkey(k.physical_keycode):
 		get_viewport().set_input_as_handled()
 		return
 	if k.is_action("menu"):

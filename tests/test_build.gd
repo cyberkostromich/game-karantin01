@@ -51,3 +51,22 @@ func test_repair_and_upgrade() -> void:
 		TestHelpers.civ(w, Vector2(0, 30 + k))
 	TestHelpers.steps(w, 20 * 30)
 	assert_eq(wall.type, "wall_concrete")
+
+
+func test_rotation_cells_and_door() -> void:
+	var w := TestHelpers.world(160)
+	var bs := w.buildings
+	var n := roundi(360.0 / Config.f("rules.build.rotation_step_deg"))
+	var f: Array = Config.a("buildings.house.footprint")
+	assert_eq(bs.rect_for("house", Vector2i(0, 0), n / 4).size, Vector2i(int(f[1]), int(f[0])), "90° меняет стороны")
+	assert_eq(bs.cells_for("house", Vector2i(0, 0), 0).size(), int(f[0]) * int(f[1]), "без поворота — весь прямоугольник")
+	var diag := roundi(45.0 / Config.f("rules.build.rotation_step_deg"))
+	var cs := bs.cells_for("house", Vector2i(0, 0), diag)
+	var r := bs.rect_for("house", Vector2i(0, 0), diag)
+	assert_lt(cs.size(), r.get_area(), "под 45° углы ограничивающего прямоугольника свободны")
+	assert_almost_eq(float(cs.size()), float(f[0]) * float(f[1]), float(f[0]) + float(f[1]), "площадь ≈ площади контура")
+	# дверь поворачивается с фасадом: 0 → юг (+Z), 90° → восток (+X), 180° → север, 270° → запад
+	var dirs := [Vector2(0, 1), Vector2(1, 0), Vector2(0, -1), Vector2(-1, 0)]
+	for q in 4:
+		var b := bs.place("house", Vector2i(40 + q * 20, 40), q * n / 4, 1, true)
+		assert_gt((b.door - b.pos).normalized().dot(dirs[q]), 0.9, "дверь при повороте %d" % q)

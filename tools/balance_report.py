@@ -84,7 +84,7 @@ def cost_str(c):
 
 
 def wave(n, players):
-    W = D["waves"]["formulas"]; m = rules["difficulty_scaling_by_players"][str(players)]
+    W = D["waves"]["formulas"]; m = rules["difficulty_scaling_by_players"][str(players)] * D["waves"]["stream"]["day_mult"]
     out = {}
     out["walker"] = round((W["walker"]["a"] + W["walker"]["b"] * n ** W["walker"]["p"]) * m)
     out["runner"] = round(W["runner"]["b"] * (n - 1) ** W["runner"]["p"] * m) if n >= 2 else 0
@@ -153,17 +153,19 @@ for k, z in zmb.items():
       f"{z['infect_chance']:.0%} | {z['hp'] / (a_dps * mult):.1f} с |")
 w("")
 
-w("## 5. Ночные волны\n")
+cycle = sum(rules["day_cycle"][k] for k in ("dawn_s", "day_s", "dusk_s", "night_s"))
+w("## 5. Поток орды по дням\n")
+w(f"Зомби за игровые сутки ({cycle} с), стаями со случайной стороны; ночью поток ×{D['waves']['stream']['night_mult']} гуще.\n")
 for players in (1, 2, 4):
-    w(f"### {players} игрок(а) · множитель ×{rules['difficulty_scaling_by_players'][str(players)]}\n")
-    w("| Ночь | Ходоки | Бегуны | Крикуны | Громилы | Плевуны | Великан | Σ HP |"); w("|---|---|---|---|---|---|---|---|")
+    w(f"### {players} игрок(а) · множитель ×{rules['difficulty_scaling_by_players'][str(players)]} × поток ×{D['waves']['stream']['day_mult']}\n")
+    w("| День | Ходоки | Бегуны | Крикуны | Громилы | Плевуны | Великан | Σ HP |"); w("|---|---|---|---|---|---|---|---|")
     for n in range(1, rules["day_cycle"]["days_total"] + 1):
         o = wave(n, players)
         w(f"| {n} | {o['walker']} | {o['runner']} | {o['screamer']} | {o['brute']} | {o['spitter']} | {o['giant'] or ''} | {o['hp_total']:,} |".replace(",", " "))
     w("")
-w("**Проверка на здравый смысл (4 игрока, ночь 12):** суммарный HP волны против DPS армии ~30 пехотинцев + 4 техники "
+w("**Проверка на здравый смысл (4 игрока, день 12):** суммарный HP потока за сутки против DPS армии ~30 пехотинцев + 4 техники "
   "(≈ 30×25 + 4×100 ≈ 1 150 DPS) → ~" + f"{wave(12, 4)['hp_total'] / 1150:.0f}" +
-  " с чистого огня, при ночи 150 с и спавне пачками — напряжённо, но проходимо со стенами и AoE.\n")
+  f" с чистого огня из {cycle} с суток — напряжённо, но проходимо со стенами и AoE.\n")
 
 w("## 6. Постройки\n")
 w("| Здание | Цена (дер/жел) | Время | HP | Энергия | Работники | Выход / работник / день | Требует |")

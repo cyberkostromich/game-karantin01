@@ -1,5 +1,5 @@
 extends GutTest
-## M2-7: формулы waves.json, множители игроков, направления.
+## M2-7 / D-15: формулы waves.json, множители игроков, поток орды по дням.
 
 
 func test_formula_values() -> void:
@@ -19,31 +19,32 @@ func test_formula_values() -> void:
 
 func test_player_scaling_and_giant_not_scaled() -> void:
 	var w := TestHelpers.world(120, 4)
-	assert_eq(w.waves.count_for("walker", 1), int(round(32 * 2.6)))
+	assert_eq(w.waves.count_for("walker", 1), int(round(32 * 2.6 * Config.f("waves.stream.day_mult"))))
 	assert_eq(w.waves.count_for("giant", 12), 1)
 
 
-func test_directions_per_night() -> void:
-	var w := TestHelpers.world(120)
-	assert_eq(w.waves.directions_for(1), 1)
-	assert_eq(w.waves.directions_for(5), 2)
-	assert_eq(w.waves.directions_for(9), 3)
-	assert_eq(w.waves.directions_for(12), 4)
-
-
-func test_wave_spawns_at_night() -> void:
-	var w := TestHelpers.world(200)
-	w.clock.phase = 2
-	w.clock.t = 0.0
-	w.on_dusk()
-	assert_false(w.waves.directions.is_empty())
-	w.clock.phase = 3
-	w.clock.t = w.clock.durations[3] * 0.3
+func test_stream_spawns_far_packs_heading_to_base() -> void:
+	var w := TestHelpers.world(800)
+	w.waves.stream_on = true
 	var before := w.zombies.alive_n
-	TestHelpers.steps(w, 5)
-	assert_gt(w.zombies.alive_n, before)
-	var horde := 0
+	TestHelpers.steps(w, 40 * 60)   # минута дня 1
+	var n := w.zombies.alive_n - before
+	assert_gt(n, 0, "поток идёт и днём, без ожидания ночи")
+	var near := 0
 	for i in w.zombies.count:
-		if w.zombies.alive[i] == 1 and w.zombies.state[i] == ZombieSystem.S.HORDE:
-			horde += 1
-	assert_gt(horde, 0)
+		if w.zombies.alive[i] == 1:
+			assert_eq(w.zombies.state[i], ZombieSystem.S.HORDE, "сразу идут на базу")
+			if w.zombies.pos[i].length() < Config.f("waves.stream.spawn_distance_m") * 0.6:
+				near += 1
+	assert_eq(near, 0, "появляются далеко от Штаба")
+
+
+func test_stream_grows_each_day() -> void:
+	var w := TestHelpers.world(200)
+	var prev := 0
+	for d in [1, 4, 8, 12]:
+		var total := 0
+		for t: String in Config.keys_of("waves.formulas"):
+			total += w.waves.count_for(t, d)
+		assert_gt(total, prev, "день %d — больше, чем раньше" % d)
+		prev = total

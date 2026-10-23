@@ -30,10 +30,44 @@ func count_of(type: String) -> int:
 	return all_of(type).size()
 
 
+## Угол постройки: rot — шаги rules.build.rotation_step_deg (вдоль поля Лужников — 45°).
+static func angle_of(rot: int) -> float:
+	return deg_to_rad(rot * Config.f("rules.build.rotation_step_deg"))
+
+
+## Ограничивающий прямоугольник повёрнутого контура (в клетках) от левого верхнего угла origin_cell.
 func rect_for(type: String, origin_cell: Vector2i, rot: int) -> Rect2i:
 	var f: Array = Config.a("buildings.%s.footprint" % type)
-	var sz := Vector2i(int(f[0]), int(f[1])) if rot % 2 == 0 else Vector2i(int(f[1]), int(f[0]))
+	var a := angle_of(rot)
+	var c := absf(cos(a))
+	var s := absf(sin(a))
+	var sz := Vector2i(ceili(float(f[0]) * c + float(f[1]) * s - 0.01), ceili(float(f[0]) * s + float(f[1]) * c - 0.01))
 	return Rect2i(origin_cell, sz)
+
+
+## Левый верхний угол, чтобы постройка встала центром в клетку center_cell.
+func origin_for(type: String, center_cell: Vector2i, rot: int) -> Vector2i:
+	return center_cell - rect_for(type, Vector2i.ZERO, rot).size / 2
+
+
+## Клетки под повёрнутым контуром: центр клетки внутри прямоугольника footprint (локальный X — f[0], Z — f[1];
+## поворот как у модели, rotation.y = угол). Под 0/90/180/270° — ровно весь прямоугольник.
+func cells_for(type: String, origin_cell: Vector2i, rot: int) -> Array[Vector2i]:
+	var f: Array = Config.a("buildings.%s.footprint" % type)
+	var r := rect_for(type, origin_cell, rot)
+	var a := angle_of(rot)
+	var center := Vector2(r.position) + Vector2(r.size) * 0.5
+	var half := Vector2(float(f[0]), float(f[1])) * 0.5 + Vector2(0.01, 0.01)
+	var out: Array[Vector2i] = []
+	for y in range(r.position.y, r.end.y):
+		for x in range(r.position.x, r.end.x):
+			var d := Vector2(x + 0.5, y + 0.5) - center
+			# мировой (x, z) → локальные оси модели: X = (cos a, −sin a), Z = (sin a, cos a)
+			var lx := d.x * cos(a) - d.y * sin(a)
+			var lz := d.x * sin(a) + d.y * cos(a)
+			if absf(lx) <= half.x and absf(lz) <= half.y:
+				out.append(Vector2i(x, y))
+	return out
 
 
 ## Почему нельзя построить ("" — можно). Ключи — для tr() в UI.
@@ -47,8 +81,7 @@ func check_place(type: String, origin_cell: Vector2i, rot: int, check_cost := tr
 	if tech != null and not world.tech.has(String(tech)):
 		return "BUILD_ERR_TECH"
 	var r := rect_for(type, origin_cell, rot)
-	var free := world.grid.rect_free_partial(r) if bool(d.get("drag_build", false)) else world.grid.rect_free(r)
-	if not free:
+	if not world.grid.cells_free(cells_for(type, origin_cell, rot), bool(d.get("drag_build", false))):
 		return "BUILD_ERR_BLOCKED"
 	var c := world.grid.center_of(r.position) + Vector2(r.size - Vector2i.ONE) * world.grid.cell * 0.5
 	if not world.in_build_zone(c):
@@ -56,6 +89,13 @@ func check_place(type: String, origin_cell: Vector2i, rot: int, check_cost := tr
 	if check_cost and not world.economy.can_afford(d.get("cost", {})):
 		return "BUILD_ERR_COST"
 	return ""
+
+
+## Дверь — со стороны фасада модели (локальный +Z, повёрнутый как rotation.y = угол).
+static func door_of(b: Building, g: Grid) -> Vector2:
+	var a := angle_of(b.rot)
+	var depth := float(Config.a("buildings.%s.footprint" % b.type)[1]) * g.cell
+	return g.nearest_walkable(b.pos + Vector2(sin(a), cos(a)) * (depth * 0.5 + 2.0), 30.0)
 
 
 func place(type: String, origin_cell: Vector2i, rot: int, owner: int, instant := false) -> Building:
@@ -71,17 +111,18 @@ func place(type: String, origin_cell: Vector2i, rot: int, owner: int, instant :=
 	b.owner = owner
 	b.rot = rot
 	b.cells = rect_for(type, origin_cell, rot)
+	b.mask = cells_for(type, origin_cell, rot)
 	var g := world.grid
 	b.rect_m = Rect2(g.origin + Vector2(b.cells.position) * g.cell, Vector2(b.cells.size) * g.cell)
 	b.pos = b.rect_m.get_center()
 	b.max_hp = float(d["hp"])
 	b.worker_slots = int(d.get("workers", 0))
-	b.door = g.nearest_walkable(b.pos + Vector2(0, b.rect_m.size.y * 0.5 + 2.0), 30.0)
+	b.door = door_of(b, g)
 	b.rally = b.door
 	list.append(b)
 	by_id[b.id] = b
 	# стройплощадка занимает клетки сразу, но блокирует проход только готовая постройка
-	g.set_rect(b.cells, b.id, Grid.BLOCK_NONE)
+	g.set_cells(b.mask, b.id, Grid.BLOCK_NONE)
 	if instant:
 		b.hp = b.max_hp
 		_finish(b)
@@ -103,7 +144,7 @@ func _block_kind(type: String) -> int:
 func _finish(b: Building) -> void:
 	b.state = Building.State.COMPLETE
 	b.progress = 1.0
-	world.grid.set_rect(b.cells, b.id, _block_kind(b.type))
+	world.grid.set_cells(b.mask, b.id, _block_kind(b.type))
 	world.paths.update_rect(b.cells.grow(1))
 	_release_builders(b)
 	if b.type == "hq":
@@ -123,7 +164,7 @@ func destroy(b: Building, by_enemy := true) -> void:
 	if not b.alive:
 		return
 	b.alive = false
-	world.grid.clear_rect(b.cells, b.id)
+	world.grid.clear_cells(b.mask, b.id)
 	world.paths.update_rect(b.cells.grow(1))
 	_release_builders(b)
 	for cid in b.workers:

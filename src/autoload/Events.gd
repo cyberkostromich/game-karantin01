@@ -6,8 +6,7 @@ extends Node
 signal phase_changed(day: int, phase: String)
 signal day_started(day: int)
 signal dawn_report(report: Dictionary)
-signal wave_announced(night: int, directions: PackedStringArray, composition: Dictionary)
-signal wave_started(night: int)
+signal horde_updated(day: int, composition: Dictionary)
 signal scenario_event(day: int, kind: String, text: String, pos: Vector2)
 signal objective_updated(id: String, state: String)
 

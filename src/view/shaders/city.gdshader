@@ -5,6 +5,7 @@ render_mode cull_disabled, diffuse_lambert, specular_disabled;
 
 uniform sampler2D palette : source_color, filter_nearest;
 global uniform float qm_night;
+#include "res://src/view/shaders/fog.gdshaderinc"
 
 varying vec3 w_pos;
 varying vec3 w_nrm;
@@ -34,7 +35,8 @@ void fragment() {
 			if (h > 0.975) { emit = vec3(1.0, 0.82, 0.5) * qm_night * 1.4; }
 		}
 	}
-	ALBEDO = c;
-	EMISSION = emit;
+	vec2 fe = fog_vis(w_pos);
+	ALBEDO = fog_color(c, fe);
+	EMISSION = emit * fog_glow(fe);
 	ROUGHNESS = 0.95;
 }

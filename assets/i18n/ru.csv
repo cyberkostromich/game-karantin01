@@ -32,11 +32,7 @@ PHASE_DAWN;рассвет
 PHASE_DAY;день
 PHASE_DUSK;сумерки
 PHASE_NIGHT;ночь
-HUD_WAVE_FROM;Волна:
-DIR_N;с севера
-DIR_S;с юга
-DIR_E;с востока
-DIR_W;с запада
+HUD_HORDE_DAY;Орда: ~%d за сутки
 RES_FOOD;Еда
 RES_WOOD;Дерево
 RES_IRON;Железо
@@ -101,7 +97,7 @@ CMD_COMMAND;Командование
 CMD_UNITS;Приказы
 CMD_BUILD;Стройка
 CMD_BUILD_MENU;Стройка (Esc — назад)
-CMD_BUILD_TIP;Постройки в радиусе базы. ЛКМ — поставить, R — повернуть, Shift — ещё, протяжка — стены.
+CMD_BUILD_TIP;Постройки в радиусе базы. ЛКМ — поставить, R / Shift+R — повернуть на 15°, Shift — ещё, протяжка — стены.
 CMD_TECH;Наука
 CMD_TECH_TIP;Дерево технологий (нужна Мастерская с работниками)
 CMD_IDLE_CIVS;Свободные
@@ -175,7 +171,6 @@ ALERT_FOUND;Найдены выжившие
 ALERT_RESCUED;Мирный на базе
 ALERT_POWER;Дефицит энергии — здания отключены
 ALERT_RESEARCH;Исследовано: %s
-ALERT_WAVE;Орда ночи %d пошла!
 ALERT_TRAINED;Готов: %s
 ALERT_BUILT;Построено: %s
 ALERT_NEST;Гнездо зачищено!
@@ -187,7 +182,7 @@ ALERT_NO_QUARANTINE;Заражённого некуда изолировать �
 ALERT_REPAIRED_SUBSTATION;Подстанция восстановлена: +20 энергии
 ALERT_REPAIRED_RADIO_TOWER;Радиовышка работает: состав волн известен
 ALERT_FORTRESS;Новодевичий монастырь наш: можно строить у стен
-RADIO_DUSK;Сумерки. Ночь %d — орда идёт %s. Включайте прожекторы!
+RADIO_HORDE_GROWS;День %d. Город шевелится — к базе идёт больше мертвецов: ~%d за сутки. Укрепляйте периметр!
 GOALS_TITLE;Цели
 GOAL_QUOTA;Собрать на арене ≥ %d человек к рассвету после ночи %d (сейчас %d)
 GOAL_SUBSTATION;Восстановить подстанцию (+20 энергии)

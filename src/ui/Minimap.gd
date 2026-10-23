@@ -88,7 +88,6 @@ func _draw_overlay() -> void:
 			var c := to_map(n.pos)
 			canvas.draw_colored_polygon(PackedVector2Array([c + Vector2(0, -5), c + Vector2(5, 0), c + Vector2(0, 5), c + Vector2(-5, 0)]), UiTheme.DANGER)
 	_grid()
-	_wave_arrows(w)
 	for p in pings:
 		var r := 4.0 + (4.0 - float(p["t"])) * 3.0
 		canvas.draw_arc(to_map(p["p"]), r, 0, TAU, 16, p["c"], 1.5)
@@ -107,19 +106,6 @@ func _grid() -> void:
 	canvas.draw_string(f, Vector2(size_px.x * 0.5 - 4, size_px.y - 4), tr("COMPASS_S"), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, c)
 	canvas.draw_string(f, Vector2(4, size_px.y * 0.5 + 4), tr("COMPASS_W"), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, c)
 	canvas.draw_string(f, Vector2(size_px.x - 12, size_px.y * 0.5 + 4), tr("COMPASS_E"), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, c)
-
-
-func _wave_arrows(w: World) -> void:
-	if w.clock.phase < 2 or w.waves.directions.is_empty():
-		return
-	var hq := to_map(w.map.hq_pos)
-	for d in w.waves.directions:
-		var v: Vector2 = WaveDirector.DIR_VEC[d]
-		var tip := hq + v * 40.0
-		var tail := hq + v * 70.0
-		canvas.draw_line(tail, tip, UiTheme.DANGER, 3.0)
-		var perp := Vector2(-v.y, v.x) * 6.0
-		canvas.draw_colored_polygon(PackedVector2Array([tip, tip + v * 9.0 + perp, tip + v * 9.0 - perp]), UiTheme.DANGER)
 
 
 func _camera_rect() -> void:

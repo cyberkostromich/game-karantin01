@@ -45,8 +45,7 @@ static func palette_double() -> ShaderMaterial:
 	return _shader_mat("palette_double", "res://src/view/shaders/palette_double.gdshader")
 
 
-## Прозрачное рисуется после прохода тумана (FogRenderer, priority 5): пост-эффект берёт кадр до прозрачных
-## объектов и затёр бы их — призраки стройки, трассеры, дым, кольца пропадали.
+## Прозрачное — поверх непрозрачного (призраки стройки, трассеры, дым, кольца выделения).
 const AFTER_FOG := 6
 
 

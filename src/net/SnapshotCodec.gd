@@ -217,7 +217,7 @@ func encode_slow(w: World) -> PackedByteArray:
 	for i in w.map.node_alive.size():
 		if w.map.node_alive[i] == 0:
 			dead.append(i)
-	return pack({"b": blds, "p": pois, "tech": w.tech.done, "wd": w.waves.directions, "wc": w.waves.composition,
+	return pack({"b": blds, "p": pois, "tech": w.tech.done, "wc": w.waves.composition,
 		"sm": ab.smokes, "fi": ab.fires, "lu": ab.lures, "rv": ab.reveals, "dead": dead, "fort": w.fortress_captured,
 		"score": w.score, "out": w.outbreaks})
 
@@ -231,7 +231,7 @@ func apply_slow(w: World, d: Dictionary) -> void:
 		_building(w, row)
 	for b in w.buildings.list.duplicate():
 		if not seen.has(b.id):
-			w.grid.clear_rect(b.cells, b.id)
+			w.grid.clear_cells(b.mask, b.id)
 			w.buildings.list.erase(b)
 			w.buildings.by_id.erase(b.id)
 	var pois: Array = d["p"]
@@ -244,7 +244,6 @@ func apply_slow(w: World, d: Dictionary) -> void:
 		p.progress = r[3]
 		p.hp = r[4]
 	w.tech.done = d["tech"]
-	w.waves.directions = d["wd"]
 	w.waves.composition = d["wc"]
 	var ab := w.abilities
 	ab.smokes.assign(d["sm"])
@@ -272,10 +271,11 @@ func _building(w: World, row: Array) -> void:
 		b.type = type
 		b.rot = int(row[2])
 		b.cells = w.buildings.rect_for(type, Vector2i(int(row[3]), int(row[4])), b.rot)
+		b.mask = w.buildings.cells_for(type, b.cells.position, b.rot)
 		var g := w.grid
 		b.rect_m = Rect2(g.origin + Vector2(b.cells.position) * g.cell, Vector2(b.cells.size) * g.cell)
 		b.pos = b.rect_m.get_center()
-		b.door = g.nearest_walkable(b.pos + Vector2(0, b.rect_m.size.y * 0.5 + 2.0), 30.0)
+		b.door = BuildSystem.door_of(b, g)
 		b.worker_slots = int(b.data().get("workers", 0))
 		w.buildings.list.append(b)
 		w.buildings.by_id[id] = b
@@ -288,7 +288,7 @@ func _building(w: World, row: Array) -> void:
 	var st := int(row[8])
 	if st != b.state or not b.has_meta("placed"):
 		b.set_meta("placed", true)
-		w.grid.set_rect(b.cells, b.id, w.buildings._block_kind(type) if st == Building.State.COMPLETE else Grid.BLOCK_NONE)
+		w.grid.set_cells(b.mask, b.id, w.buildings._block_kind(type) if st == Building.State.COMPLETE else Grid.BLOCK_NONE)
 	b.state = st
 	b.progress = row[9]
 	var fl := int(row[10])

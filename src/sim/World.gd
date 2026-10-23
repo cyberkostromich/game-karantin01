@@ -86,9 +86,10 @@ func _start_state(empty: bool) -> void:
 	for r: String in Economy.RES:
 		economy.res[r] = Config.f("rules.start.resources.%s.base" % r) + Config.f("rules.start.resources.%s.per_player" % r) * n
 	economy.reset_stats()
-	var hq_cell := grid.cell_of(map.hq_pos) - Vector2i(4, 4)
-	buildings.place("hq", hq_cell, 0, 0, true)
+	var hq_rot := int(Config.f("rules.start.hq_rotation_steps"))
+	buildings.place("hq", buildings.origin_for("hq", grid.cell_of(map.hq_pos), hq_rot), hq_rot, 0, true)
 	if empty:
+		waves.stream_on = false   # пустой мир (тесты, песочница): без потока орды
 		return
 	var hq := buildings.hq
 	for p in players:
@@ -195,7 +196,6 @@ func on_day_start() -> void:
 
 
 func on_dusk() -> void:
-	waves.on_dusk(clock.day)
 	_update_lights()
 
 

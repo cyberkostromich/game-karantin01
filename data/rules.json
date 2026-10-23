@@ -42,12 +42,12 @@
     "dawn_s": 20,
     "days_total": 12,
     "night_vision_mult": 0.6,
-    "night_ambient_spawn_mult": 3.0,
-    "horde_launch_at_night_fraction": 0.25,
-    "wave_direction_reveal_at": "dusk"
+    "night_ambient_spawn_mult": 3.0
   },
   "start": {
     "_doc": "Стартовые значения = base + per_player * N",
+    "hq_rotation_steps": 3,
+    "_hq_rotation_doc": "Штаб вдоль поля Лужников (поле развёрнуто на 45°): 3 шага × rotation_step_deg",
     "resources": {
       "food": {
         "base": 100,
@@ -225,7 +225,9 @@
     "max_builders_per_site": 4,
     "assign_interval_s": 1.0,
     "auto_assign_radius_m": 260,
-    "demolish_refund_frac": 0.5
+    "demolish_refund_frac": 0.5,
+    "rotation_step_deg": 15,
+    "_rotation_doc": "R / Shift+R — поворот на шаг; стены протяжкой — только по осям (шаг 90°)"
   },
   "power": {
     "_doc": "Энергосеть (GDD §5): баланс раз в update_interval_s. Аккумулятор: заряд в единицах «баланс×минута».",

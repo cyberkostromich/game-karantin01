@@ -98,54 +98,42 @@ func is_road(p: Vector2) -> bool:
 
 
 ## Постройка занимает прямоугольник клеток. kind — BLOCK_* (мешки с песком не блокируют никого).
-func set_rect(r: Rect2i, building_id: int, kind: int) -> void:
-	for y in range(r.position.y, r.end.y):
-		for x in range(r.position.x, r.end.x):
-			if x < 0 or y < 0 or x >= w or y >= h:
-				continue
-			var i := y * w + x
-			occ[i] = building_id
-			block[i] = kind
+func set_cells(cs: Array[Vector2i], building_id: int, kind: int) -> void:
+	for c in cs:
+		if c.x < 0 or c.y < 0 or c.x >= w or c.y >= h:
+			continue
+		var i := c.y * w + c.x
+		occ[i] = building_id
+		block[i] = kind
 	version += 1
 
 
-func clear_rect(r: Rect2i, building_id: int) -> void:
-	for y in range(r.position.y, r.end.y):
-		for x in range(r.position.x, r.end.x):
-			if x < 0 or y < 0 or x >= w or y >= h:
-				continue
-			var i := y * w + x
-			if occ[i] == building_id:
-				occ[i] = -1
-				block[i] = BLOCK_NONE
+func clear_cells(cs: Array[Vector2i], building_id: int) -> void:
+	for c in cs:
+		if c.x < 0 or c.y < 0 or c.x >= w or c.y >= h:
+			continue
+		var i := c.y * w + c.x
+		if occ[i] == building_id:
+			occ[i] = -1
+			block[i] = BLOCK_NONE
 	version += 1
 
 
-## Прямоугольник свободен для стройки: рельеф проходим и нет наших построек.
-func rect_free(r: Rect2i) -> bool:
-	for y in range(r.position.y, r.end.y):
-		for x in range(r.position.x, r.end.x):
-			if x < 0 or y < 0 or x >= w or y >= h:
-				return false
-			var i := y * w + x
-			if terrain[i] < WALKABLE_MIN or occ[i] >= 0:
-				return false
-	return true
-
-
-## Для стен протяжкой: клетки рельефа-препятствия (трибуны, дома) допускаются — иначе у края не закрыть щель в 1 клетку.
-## Нужна хотя бы одна проходимая клетка и ни одной нашей постройки.
-func rect_free_partial(r: Rect2i) -> bool:
+## Клетки свободны для стройки: рельеф проходим и нет наших построек.
+## partial (стены протяжкой): рельеф-препятствие (трибуны, дома) допускается — иначе у края не закрыть щель
+## в 1 клетку; нужна хотя бы одна проходимая клетка и ни одной нашей постройки.
+func cells_free(cs: Array[Vector2i], partial := false) -> bool:
 	var any := false
-	for y in range(r.position.y, r.end.y):
-		for x in range(r.position.x, r.end.x):
-			if x < 0 or y < 0 or x >= w or y >= h:
-				return false
-			var i := y * w + x
-			if occ[i] >= 0:
-				return false
-			if terrain[i] >= WALKABLE_MIN:
-				any = true
+	for c in cs:
+		if c.x < 0 or c.y < 0 or c.x >= w or c.y >= h:
+			return false
+		var i := c.y * w + c.x
+		if occ[i] >= 0:
+			return false
+		if terrain[i] >= WALKABLE_MIN:
+			any = true
+		elif not partial:
+			return false
 	return any
 
 

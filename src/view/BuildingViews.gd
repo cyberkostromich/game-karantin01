@@ -21,7 +21,7 @@ func _create(b: Building) -> Node3D:
 	model.name = "Model"
 	root.add_child(model)
 	root.position = Vector3(b.pos.x, 0, b.pos.y)
-	root.rotation.y = PI * 0.5 * b.rot
+	root.rotation.y = BuildSystem.angle_of(b.rot)
 	root.set_meta("complete", b.complete())
 	root.set_meta("type", b.type)
 	add_child(root)

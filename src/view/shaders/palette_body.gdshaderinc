@@ -32,6 +32,7 @@ const float infect_tint = 0.0;
 #define build_progress bstate.z
 #endif
 global uniform float qm_night;
+#include "res://src/view/shaders/fog.gdshaderinc"
 
 varying float v_y;
 varying float v_wy;
@@ -72,7 +73,8 @@ void fragment() {
 	}
 	ALPHA = a;
 #endif
-	ALBEDO = c;
-	EMISSION = emit + vec3(1.0, 0.75, 0.3) * highlight * 0.25;
+	vec2 fe = fog_vis((INV_VIEW_MATRIX * vec4(VERTEX, 1.0)).xyz);
+	ALBEDO = fog_color(c, fe);
+	EMISSION = (emit + vec3(1.0, 0.75, 0.3) * highlight * 0.25) * fog_glow(fe);
 	ROUGHNESS = 0.92;
 }

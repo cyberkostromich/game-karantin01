@@ -57,3 +57,15 @@ qm_time={
 "type": "float",
 "value": 0.0
 }
+qm_fog={
+"type": "sampler2D",
+"value": ""
+}
+qm_fog_rect={
+"type": "vec4",
+"value": Vector4(0, 0, 1, 1)
+}
+qm_fog_k={
+"type": "vec4",
+"value": Vector4(0, 0.45, 0.01, 0)
+}

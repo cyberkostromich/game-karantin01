@@ -1,11 +1,12 @@
 class_name BuildController
 extends Node3D
-## Призрак постройки (M2-3): снап к сетке 2 м, R — поворот, зелёный/красный по проверке клеток,
+## Призрак постройки (M2-3): снап к сетке 2 м, R / Shift+R — поворот (шаг из rules, по умолчанию — вдоль поля), зелёный/красный по проверке клеток,
 ## стены и мешки — протяжкой (сначала по главной оси, затем по второй — «Г»). Shift — строить ещё.
 
 var game: Node
 var type: String = ""
 var rot: int = 0
+var _last_rot: int = -1   # последний выбранный поворот: следующие здания встают так же
 var ghosts: Array[Node3D] = []
 var _drag_from := Vector2i(-99999, -99999)
 var _dragging := false
@@ -20,7 +21,9 @@ func active() -> bool:
 func begin(t: String) -> void:
 	cancel()
 	type = t
-	rot = 0
+	if _last_rot < 0:
+		_last_rot = int(Config.f("rules.start.hq_rotation_steps"))
+	rot = 0 if _drag_build() else _last_rot
 	_radius_ring = MeshInstance3D.new()
 	var tm := TorusMesh.new()
 	var r := Config.f("rules.base.build_radius_m")
@@ -52,10 +55,11 @@ func _drag_build() -> bool:
 
 
 func _origin_for(p: Vector2) -> Vector2i:
-	var g: Grid = game.world.grid
-	var f: Array = Config.a("buildings.%s.footprint" % type)
-	var sz := Vector2i(int(f[0]), int(f[1])) if rot % 2 == 0 else Vector2i(int(f[1]), int(f[0]))
-	return g.cell_of(p) - sz / 2
+	return game.world.buildings.origin_for(type, game.world.grid.cell_of(p), rot)
+
+
+func _steps() -> int:
+	return roundi(360.0 / Config.f("rules.build.rotation_step_deg"))
 
 
 func _unhandled_input(ev: InputEvent) -> void:
@@ -85,7 +89,11 @@ func _unhandled_input(ev: InputEvent) -> void:
 	elif ev is InputEventKey and ev.pressed and not ev.echo:
 		var k := ev as InputEventKey
 		if k.physical_keycode == KEY_R:
-			rot = (rot + 1) % 2
+			var n := _steps()
+			var q := n / 4 if _drag_build() else 1   # стены протяжкой — только по осям
+			rot = posmod(rot + (-q if k.shift_pressed else q), n)
+			if not _drag_build():
+				_last_rot = rot
 			_update(game.cam.ground_at(get_viewport().get_mouse_position()))
 			get_viewport().set_input_as_handled()
 		elif k.physical_keycode == KEY_ESCAPE:
@@ -122,7 +130,7 @@ func _rot_for(i: int) -> int:
 		return rot
 	# сегмент вдоль Z — повёрнут на 90°
 	var d := (_cells[mini(i + 1, _cells.size() - 1)] - _cells[maxi(i - 1, 0)])
-	return 1 if absi(d.y) > absi(d.x) else 0
+	return _steps() / 4 if absi(d.y) > absi(d.x) else 0
 
 
 func _update(p: Vector2) -> void:
@@ -142,7 +150,7 @@ func _update(p: Vector2) -> void:
 		var center := w.grid.origin + (Vector2(rect.position) + Vector2(rect.size) * 0.5) * w.grid.cell
 		var g := ghosts[i]
 		g.position = Vector3(center.x, 0.05, center.y)
-		g.rotation.y = PI * 0.5 * r
+		g.rotation.y = BuildSystem.angle_of(r)
 		var err := w.buildings.check_place(type, c, r, false)
 		if err == "" and not _affordable(spent, i + 1):
 			err = "BUILD_ERR_COST"
@@ -173,9 +181,9 @@ func _place(keep: bool) -> void:
 		game.send({"t": "build", "building": type, "cells": [[_cells[0].x, _cells[0].y]], "rot": _rot_for(0)})
 	else:
 		# сегменты одной ориентации — одной командой (контракт tech spec §4.2)
-		var by_rot := {0: [], 1: []}
+		var by_rot := {}
 		for i in _cells.size():
-			(by_rot[_rot_for(i)] as Array).append([_cells[i].x, _cells[i].y])
+			(by_rot.get_or_add(_rot_for(i), []) as Array).append([_cells[i].x, _cells[i].y])
 		for r: int in by_rot:
 			if not (by_rot[r] as Array).is_empty():
 				game.send({"t": "build", "building": type, "cells": by_rot[r], "rot": r})

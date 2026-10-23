@@ -1,33 +1,28 @@
 class_name FogRenderer
-extends MeshInstance3D
-## Туман войны поверх сцены: полноэкранный квад, шейдер восстанавливает XZ из глубины (fog.gdshader).
+extends Node
+## Туман войны: растр FogOfWar → глобальные параметры шейдеров (fog.gdshaderinc). Каждый материал мира
+## сам затемняет себя по мировой позиции — одинаково в Forward+ и в WebGL, без пост-эффекта.
 
 var world: World
 var img: Image
 var tex: ImageTexture
-var mat: ShaderMaterial
 var _ver: int = -1
 
 
 func setup(w: World) -> void:
 	world = w
-	var q := QuadMesh.new()
-	q.size = Vector2(1, 1)
-	q.flip_faces = true
-	mesh = q
-	mat = ShaderMaterial.new()
-	mat.shader = load("res://src/view/shaders/fog.gdshader")
-	mat.render_priority = 5
-	material_override = mat
-	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	extra_cull_margin = 16384.0
 	var f := w.fog
 	img = Image.create_from_data(f.w, f.h, false, Image.FORMAT_L8, f.display)
 	tex = ImageTexture.create_from_image(img)
-	mat.set_shader_parameter("fog_tex", tex)
-	mat.set_shader_parameter("fog_origin", f.origin)
-	mat.set_shader_parameter("fog_size", Vector2(f.w, f.h) * f.cell)
-	mat.set_shader_parameter("unexplored", Config.f("rules.view.fog_unexplored_brightness"))
+	RenderingServer.global_shader_parameter_set("qm_fog", tex)
+	RenderingServer.global_shader_parameter_set("qm_fog_rect", Vector4(f.origin.x, f.origin.y, f.w * f.cell, f.h * f.cell))
+	_set_k()
+
+
+func _set_k() -> void:
+	var f := world.fog
+	RenderingServer.global_shader_parameter_set("qm_fog_k",
+		Vector4(1.0 if f.enabled else 0.0, Config.f("rules.view.fog_unexplored_brightness"), 1.0 / maxf(f.w, 1), 0.0))
 
 
 func render() -> void:
@@ -37,4 +32,9 @@ func render() -> void:
 	_ver = f.version
 	img.set_data(f.w, f.h, false, Image.FORMAT_L8, f.display)
 	tex.update(img)
-	mat.set_shader_parameter("enabled", 1.0 if f.enabled else 0.0)
+	_set_k()
+
+
+func _exit_tree() -> void:
+	# меню и следующая партия — без тумана
+	RenderingServer.global_shader_parameter_set("qm_fog_k", Vector4.ZERO)

@@ -7,6 +7,7 @@ cd "$(dirname "$0")/../.."
 VER=$(grep -oP 'config/version="\K[^"]+' project.godot)
 godot --headless --import >/dev/null 2>&1 || true
 mkdir -p export/linux export/windows export/web
+touch export/.gdignore   # иначе Godot импортирует иконки сборки и кладёт их в пак
 godot --headless --export-release "Linux" export/linux/karantin_moskva.x86_64
 godot --headless --export-release "Windows" export/windows/karantin_moskva.exe
 godot --headless --export-release "Web" export/web/index.html

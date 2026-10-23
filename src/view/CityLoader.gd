@@ -61,9 +61,9 @@ func _ground(bounds: Rect2) -> void:
 	var pm := PlaneMesh.new()
 	pm.size = bounds.size + Vector2(3000, 3000)
 	mi.mesh = pm
-	var m := StandardMaterial3D.new()
-	m.albedo_color = Color("4e6a38").darkened(0.15)
-	m.roughness = 1.0
+	var m := ShaderMaterial.new()
+	m.shader = load("res://src/view/shaders/ground.gdshader")
+	m.set_shader_parameter("color", Color("4e6a38").darkened(0.15))
 	mi.material_override = m
 	mi.position = Vector3(bounds.get_center().x, -0.08, bounds.get_center().y)
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

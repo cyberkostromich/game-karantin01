@@ -199,7 +199,7 @@ func _leave(a: Agent) -> void:
 
 func _build(c: Dictionary, pid: int) -> void:
 	var type := String(c["building"])
-	var rot := int(c.get("rot", 0))
+	var rot := posmod(int(c.get("rot", 0)), roundi(360.0 / Config.f("rules.build.rotation_step_deg")))
 	for cell: Variant in c.get("cells", []):
 		var v := _v2(cell)
 		world.buildings.place(type, Vector2i(int(v.x), int(v.y)), rot, pid)

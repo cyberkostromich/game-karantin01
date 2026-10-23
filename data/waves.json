@@ -1,5 +1,5 @@
 {
-  "_doc": "Ночные волны. count(type, n) = round(f(n) * players_mult), n — номер ночи 1..12. Таблица по ночам генерируется tools/balance_report.py в docs/03_balance.md.",
+  "_doc": "Орда по дням: f(n) — сколько зомби типа приходит за сутки n (1..12) до множителей потока (stream.day_mult) и игроков. Таблица по дням генерируется tools/balance_report.py в docs/03_balance.md.",
   "formulas": {
     "walker": {
       "from_night": 1,
@@ -33,31 +33,18 @@
       "scale": false
     }
   },
-  "spawn": {
-    "directions": [
-      "N",
-      "E",
-      "S",
-      "W"
-    ],
-    "directions_per_night": {
-      "1": 1,
-      "4": 2,
-      "8": 3,
-      "12": 4
-    },
-    "sources": [
-      "map_edge",
-      "metro_nests"
-    ],
-    "batch_size": 25,
-    "batch_interval_s": 4,
-    "spawn_distance_m": 180,
-    "spread_m": 35,
-    "nest_share": 0.0,
-    "day_ambient_respawn_s": 30,
-    "night_nest_horde": true,
-    "_doc": "spawn_distance_m — от Штаба по направлению волны: ходок 1.6 м/с должен дойти до базы за ночь (старт на 25% ночи)."
+  "stream": {
+    "_doc": "Поток орды (D-15, плейтест: «не надо волн, пусть далеко появляются и сразу идут, с каждым днём больше»). За игровые сутки n приходит count = round(f(n) * day_mult * players_mult) каждого типа, стаями pack_min..pack_max со случайной стороны на кольце spawn_distance_m..+spawn_depth_m от Штаба (внутри окна flow-field rules.sim_tuning.flowfield_radius_m). Ночью поток гуще в night_mult раз (сумма за сутки не меняется).",
+    "day_mult": 5.0,
+    "night_mult": 1.6,
+    "pack_min": 4,
+    "pack_max": 9,
+    "spawn_distance_m": 330,
+    "spawn_depth_m": 30,
+    "pack_spread_m": 6
+  },
+  "nests": {
+    "night_nest_horde": true
   },
   "events": {
     "day_3": {

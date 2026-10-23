@@ -6,7 +6,7 @@ extends VBoxContainer
 const MAX := 5
 const LIFE := 9.0
 const COLORS := {"infected": UiTheme.INFECT, "attack": UiTheme.DANGER, "civilians": UiTheme.INFO,
-	"deficit": UiTheme.WARN, "research": UiTheme.ACCENT, "wave": UiTheme.DANGER, "objective": UiTheme.ACCENT,
+	"deficit": UiTheme.WARN, "research": UiTheme.ACCENT, "objective": UiTheme.ACCENT,
 	"fuel": UiTheme.WARN, "info": UiTheme.DIM}
 
 var game: Node
@@ -29,7 +29,6 @@ func setup(g: Node) -> void:
 	Events.civilian_rescued.connect(func(_id: int, p: Vector2) -> void: push("civilians", tr("ALERT_RESCUED"), p))
 	Events.power_deficit.connect(func(_ids: PackedInt32Array) -> void: push("deficit", tr("ALERT_POWER"), Vector2.INF))
 	Events.research_completed.connect(func(t: String) -> void: push("research", tr("ALERT_RESEARCH") % String(Config.g("tech.%s.name_ru" % t)), Vector2.INF, true))
-	Events.wave_started.connect(func(n: int) -> void: push("wave", tr("ALERT_WAVE") % n, Vector2.INF, true))
 	Events.unit_trained.connect(func(_id: int, t: String, _o: int) -> void: push("info", tr("ALERT_TRAINED") % String(Config.g("units.%s.name_ru" % t)), Vector2.INF, true))
 	Events.building_completed.connect(func(id: int, t: String) -> void:
 		var b := game.world.buildings.get_building(id) as Building

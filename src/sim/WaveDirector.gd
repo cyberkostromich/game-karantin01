@@ -1,17 +1,17 @@
 class_name WaveDirector
 extends RefCounted
-## Ночные волны по формулам waves.json (GDD §2.3, M2-7), гнёзда в метро, фоновое население города.
-
-const DIR_VEC := {"N": Vector2(0, -1), "S": Vector2(0, 1), "E": Vector2(1, 0), "W": Vector2(-1, 0)}
+## Поток орды (D-15, вместо ночных волн GDD §2.3): зомби непрерывно появляются далеко от Штаба стаями
+## с разных сторон и сразу идут на базу; за день типа t приходит count_for(t, день) — с каждым днём больше.
+## Плюс гнёзда в метро и фоновое население города.
 
 var world: World
-var night: int = 0
-var directions: PackedStringArray = []
-var composition: Dictionary = {}
-var to_spawn: Array[Dictionary] = []   # очередь {type, dir}
-var batch_cd: float = 0.0
-var launched: bool = false
+var day: int = 0
+var composition: Dictionary = {}     # тип → сколько придёт за текущий день (для HUD при разведке радиовышкой)
 var spawned_total: int = 0
+var stream_on: bool = true
+var _acc: Dictionary = {}            # тип → накопленная «доля» зомби (дробная часть переносится)
+var _pending: Array[int] = []        # набранные типы следующей стаи
+var _pack_n: int = 0
 var _exprs: Dictionary = {}
 
 
@@ -53,37 +53,17 @@ func base_count(t: String, n: int) -> int:
 	return maxi(0, int(round(float(v))))
 
 
+## Сколько зомби типа t придёт за день n потока (с множителями игроков и сложности).
 func count_for(t: String, n: int) -> int:
 	var c := float(base_count(t, n))
 	if bool(Config.opt("waves.formulas.%s.scale" % t, true)):
-		c *= world.players_mult() * world.difficulty_mult
+		c *= world.players_mult() * world.difficulty_mult * Config.f("waves.stream.day_mult")
 	return int(round(c))
 
 
-func directions_for(n: int) -> int:
-	var dpn := Config.d("waves.spawn.directions_per_night")
-	var best := 1
-	var best_k := 0
-	for k: String in dpn:
-		if int(k) <= n and int(k) >= best_k:
-			best_k = int(k)
-			best = int(dpn[k])
-	return best
-
-
-# ------------------------------------------------------------------ фазы
-func on_dusk(n: int) -> void:
-	night = n
-	var all: Array = Config.a("waves.spawn.directions").duplicate()
-	var k := directions_for(n)
-	directions = PackedStringArray()
-	if world.scenario.migration_night == n:
-		directions.append("N")
-		all.erase("N")
-	while directions.size() < k and not all.is_empty():
-		var d: String = all[world.rng.randi() % all.size()]
-		all.erase(d)
-		directions.append(d)
+# ------------------------------------------------------------------ поток
+func _new_day(n: int) -> void:
+	day = n
 	composition = {}
 	for t: String in Config.keys_of("waves.formulas"):
 		var c := count_for(t, n)
@@ -91,65 +71,51 @@ func on_dusk(n: int) -> void:
 			c = int(round(c * (1.0 + Config.f("waves.events.day_7.extra_walkers_mult"))))
 		if c > 0:
 			composition[t] = c
-	launched = false
-	world.emit("wave_announced", [n, directions, composition])
+		if not _acc.has(t):
+			_acc[t] = 0.5   # редкие (Великан) — к середине своего дня, а не на последней секунде
+	world.emit("horde_updated", [n, composition])
 
 
 func update(dt: float) -> void:
 	_nests(dt)
-	if not world.clock.is_night():
+	if world.clock.day != day:
+		_new_day(world.clock.day)
+	if not stream_on:
 		return
-	if not launched and world.clock.night_elapsed() >= world.clock.durations[3] * Config.f("rules.day_cycle.horde_launch_at_night_fraction"):
-		_launch()
-	if to_spawn.is_empty():
-		return
-	batch_cd -= dt
-	if batch_cd > 0.0:
-		return
-	batch_cd = Config.f("waves.spawn.batch_interval_s")
-	for _k in Config.i("waves.spawn.batch_size"):
-		if to_spawn.is_empty():
-			break
-		var s: Dictionary = to_spawn.pop_front()
-		_spawn_one(String(s["type"]), String(s["dir"]))
-
-
-func _launch() -> void:
-	launched = true
-	to_spawn.clear()
-	var di := 0
-	# перемешиваем типы, чтобы особые шли внутри орды, а не отдельной колонной
-	var pool: Array[String] = []
+	var cycle := 0.0
+	for d in world.clock.durations:
+		cycle += d
+	# ночью поток гуще; дневная и ночная доли нормированы, чтобы за сутки пришло ровно composition
+	var nm := Config.f("waves.stream.night_mult")
+	var night_s: float = world.clock.durations[3]
+	var k := (nm if world.clock.is_night() else 1.0) / (cycle - night_s + night_s * nm)
 	for t: String in composition:
-		for _k in int(composition[t]):
-			pool.append(t)
-	for i in range(pool.size() - 1, 0, -1):
-		var j := world.rng.randi() % (i + 1)
-		var tmp := pool[i]
-		pool[i] = pool[j]
-		pool[j] = tmp
-	for t in pool:
-		to_spawn.append({"type": t, "dir": directions[di % directions.size()]})
-		di += 1
-	batch_cd = 0.0
-	world.emit("wave_started", [night])
+		_acc[t] = float(_acc[t]) + float(composition[t]) * k * dt
+		while float(_acc[t]) >= 1.0:
+			_acc[t] = float(_acc[t]) - 1.0
+			_pending.append(world.zombies.type_index(t))
+	if _pack_n <= 0:
+		_pack_n = world.rng.randi_range(Config.i("waves.stream.pack_min"), Config.i("waves.stream.pack_max"))
+	if _pending.size() >= _pack_n:
+		_spawn_pack(_pending)
+		_pending = []
+		_pack_n = 0
 
 
-func spawn_point(dir: String) -> Vector2:
-	var v: Vector2 = DIR_VEC[dir]
-	var dist := Config.f("waves.spawn.spawn_distance_m")
-	var spread := Config.f("waves.spawn.spread_m")
-	var perp := Vector2(-v.y, v.x)
-	var p: Vector2 = world.map.hq_pos + v * dist + perp * world.rng.randf_range(-spread, spread)
-	return world.grid.nearest_walkable(world.grid.clamp_pos(p), 140.0, true)
-
-
-func _spawn_one(t: String, dir: String) -> void:
-	var ti := world.zombies.type_index(t)
-	if ti < 0:
-		return
-	world.zombies.spawn(ti, spawn_point(dir), ZombieSystem.S.HORDE)
-	spawned_total += 1
+## Стая появляется в одной точке на кольце spawn_distance_m со случайной стороны — внутри окна flow-field,
+## поэтому сразу идёт к Штабу по полю путей.
+func _spawn_pack(types: Array[int]) -> void:
+	var cfg := Config.d("waves.stream")
+	var a := world.rng.randf() * TAU
+	var r := float(cfg["spawn_distance_m"]) + world.rng.randf_range(0.0, float(cfg["spawn_depth_m"]))
+	var c := world.grid.nearest_walkable(world.grid.clamp_pos(world.map.hq_pos + Vector2(cos(a), sin(a)) * r), 140.0, true)
+	var spread := float(cfg["pack_spread_m"])
+	for t in types:
+		if t < 0:
+			continue
+		var p := world.grid.nearest_walkable(c + Vector2(world.rng.randf_range(-spread, spread), world.rng.randf_range(-spread, spread)), 20.0, true)
+		world.zombies.spawn(t, p, ZombieSystem.S.HORDE)
+		spawned_total += 1
 
 
 # ------------------------------------------------------------------ гнёзда и фон
@@ -157,7 +123,7 @@ func _nests(dt: float) -> void:
 	var cfg := Config.d("zombies.nest.spawn")
 	var cap := int(float(cfg["ambient_cap_contrib"]) * world.players_mult())
 	var walker := world.zombies.type_index(String(cfg["type"]))
-	var night_horde := bool(Config.opt("waves.spawn.night_nest_horde", false))
+	var night_horde := bool(Config.opt("waves.nests.night_nest_horde", false))
 	for n in world.map.nests:
 		if not n.alive:
 			continue

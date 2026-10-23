@@ -186,13 +186,13 @@ func _morale_tip(e: Economy) -> String:
 
 func _wave_text(w: World) -> String:
 	var wd := w.waves
-	if wd.directions.is_empty() or w.clock.phase < 2 and not w.pois.wave_info_known():
+	var total := 0
+	for t: String in wd.composition:
+		total += int(wd.composition[t])
+	if total == 0:
 		return ""
-	var dirs: PackedStringArray = []
-	for d in wd.directions:
-		dirs.append(tr("DIR_" + d))
-	var s := "%s %s" % [tr("HUD_WAVE_FROM"), ", ".join(dirs)]
-	if w.pois.wave_info_known():
+	var s := tr("HUD_HORDE_DAY") % total
+	if w.pois.wave_info_known():   # радиовышка: состав потока на сегодня
 		var parts: PackedStringArray = []
 		for t: String in wd.composition:
 			parts.append("%s %d" % [String(Config.g("zombies.%s.name_ru" % t)), int(wd.composition[t])])

@@ -7,7 +7,8 @@ enum State { CONSTRUCTING, COMPLETE }
 var id: int = 0
 var type: String = ""
 var owner: int = 0
-var cells := Rect2i()
+var cells := Rect2i()               # ограничивающий прямоугольник (повёрнутая постройка шире контура)
+var mask: Array[Vector2i] = []      # клетки под контуром
 var rect_m := Rect2()
 var pos: Vector2 = Vector2.ZERO
 var rot: int = 0
@@ -50,11 +51,6 @@ func working() -> bool:
 
 func is_wall_like() -> bool:
 	return bool(data().get("drag_build", false))
-
-
-func footprint() -> Vector2i:
-	var f: Array = data()["footprint"]
-	return Vector2i(int(f[0]), int(f[1])) if rot % 2 == 0 else Vector2i(int(f[1]), int(f[0]))
 
 
 func half_extent() -> float:
