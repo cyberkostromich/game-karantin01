@@ -4,49 +4,49 @@
 
 ## 1. 3D-модели (плейсхолдеры в пакете)
 
-Всего: **75** моделей · формат `.glb` · один материал `palette` · превью: `previews/models/`, листы: `previews/sheet_*.png`
+Всего: **77** моделей · формат `.glb` · один материал `palette` · превью: `previews/models/`, листы: `previews/sheet_*.png`
 
 ### Военные (4)
 
 | Файл | Треуг. | Габарит, м (X×Y×Z) | Узлы | Статус |
 |---|---|---|---|---|
-| `models/units/unit_assault.glb` | 252 | 1.1×1.88×1.22 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
-| `models/units/unit_sniper.glb` | 268 | 1.1×1.91×1.45 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
-| `models/units/unit_medic.glb` | 228 | 0.82×1.88×1.13 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
-| `models/units/unit_scout.glb` | 252 | 1.1×1.89×1.06 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
+| `models/units/unit_assault.glb` | 636 | 0.72×1.87×1.27 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
+| `models/units/unit_sniper.glb` | 548 | 0.72×1.9×1.62 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
+| `models/units/unit_medic.glb` | 556 | 0.72×1.87×1.1 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
+| `models/units/unit_scout.glb` | 504 | 0.72×2.12×1.23 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
 
 ### Мирные (7)
 
 | Файл | Треуг. | Габарит, м (X×Y×Z) | Узлы | Статус |
 |---|---|---|---|---|
-| `models/civilians/civ_adult_a.glb` | 168 | 0.76×1.81×0.35 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_adult_b.glb` | 168 | 0.76×1.81×0.35 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_adult_c.glb` | 168 | 0.76×1.81×0.35 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_adult_d.glb` | 168 | 0.76×1.81×0.35 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_adult_e.glb` | 168 | 0.76×1.81×0.35 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_child.glb` | 156 | 0.53×1.25×0.3 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/civilians/civ_worker_carry.glb` | 184 | 1.4×1.88×0.65 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
+| `models/civilians/civ_adult_a.glb` | 324 | 0.72×1.81×0.33 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/civilians/civ_adult_b.glb` | 312 | 0.64×1.78×0.33 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/civilians/civ_adult_c.glb` | 300 | 0.7×1.82×0.32 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/civilians/civ_adult_d.glb` | 300 | 0.63×1.74×0.43 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/civilians/civ_adult_e.glb` | 324 | 0.66×1.81×0.5 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/civilians/civ_child.glb` | 340 | 0.47×1.3×0.36 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/civilians/civ_worker_carry.glb` | 324 | 1.4×1.87×0.75 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r`, `weapon` | ✅ 🎨 |
 
 ### Заражённые (8)
 
 | Файл | Треуг. | Габарит, м (X×Y×Z) | Узлы | Статус |
 |---|---|---|---|---|
-| `models/zombies/zmb_walker.glb` | 204 | 0.79×1.87×1.12 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_walker_armored.glb` | 240 | 0.79×1.9×1.12 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_runner.glb` | 180 | 0.72×1.75×1.2 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_brute.glb` | 216 | 1.78×2.23×0.93 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_screamer.glb` | 192 | 0.68×1.84×0.64 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_spitter.glb` | 316 | 0.82×1.83×0.94 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
-| `models/zombies/zmb_giant.glb` | 250 | 2.98×3.67×1.68 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/zombies/zmb_walker.glb` | 384 | 0.69×1.84×1.11 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/zombies/zmb_walker_armored.glb` | 532 | 0.69×1.87×1.11 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/zombies/zmb_runner.glb` | 372 | 0.64×1.76×1.19 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/zombies/zmb_brute.glb` | 420 | 1.73×2.04×0.9 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/zombies/zmb_screamer.glb` | 444 | 0.61×1.86×0.62 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/zombies/zmb_spitter.glb` | 480 | 0.71×1.83×0.85 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
+| `models/zombies/zmb_giant.glb` | 412 | 2.91×3.37×1.57 | `leg_l`, `leg_r`, `body`, `head`, `arm_l`, `arm_r` | ✅ 🎨 |
 | `models/zombies/zmb_nest.glb` | 1680 | 8.4×3.05×8.4 | `body`, `pulse` | ✅ 🎨 |
 
 ### Техника (3)
 
 | Файл | Треуг. | Габарит, м (X×Y×Z) | Узлы | Статус |
 |---|---|---|---|---|
-| `models/vehicles/veh_bmp.glb` | 632 | 3.2×2.15×7.1 | `hull`, `turret`, `barrel` | ✅ 🎨 |
-| `models/vehicles/veh_tank.glb` | 836 | 3.7×4.2×9.45 | `hull`, `turret`, `barrel` | ✅ 🎨 |
-| `models/vehicles/veh_heli.glb` | 420 | 15.71×4.16×17.79 | `body`, `rotor_main`, `rotor_tail` | ✅ 🎨 |
+| `models/vehicles/veh_bmp.glb` | 1756 | 3.23×2.62×7.17 | `hull`, `turret`, `barrel` | ✅ 🎨 |
+| `models/vehicles/veh_tank.glb` | 2140 | 4.21×4.5×10.2 | `hull`, `turret`, `barrel` | ✅ 🎨 |
+| `models/vehicles/veh_heli.glb` | 1020 | 16.13×5.32×21.07 | `body`, `rotor_main`, `rotor_tail` | ✅ 🎨 |
 
 ### Постройки игрока (25)
 
@@ -55,7 +55,7 @@
 | `models/buildings/bld_hq.glb` | 1220 | 16.0×13.41×16.0 | `body` | ✅ 🎨 |
 | `models/buildings/bld_tent.glb` | 44 | 5.6×2.6×5.6 | `body` | ✅ 🎨 |
 | `models/buildings/bld_house.glb` | 312 | 8.09×5.4×12.72 | `body` | ✅ 🎨 |
-| `models/buildings/bld_storage.glb` | 156 | 9.8×9.6×11.34 | `body` | ✅ 🎨 |
+| `models/buildings/bld_storage.glb` | 128 | 9.8×5.7×11.34 | `body` | ✅ 🎨 |
 | `models/buildings/bld_kitchen.glb` | 244 | 7.8×3.9×7.8 | `body` | ✅ 🎨 |
 | `models/buildings/bld_greenhouse.glb` | 548 | 9.6×3.7×15.6 | `body` | ✅ 🎨 |
 | `models/buildings/bld_sawmill.glb` | 440 | 9.6×4.4×9.6 | `body` | ✅ 🎨 |
@@ -78,7 +78,7 @@
 | `models/buildings/bld_siren.glb` | 96 | 1.91×5.75×1.65 | `body`, `speakers` | ✅ 🎨 |
 | `models/buildings/bld_sandbags.glb` | 216 | 4.13×0.82×0.36 | `body` | ✅ 🎨 |
 
-### Город (8)
+### Город (10)
 
 | Файл | Треуг. | Габарит, м (X×Y×Z) | Узлы | Статус |
 |---|---|---|---|---|
@@ -89,6 +89,8 @@
 | `models/city/city_shop.glb` | 60 | 12.2×4.3×8.3 | `body` | ✅ 🎨 |
 | `models/city/city_metro_entrance.glb` | 200 | 14.0×7.35×10.5 | `body` | ✅ 🎨 |
 | `models/city/city_substation.glb` | 228 | 20.05×9.0×14.03 | `body` | ✅ 🎨 |
+| `models/city/city_radio_mast.glb` | 376 | 8.1×46.15×8.0 | `body` | ✅ 🎨 |
+| `models/city/city_mgu.glb` | 336 | 252.0×242.0×48.4 | `body` | ✅ 🎨 |
 | `models/city/city_test_district.glb` | 2472 | 120.0×51.0×120.0 | `ground`, `buildings`, `trees`, `wrecks` | ✅ 🎨 |
 
 ### Пропсы и ресурсные узлы (16)
@@ -105,7 +107,7 @@
 | `models/props/prop_wreck_trolleybus.glb` | 244 | 2.52×5.31×11.54 | `body` | ✅ 🎨 |
 | `models/props/prop_wreck_truck.glb` | 228 | 2.4×3.1×7.35 | `body` | ✅ 🎨 |
 | `models/props/prop_streetlight.glb` | 48 | 0.4×8.07×2.17 | `body` | ✅ 🎨 |
-| `models/props/prop_hedgehog.glb` | 36 | 1.8×1.8×0.15 | `body` | ✅ 🎨 |
+| `models/props/prop_hedgehog.glb` | 48 | 1.89×1.38×1.89 | `body` | ✅ 🎨 |
 | `models/props/prop_concrete_block.glb` | 24 | 2.0×1.05×0.8 | `body` | ✅ 🎨 |
 | `models/props/prop_bus_stop.glb` | 60 | 4.0×2.66×1.6 | `body` | ✅ 🎨 |
 | `models/props/prop_dumpster.glb` | 24 | 1.85×1.39×1.17 | `body` | ✅ 🎨 |
@@ -123,7 +125,7 @@
 
 ## 2. UI-иконки
 
-Всего: **67** · `assets/icons/svg/<id>.svg` (бейдж), `svg/glyph/<id>.svg` (без бейджа), `png/64`, `png/128` · лист: `previews/sheet_icons.png`
+Всего: **68** · `assets/icons/svg/<id>.svg` (бейдж), `svg/glyph/<id>.svg` (без бейджа), `png/64`, `png/128` · лист: `previews/sheet_icons.png`
 
 | ID | Подпись | Категория |
 |---|---|---|
@@ -157,6 +159,7 @@
 | `st_low_power` | Нет энергии | status |
 | `st_night` | Ночь | status |
 | `st_day` | День | status |
+| `st_unknown` | Выжившие? | status |
 | `st_wave` | Волна | status |
 | `abl_grenade` | Граната | abl |
 | `abl_aimed_shot` | Прицельный выстрел | abl |

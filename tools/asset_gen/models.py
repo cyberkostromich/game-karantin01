@@ -13,6 +13,7 @@ import random
 import sys
 from pathlib import Path
 
+import numpy as np
 import trimesh
 
 from lowpoly import ALONG_X, UP, Model, _rot_matrix, save_palette
@@ -1010,12 +1011,57 @@ def test_district():
 
 # ======================================================================================
 
+def city_radio_mast():
+    """Решётчатая радиомачта ~42 м (POI «Радиовышка»): четыре пояса, раскосы, тарелки."""
+    m = Model("city_radio_mast"); n = m.node("body")
+    n.box((8, 0.3, 8), (0, 0.15, 0), "CONCRETE_D")
+    n.box((3, 2.6, 2.4), (2.6, 1.3, 2.6), "CONCRETE_L")                   # аппаратная
+    levels = [0.3, 10, 20, 30, 40]
+    for i in range(len(levels) - 1):
+        y0, y1 = levels[i], levels[i + 1]
+        r0, r1 = 2.2 - i * 0.45, 2.2 - (i + 1) * 0.45
+        for sx, sz in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+            a = np.array([sx * r0, y0, sz * r0]); b = np.array([sx * r1, y1, sz * r1])
+            mid = (a + b) / 2; L = np.linalg.norm(b - a)
+            seg = trimesh.creation.box(extents=(0.18, L, 0.18))
+            d = (b - a) / L
+            ax = np.cross([0, 1, 0], d); ang = math.acos(np.clip(d[1], -1, 1))
+            if np.linalg.norm(ax) > 1e-6:
+                seg.apply_transform(trimesh.transformations.rotation_matrix(ang, ax / np.linalg.norm(ax)))
+            seg.apply_translation(mid)
+            n.add(seg, "SIGNAL_ORANGE" if i % 2 else "WHITE")
+        n.box((2 * r1 + 0.2, 0.15, 2 * r1 + 0.2), (0, y1, 0), "STEEL_D")
+    n.cyl(0.06, 6, (0, 43, 0), "STEEL", sections=5, rot=UP)
+    n.cyl(0.9, 0.3, (0.8, 34, 0.8), "WHITE", sections=10, rot=(-70, 45, 0))  # тарелки
+    n.cyl(0.7, 0.3, (-0.8, 26, -0.6), "WHITE", sections=10, rot=(-70, -120, 0))
+    n.box((0.3, 0.3, 0.3), (0, 46, 0), "RED_CROSS")                           # заградительный огонь
+    return reg("city", m, city="poi_radio_tower")
+
+
+def city_mgu():
+    """Силуэт Главного здания МГУ (задник за картой, ~240 м): ступенчатая башня, шпиль, крылья."""
+    m = Model("city_mgu"); n = m.node("body")
+    n.box((90, 60, 40), (0, 30, 0), "STALIN_YEL")
+    for sx in (-1, 1):
+        n.box((70, 40, 30), (sx * 75, 20, 10), "STALIN_YEL")
+        n.box((22, 70, 22), (sx * 115, 35, 10), "STALIN_YEL")
+        n.cyl(6, 18, (sx * 115, 79, 10), "STALIN_YEL", sections=8, rot=UP, r2=1.5)
+        n.cyl(0.6, 12, (sx * 115, 94, 10), "LEAF_AUTUMN", sections=5, rot=UP)
+    for i, (w, h) in enumerate(((64, 40), (48, 36), (34, 30), (24, 20))):
+        y0 = 60 + sum(hh for _, hh in ((64, 40), (48, 36), (34, 30), (24, 20))[:i])
+        n.box((w, h, w * 0.7), (0, y0 + h / 2, 0), "STALIN_YEL")
+        n.box((w + 2, 1.5, w * 0.7 + 2), (0, y0 + h, 0), "WHITE")
+    n.cyl(8, 26, (0, 199, 0), "STALIN_YEL", sections=8, rot=UP, r2=2.5)
+    n.cyl(0.9, 30, (0, 227, 0), "LEAF_AUTUMN", sections=6, rot=UP)            # шпиль
+    n.ball(2.2, (0, 238, 0), "HAZARD_YELLOW", subdiv=0)                       # звезда (условно)
+    return reg("city", m, city="landmark_backdrop")
+
+
 def build_all():
-    unit_assault(); unit_sniper(); unit_medic(); unit_scout()
-    civilians()
-    zmb_walker(); zmb_walker("zmb_walker_armored", armored=True); zmb_runner(); zmb_brute()
-    zmb_screamer(); zmb_spitter(); zmb_giant(); zmb_nest()
-    veh_bmp(); veh_tank(); veh_heli()
+    import characters, vehicles
+    characters.build_all(reg)
+    zmb_nest()
+    vehicles.build_all(reg)
     for f in (bld_hq, bld_tent, bld_house, bld_storage, bld_kitchen, bld_greenhouse, bld_sawmill, bld_scrapyard,
               bld_generator, bld_solar, bld_battery, bld_medpost, bld_quarantine, bld_checkpoint, bld_barracks,
               bld_motorpool, bld_helipad, bld_workshop, bld_wall_wood, bld_wall_concrete, bld_gate, bld_tower,
@@ -1024,7 +1070,7 @@ def build_all():
     city_panel("city_panel_9fl", 3, 9)
     city_panel("city_panel_17fl", 1, 17, depth=16, color="PANEL_BEIGE", accent="TILE_TEAL", sec_w=18)
     city_panel("city_khrushchevka_5fl", 4, 5, color="BRICK_L", accent="BRICK", sec_w=12)
-    city_stalinka(); city_shop(); city_metro_entrance(); city_substation()
+    city_stalinka(); city_shop(); city_metro_entrance(); city_substation(); city_radio_mast(); city_mgu()
     for nm, k in (("prop_tree_birch", "birch"), ("prop_tree_poplar", "poplar"), ("prop_tree_linden", "linden"),
                   ("prop_tree_pine", "pine")):
         tree(nm, k)

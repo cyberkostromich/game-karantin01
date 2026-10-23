@@ -11,8 +11,8 @@ from render import render
 
 ROOT = Path(__file__).resolve().parents[2]
 PV = ROOT / "previews"
-F_B = "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"
-F_R = "/usr/share/fonts/opentype/inter/Inter-Regular.otf"
+F_B = str(ROOT / "assets" / "fonts" / "Inter-SemiBold.ttf")
+F_R = str(ROOT / "assets" / "fonts" / "Inter-Regular.ttf")
 
 BG = (238, 236, 230, 255)
 INK = (34, 38, 44)
@@ -31,7 +31,7 @@ def sheet(cat, items, cols=6, cell=260):
     img = Image.new("RGBA", (W, H), BG)
     d = ImageDraw.Draw(img)
     d.text((24, 22), TITLES.get(cat, cat).upper(), font=ImageFont.truetype(F_B, 34), fill=INK)
-    d.text((24, 66), f"КАРАНТИН: МОСКВА · плейсхолдеры v0.1 · {len(items)} шт · 1 ед = 1 м",
+    d.text((24, 66), f"КАРАНТИН: МОСКВА · модели v0.2 · {len(items)} шт · 1 ед = 1 м",
            font=ImageFont.truetype(F_R, 18), fill=MUTED)
     d.rectangle((24, 96, 84, 100), fill=ACCENT)
     f_name = ImageFont.truetype(F_B, 15); f_meta = ImageFont.truetype(F_R, 13)

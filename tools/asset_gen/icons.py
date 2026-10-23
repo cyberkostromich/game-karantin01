@@ -115,6 +115,8 @@ icon("st_low_power", "status", "Нет энергии", f'<path {SF} d="M36 8L16
 icon("st_night", "status", "Ночь", f'<path {SF} d="M40 10a22 22 0 1 0 14 34A18 18 0 0 1 40 10z"/>')
 icon("st_day", "status", "День", f'<circle cx="32" cy="32" r="9" {SF}/>' +
      "".join(f'<path {S} transform="rotate({a} 32 32)" d="M32 12v6"/>' for a in range(0, 360, 45)))
+icon("st_unknown", "status", "Выжившие?",
+     f'<path {S} d="M22 24a10 10 0 1 1 14 9c-3 1.5-4 3.5-4 7"/><circle cx="32" cy="49" r="3.5" {SF}/>')
 icon("st_wave", "status", "Волна", ZB.replace(G, W) + f'<path stroke="{R}" stroke-width="4" stroke-linecap="round" d="M50 12v14M50 32v1"/>')
 
 # ----------------------------------------------------------------- способности
@@ -245,7 +247,7 @@ def main():
             cairosvg.svg2png(bytestring=doc.encode(), write_to=str(PNG_DIR / str(sz) / f"{id_}.png"),
                              output_width=sz, output_height=sz)
     # контакт-лист
-    F_B = "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"; F_R = "/usr/share/fonts/opentype/inter/Inter-Regular.otf"
+    F_B = str(ROOT / "assets" / "fonts" / "Inter-SemiBold.ttf"); F_R = str(ROOT / "assets" / "fonts" / "Inter-Regular.ttf")
     cols, cell = 10, 150
     items = list(ICONS.items())
     rows = (len(items) + cols - 1) // cols

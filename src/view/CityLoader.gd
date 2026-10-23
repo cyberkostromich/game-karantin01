@@ -25,6 +25,7 @@ func start(city_dir: String, bounds: Rect2, chunk_m: float) -> void:
 			n.name = name.capitalize()
 			Look.apply_material(n, Look.palette_double())
 			add_child(n)
+	_backdrop()
 	var c0 := Vector2i(floori(bounds.position.x / chunk_m), floori(bounds.position.y / chunk_m))
 	var c1 := Vector2i(floori(bounds.end.x / chunk_m), floori(bounds.end.y / chunk_m))
 	for cz in range(c0.y, c1.y + 1):
@@ -33,6 +34,25 @@ func start(city_dir: String, bounds: Rect2, chunk_m: float) -> void:
 			if ResourceLoader.exists(p):
 				pending.append(p)
 	total = pending.size()
+
+
+## Ориентиры за пределами карты (силуэт МГУ на горизонте) и на POI без своей модели в OSM.
+func _backdrop() -> void:
+	var arr: Variant = JSON.parse_string(FileAccess.get_file_as_string(dir.path_join("pois.json")))
+	if not (arr is Array):
+		return
+	for p: Dictionary in arr:
+		var model := ""
+		match String(p["id"]):
+			"mgu": model = "models/city/city_mgu.glb"
+			"radio_tower": model = "models/city/city_radio_mast.glb"
+		if model == "":
+			continue
+		var n := Look.instance(model)
+		n.position = Vector3(float(p["x"]), 0, float(p["z"]))
+		if String(p["id"]) == "mgu":
+			n.rotation.y = deg_to_rad(-30)
+		add_child(n)
 
 
 ## Подложка шире карты, чтобы край мира не был пустотой.

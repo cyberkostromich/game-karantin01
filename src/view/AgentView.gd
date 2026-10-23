@@ -139,8 +139,9 @@ func _walk(delta: float, spd: float, moving: bool) -> void:
 	var s := sin(phase) * amp
 	_swing("leg_l", s)
 	_swing("leg_r", -s)
-	_swing("arm_l", -s * 0.6)
-	_swing("arm_r", s * 0.6 if not parts.has("weapon") else s * 0.15)
+	var armed := parts.has("weapon") and kind != Agent.Kind.CIVILIAN
+	_swing("arm_l", -s * (0.12 if armed else 0.6))
+	_swing("arm_r", s * (0.12 if armed else 0.6))
 	if parts.has("body"):
 		var b: Node3D = parts["body"]
 		b.position.y = absf(sin(phase)) * 0.04 * amp
