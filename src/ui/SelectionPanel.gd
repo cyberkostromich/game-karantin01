@@ -5,14 +5,16 @@ extends PanelContainer
 
 var game: Node
 var box := VBoxContainer.new()
+var portrait := Portrait.new()   # живой 3D-портрет одиночного выделения
 var _acc: float = 0.0
 
 
 func setup(g: Node) -> void:
 	game = g
-	set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	custom_minimum_size = Vector2(420, 150)
-	box.add_theme_constant_override("separation", 4)
+	set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	custom_minimum_size = Vector2(420, 200)
+	box.add_theme_constant_override("separation", 6)
 	add_child(box)
 
 
@@ -21,6 +23,7 @@ func _process(delta: float) -> void:
 	if _acc > 0.0:
 		return
 	_acc = 0.2
+	_detach_portrait()   # портрет живёт между перестройками панели — модель не грузится заново
 	for c in box.get_children():
 		c.queue_free()
 	var s: Selection = game.selection
@@ -51,13 +54,31 @@ func _row() -> HBoxContainer:
 
 func _bar(frac: float, col: Color, w: float = 240.0) -> ProgressBar:
 	var p := ProgressBar.new()
-	p.custom_minimum_size = Vector2(w, 10)
+	p.custom_minimum_size = Vector2(w, 12)
 	p.show_percentage = false
 	p.max_value = 1.0
 	p.value = frac
-	var sb := UiTheme.box(col, 3)
-	p.add_theme_stylebox_override("fill", sb)
+	p.add_theme_stylebox_override("fill", UiTheme.fill(col))
 	return p
+
+
+## Портрет в утопленном слоте.
+func _portrait(icon_id: String, px: int = 84) -> Control:
+	var slot := PanelContainer.new()
+	slot.add_theme_stylebox_override("panel", UiTheme.skin("inset", 6))
+	slot.add_child(UiTheme.icon_rect(icon_id, px))
+	return slot
+
+
+func _detach_portrait() -> void:
+	if portrait.get_parent() != null:
+		portrait.get_parent().remove_child(portrait)
+
+
+func _model_of(a: Agent) -> String:
+	if a.kind == Agent.Kind.CIVILIAN:
+		return String(Config.g("civilians.child.model")) if a.is_child else AgentViews.CIV_MODELS[a.id % AgentViews.CIV_MODELS.size()]
+	return String(Config.g("units.%s.model" % a.type))
 
 
 func _agent(a: Agent) -> void:
@@ -65,14 +86,17 @@ func _agent(a: Agent) -> void:
 		return
 	var w: World = game.world
 	var h := _row()
-	var icon := ("civ_child" if a.is_child else "civ_adult") if a.kind == Agent.Kind.CIVILIAN else "unit_" + a.type
-	h.add_child(UiTheme.icon_rect(icon, 64))
+	var slot := PanelContainer.new()
+	slot.add_theme_stylebox_override("panel", UiTheme.skin("inset", 4))
+	portrait.show_model(_model_of(a), a.kind == Agent.Kind.VEHICLE or a.kind == Agent.Kind.AIR)
+	slot.add_child(portrait)
+	h.add_child(slot)
 	var v := VBoxContainer.new()
 	h.add_child(v)
 	var name := String(Config.g("civilians.%s.name_ru" % a.type)) if a.kind == Agent.Kind.CIVILIAN else String(Config.g("units.%s.name_ru" % a.type))
-	v.add_child(UiTheme.label(name, 17, UiTheme.TEXT, true))
+	v.add_child(UiTheme.caps(name, 20, UiTheme.TEXT))
 	v.add_child(_bar(a.hp / a.max_hp, UiTheme.OK.lerp(UiTheme.DANGER, 1.0 - a.hp / a.max_hp)))
-	v.add_child(UiTheme.label("%d / %d HP" % [int(a.hp), int(a.max_hp)], 12, UiTheme.DIM))
+	v.add_child(UiTheme.mono("%d / %d" % [int(a.hp), int(a.max_hp)], 13, UiTheme.DIM))
 	var st: PackedStringArray = []
 	if a.infected and a.infect_detected:
 		st.append(tr("ST_INFECTED") % int(ceil(a.infect_t)))
@@ -91,26 +115,48 @@ func _agent(a: Agent) -> void:
 			st.append(tr("HUD_TEMP") % int(a.temp_life))
 		if a.trait_id != "":
 			st.append("★ " + String(Config.g("civilians.traits.%s.name_ru" % a.trait_id)))
-	v.add_child(UiTheme.label(" · ".join(st), 12, UiTheme.DIM))
+	v.add_child(UiTheme.label(" · ".join(st), 13, UiTheme.DIM))
+	if a.is_unit():
+		v.add_child(_stats(a))
+
+
+## Строка характеристик (как в AoE IV): урон×скорострельность, дальность, скорость, обзор.
+func _stats(a: Agent) -> Control:
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 14)
+	var at := Config.d("units.%s.attack" % a.type)
+	var pairs := [["HUD_STAT_DMG", "%d×%.1f" % [int(at.get("damage", 0)), float(at.get("rof", 0))]],
+		["HUD_STAT_RANGE", "%d" % int(at.get("range", 0))], ["HUD_STAT_SPEED", "%.1f" % a.speed], ["HUD_STAT_VISION", "%d" % int(a.vision)]]
+	for p: Array in pairs:
+		var v := VBoxContainer.new()
+		v.add_theme_constant_override("separation", -2)
+		v.add_child(UiTheme.caps(tr(p[0]), 10, UiTheme.DIM))
+		v.add_child(UiTheme.digits(p[1], 17))
+		h.add_child(v)
+	return h
 
 
 func _group(ids: Array[int]) -> void:
 	var w: World = game.world
-	box.add_child(UiTheme.caps(tr("HUD_SELECTED") % ids.size()))
+	box.add_child(UiTheme.tape(tr("HUD_SELECTED") % ids.size(), 12))
 	var g := GridContainer.new()
-	g.columns = 10
+	g.columns = maxi(4, int((custom_minimum_size.x) / 54.0))
+	g.add_theme_constant_override("h_separation", 4)
+	g.add_theme_constant_override("v_separation", 4)
 	box.add_child(g)
-	for id in ids.slice(0, 30):
+	for id in ids.slice(0, g.columns * 3):
 		var a := w.agents.get_agent(id)
 		if a == null:
 			continue
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(38, 38)
-		b.icon = Look.icon(("civ_child" if a.is_child else "civ_adult") if a.kind == Agent.Kind.CIVILIAN else "unit_" + a.type)
-		b.expand_icon = true
-		b.focus_mode = Control.FOCUS_NONE
-		b.modulate = Color.WHITE.lerp(Color(1, 0.4, 0.3), 1.0 - a.hp / a.max_hp)
-		b.pressed.connect(func() -> void: game.selection.set_agents([id] if a.is_unit() else [], [id] if not a.is_unit() else []))
+		var icon := ("civ_child" if a.is_child else "civ_adult") if a.kind == Agent.Kind.CIVILIAN else "unit_" + a.type
+		var b := UiTheme.icon_button(icon, "", "", func() -> void: game.selection.set_agents([id] if a.is_unit() else [], [id] if not a.is_unit() else []), 50)
+		var hp := ColorRect.new()   # полоска здоровья по низу карточки
+		var f := a.hp / a.max_hp
+		hp.color = UiTheme.OK.lerp(UiTheme.DANGER, 1.0 - f)
+		hp.position = Vector2(6, 42)
+		hp.size = Vector2(38.0 * f, 3)
+		hp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(hp)
 		g.add_child(b)
 
 
@@ -118,10 +164,10 @@ func _building(b: Building) -> void:
 	var w: World = game.world
 	var d := b.data()
 	var h := _row()
-	h.add_child(UiTheme.icon_rect(String(d["icon"]).get_file().get_basename(), 56))
+	h.add_child(_portrait(String(d["icon"]).get_file().get_basename(), 72))
 	var v := VBoxContainer.new()
 	h.add_child(v)
-	v.add_child(UiTheme.label(String(d["name_ru"]), 17, UiTheme.TEXT, true))
+	v.add_child(UiTheme.caps(String(d["name_ru"]), 20, UiTheme.TEXT))
 	v.add_child(_bar(b.hp / b.max_hp, UiTheme.OK.lerp(UiTheme.DANGER, 1.0 - b.hp / b.max_hp)))
 	var info: PackedStringArray = ["%d / %d" % [int(b.hp), int(b.max_hp)]]
 	if not b.complete():
@@ -170,8 +216,11 @@ func _workers(b: Building) -> void:
 
 func _poi(p: MapPoi) -> void:
 	var name := p.name if p.name != "" else tr("POI_" + p.type.to_upper())
-	box.add_child(UiTheme.label(name, 17, UiTheme.TEXT, true))
-	box.add_child(UiTheme.label(tr("POI_" + p.type.to_upper() + "_TIP"), 12, UiTheme.DIM))
+	box.add_child(UiTheme.caps(name, 20, UiTheme.TEXT))
+	var tip := UiTheme.label(tr("POI_" + p.type.to_upper() + "_TIP"), 14, UiTheme.DIM)
+	tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	tip.custom_minimum_size = Vector2(custom_minimum_size.x - 20, 0)
+	box.add_child(tip)
 	if p.type == "nest":
 		box.add_child(_bar(p.hp / p.max_hp, UiTheme.DANGER))
 	elif p.progress > 0.0 or p.done:

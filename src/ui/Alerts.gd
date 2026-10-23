@@ -17,8 +17,8 @@ var _cool: Dictionary = {}   # kind → секунд до следующего �
 func setup(g: Node) -> void:
 	game = g
 	set_anchors_preset(Control.PRESET_TOP_LEFT)
-	position = Vector2(10, 62)
-	custom_minimum_size = Vector2(270, 0)
+	position = Vector2(12, 84)
+	custom_minimum_size = Vector2(290, 0)
 	add_theme_constant_override("separation", 4)
 	Events.civilian_infected.connect(func(_id: int, p: Vector2, inside: bool) -> void:
 		if inside: push("infected", tr("ALERT_BITE_BASE"), p))
@@ -56,16 +56,23 @@ func push(kind: String, text: String, p: Vector2, force := false) -> void:
 	if p != Vector2.INF:
 		last_pos = p
 	var b := Button.new()
-	b.text = "  " + text
+	b.text = text
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.focus_mode = Control.FOCUS_NONE
 	b.clip_text = true
-	b.custom_minimum_size = Vector2(270, 30)
-	var sb := UiTheme.box(Color(0.1, 0.11, 0.13, 0.9), 6)
-	sb.border_color = COLORS.get(kind, UiTheme.DIM)
-	sb.border_width_left = 4
-	b.add_theme_stylebox_override("normal", sb)
-	b.add_theme_font_size_override("font_size", 13)
+	b.custom_minimum_size = Vector2(290, 32)
+	for st: String in ["normal", "hover", "pressed"]:
+		var sb := UiTheme.skin("panel_dark" if st != "hover" else "btn_hover", 8).duplicate() as StyleBoxTexture
+		sb.content_margin_left = 16
+		b.add_theme_stylebox_override(st, sb)
+	b.add_theme_font_override("font", UiTheme.font_r)
+	b.add_theme_font_size_override("font_size", 14)
+	var strip := ColorRect.new()   # кант цвета события: заражение, атака, мирные, дефицит…
+	strip.color = COLORS.get(kind, UiTheme.DIM)
+	strip.position = Vector2(4, 5)
+	strip.size = Vector2(4, 22)
+	strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.add_child(strip)
 	b.set_meta("t", LIFE)
 	if p != Vector2.INF:
 		b.pressed.connect(func() -> void: game.cam.focus(p))

@@ -74,14 +74,10 @@ func _card(t: String, w: World, ws: Building) -> Control:
 	var p := PanelContainer.new()
 	var done := w.tech.has(t)
 	var prog := w.tech.in_progress(t)
-	var sb := UiTheme.box(UiTheme.PANEL if not done else Color("27402f"), 8)
-	if prog:
-		sb.border_color = UiTheme.ACCENT
-		sb.set_border_width_all(2)
-	p.add_theme_stylebox_override("panel", sb)
+	p.add_theme_stylebox_override("panel", UiTheme.skin("btn_active" if prog else ("inset" if done else "btn"), 10))
 	var v := VBoxContainer.new()
 	p.add_child(v)
-	v.add_child(UiTheme.label(String(d["name_ru"]), 15, UiTheme.TEXT, true))
+	v.add_child(UiTheme.caps(String(d["name_ru"]), 15, UiTheme.OK if done else UiTheme.TEXT))
 	var lbl := UiTheme.label(String(d["effect"]), 11, UiTheme.DIM)
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl.custom_minimum_size.x = 240

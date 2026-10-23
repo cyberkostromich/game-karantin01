@@ -4,6 +4,7 @@ extends CanvasLayer
 
 var game: Node
 var root := Control.new()
+var console := PanelContainer.new()   # нижняя консоль: миникарта | выделение | приказы (как в AoE IV / SC2)
 var top := TopBar.new()
 var alerts := Alerts.new()
 var minimap := Minimap.new()
@@ -27,19 +28,20 @@ func setup(g: Node) -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
+	console.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.add_child(console)
 	for c: Control in [top, alerts, minimap, selection_panel, command_card, radio]:
 		root.add_child(c)
 		c.setup(g)
 	_layout_bottom()
 	hint.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	hint.position = Vector2(-300, -250)
+	hint.position = Vector2(-300, -270)
 	hint.custom_minimum_size = Vector2(600, 0)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.add_theme_color_override("font_color", UiTheme.ACCENT)
 	hint.add_theme_font_size_override("font_size", 15)
 	root.add_child(hint)
-	fps.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	fps.position = Vector2(290, -22)
+	fps.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	fps.add_theme_font_size_override("font_size", 11)
 	fps.add_theme_color_override("font_color", UiTheme.DIM)
 	root.add_child(fps)
@@ -54,11 +56,21 @@ func setup(g: Node) -> void:
 	root.get_viewport().size_changed.connect(_layout_bottom)
 
 
+const CONSOLE_H := 228.0
+
+
 func _layout_bottom() -> void:
 	var vs := root.get_viewport_rect().size
-	minimap.position = Vector2(8, vs.y - minimap.custom_minimum_size.y - 8)
-	command_card.position = Vector2(vs.x - command_card.custom_minimum_size.x - 8, vs.y - command_card.custom_minimum_size.y - 8)
-	selection_panel.position = Vector2(minimap.custom_minimum_size.x + 20, vs.y - selection_panel.custom_minimum_size.y - 8)
+	var y0 := vs.y - CONSOLE_H
+	console.position = Vector2(0, y0)
+	console.size = Vector2(vs.x, CONSOLE_H)
+	minimap.position = Vector2(12, vs.y - minimap.custom_minimum_size.y - 12)
+	command_card.position = Vector2(vs.x - command_card.custom_minimum_size.x - 12, y0 + 12)
+	var sx := minimap.position.x + minimap.custom_minimum_size.x + 14
+	selection_panel.position = Vector2(sx, y0 + 12)
+	selection_panel.custom_minimum_size = Vector2(command_card.position.x - 14 - sx, CONSOLE_H - 24)
+	selection_panel.size = selection_panel.custom_minimum_size
+	fps.position = Vector2(vs.x - 260, y0 - 18)
 	tech.position = (vs - tech.custom_minimum_size) * 0.5
 	game_over.position = (vs - game_over.custom_minimum_size) * 0.5
 	radio.position = Vector2(vs.x - 380, 66)
@@ -67,14 +79,14 @@ func _layout_bottom() -> void:
 func _loading() -> void:
 	loading = PanelContainer.new()
 	loading.set_anchors_preset(Control.PRESET_FULL_RECT)
-	loading.add_theme_stylebox_override("panel", UiTheme.box(Color("1b1e23"), 0))
+	loading.add_theme_stylebox_override("panel", UiTheme.box(Color("15171a"), 0))
 	var v := VBoxContainer.new()
 	v.alignment = BoxContainer.ALIGNMENT_CENTER
 	loading.add_child(v)
-	var t := UiTheme.label(tr("GAME_TITLE").to_upper(), 46, UiTheme.TEXT, true)
+	var t := UiTheme.digits(tr("GAME_TITLE").to_upper(), 54)
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(t)
-	var s := UiTheme.label(tr("LOADING_CITY"), 16, UiTheme.DIM)
+	var s := UiTheme.caps(tr("LOADING_CITY"), 14, UiTheme.DIM)
 	s.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	v.add_child(s)
 	loading_bar.custom_minimum_size = Vector2(420, 12)

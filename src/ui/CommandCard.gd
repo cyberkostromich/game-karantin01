@@ -23,14 +23,17 @@ var _acc: float = 0.0
 func setup(g: Node) -> void:
 	game = g
 	set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	custom_minimum_size = Vector2(360, 196)
+	add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	custom_minimum_size = Vector2(4 * 62 + 3 * 6, 204)
 	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 6)
 	add_child(v)
-	title = UiTheme.caps("", 11)
-	v.add_child(title)
+	var tp := UiTheme.tape("", 12)
+	title = tp.get_child(0)
+	v.add_child(tp)
 	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 5)
-	grid.add_theme_constant_override("v_separation", 5)
+	grid.add_theme_constant_override("h_separation", 6)
+	grid.add_theme_constant_override("v_separation", 6)
 	v.add_child(grid)
 	game.selection.changed.connect(func() -> void:
 		build_mode = false
@@ -72,26 +75,28 @@ func _clear() -> void:
 	ability_ids.clear()
 
 
+## Кнопка-пластина: глиф + горячая клавиша; название и цена — в подсказке (как в RTS: сетка без подписей).
+## text показывается мелко внизу только если короткий (±1 работник) — иначе одинаковые глифы не различить.
 func _btn(text: String, icon_id: String, key: String, cb: Callable, tip: String, err: String = "") -> Button:
-	var b := Button.new()
-	b.custom_minimum_size = Vector2(84, 52)
-	b.focus_mode = Control.FOCUS_NONE
-	b.text = text
-	b.clip_text = true
-	b.add_theme_font_size_override("font_size", 11)
-	if icon_id != "":
-		b.icon = Look.icon(icon_id, 64)
-		b.expand_icon = true
-		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-	b.tooltip_text = tip + ("\n" + tr(err) if err != "" else "")
-	b.disabled = err != ""
-	b.pressed.connect(cb)
+	var px := 54 if build_mode else 62
+	var lines: PackedStringArray = []
+	if text.length() > 3 and not tip.begins_with(text):
+		lines.append(text.to_upper())
+	if tip != "":
+		lines.append(tip)
 	if key != "":
-		var k := UiTheme.label(key, 10, UiTheme.ACCENT, true)
-		k.position = Vector2(4, 1)
-		b.add_child(k)
-	var cd := UiTheme.label("", 13, Color.WHITE, true)
+		lines.append("[%s]" % key)
+	if err != "":
+		lines.append(tr(err))
+	var b := UiTheme.icon_button(icon_id, key, "\n".join(lines), cb, px)
+	b.disabled = err != ""
+	if text.length() <= 3 and text != "":
+		var t := UiTheme.caps(text, 13, UiTheme.TEXT)
+		t.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+		t.position = Vector2(px - 18, px - 20)
+		t.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(t)
+	var cd := UiTheme.digits("", 22, Color.WHITE)
 	cd.name = "CD"
 	cd.set_anchors_preset(Control.PRESET_FULL_RECT)
 	cd.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -103,6 +108,7 @@ func _btn(text: String, icon_id: String, key: String, cb: Callable, tip: String,
 
 func _rebuild() -> void:
 	_clear()
+	game.hud.call_deferred("_layout_bottom")
 	var s: Selection = game.selection
 	var w: World = game.world
 	if build_mode:
@@ -143,12 +149,12 @@ func _build_menu() -> void:
 				func() -> void: game.begin_build(t), _cost_tip(String(d["name_ru"]), d.get("cost", {}), d), err)
 			b.set_meta("build", t)
 	grid.columns = 6
-	custom_minimum_size.x = 540
+	custom_minimum_size.x = 6 * 54 + 5 * 6
 
 
 func _units() -> void:
 	grid.columns = 4
-	custom_minimum_size.x = 360
+	custom_minimum_size.x = 4 * 62 + 3 * 6
 	var sel: SelectionController = game.select_ctl
 	_btn(tr("CMD_AMOVE"), "st_wave", "A", func() -> void: sel.set_mode(SelectionController.Mode.AMOVE), tr("CMD_AMOVE_TIP"))
 	_btn(tr("CMD_STOP"), "st_day", "S", func() -> void: game.send({"t": "stop", "units": game.selection.units}), "")
@@ -196,7 +202,7 @@ func _doctrine_buttons() -> void:
 
 func _building(b: Building) -> void:
 	grid.columns = 4
-	custom_minimum_size.x = 360
+	custom_minimum_size.x = 4 * 62 + 3 * 6
 	var w: World = game.world
 	var d := b.data()
 	if not b.complete():

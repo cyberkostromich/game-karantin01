@@ -16,24 +16,26 @@ func _ready() -> void:
 	root.theme = UiTheme.get_theme()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(root)
-	var bg := ColorRect.new()
-	bg.color = Color("1b1e23")
+	# фон — штабная карта Лужников с пометками (tools/asset_gen/ui_skin.py: menu_bg)
+	var bg := TextureRect.new()
+	bg.texture = load("res://assets/ui/menu_bg.jpg")
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(bg)
-	var stripe := ColorRect.new()
-	stripe.color = UiTheme.ACCENT
-	stripe.position = Vector2(80, 210)
-	stripe.size = Vector2(90, 6)
-	root.add_child(stripe)
-	var t1 := UiTheme.label(tr("TITLE_1"), 64, UiTheme.TEXT, true)
-	t1.position = Vector2(76, 70)
+	var t1 := UiTheme.digits(tr("TITLE_1").to_upper(), 96, UiTheme.TEXT)
+	t1.position = Vector2(76, 48)
 	root.add_child(t1)
-	var t2 := UiTheme.label(tr("TITLE_2"), 64, UiTheme.ACCENT, true)
-	t2.position = Vector2(76, 136)
+	var t2 := UiTheme.digits(tr("TITLE_2").to_upper(), 96, UiTheme.ACCENT)
+	t2.position = Vector2(76, 150)
 	root.add_child(t2)
-	var sub := UiTheme.label(tr("TITLE_SUB"), 16, UiTheme.DIM)
-	sub.position = Vector2(80, 230)
+	var sub := UiTheme.tape(tr("TITLE_SUB"), 14)
+	sub.position = Vector2(80, 280)
 	root.add_child(sub)
+	var hz := UiTheme.hazard_strip(8)
+	hz.position = Vector2(80, 268)
+	hz.size = Vector2(120, 8)
+	root.add_child(hz)
 	_page_main()
 	_page_solo()
 	lobby = Lobby.new()
@@ -51,7 +53,7 @@ func show_page(id: String) -> void:
 
 func _box(id: String) -> VBoxContainer:
 	var v := VBoxContainer.new()
-	v.position = Vector2(80, 290)
+	v.position = Vector2(80, 340)
 	v.add_theme_constant_override("separation", 10)
 	root.add_child(v)
 	pages[id] = v
@@ -59,9 +61,14 @@ func _box(id: String) -> VBoxContainer:
 
 
 func _big(text: String, cb: Callable) -> Button:
-	var b := UiTheme.button(text, cb)
-	b.custom_minimum_size = Vector2(320, 46)
-	b.add_theme_font_size_override("font_size", 17)
+	var b := UiTheme.button(text.to_upper(), cb)
+	b.custom_minimum_size = Vector2(380, 52)
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.add_theme_font_size_override("font_size", 20)
+	for st: String in ["normal", "hover", "pressed"]:
+		var sb := UiTheme.skin({"normal": "btn", "hover": "btn_hover", "pressed": "btn_pressed"}[st]).duplicate() as StyleBoxTexture
+		sb.content_margin_left = 22
+		b.add_theme_stylebox_override(st, sb)
 	return b
 
 
@@ -80,22 +87,27 @@ func _page_main() -> void:
 	v.add_child(_big(tr("MENU_SETTINGS"), func() -> void: settings.visible = not settings.visible))
 	v.add_child(settings)
 	v.add_child(_big(tr("MENU_QUIT"), func() -> void: get_tree().quit()))
-	var ver := UiTheme.label("v%s · Godot %s" % [ProjectSettings.get_setting("application/config/version"), Engine.get_version_info()["string"]], 12, UiTheme.DIM)
+	var ver := UiTheme.mono("v%s · Godot %s" % [ProjectSettings.get_setting("application/config/version"), Engine.get_version_info()["string"]], 12, UiTheme.DIM)
 	ver.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	ver.position = Vector2(80, -40)
+	ver.position = Vector2(80, -58)
 	root.add_child(ver)
+	var credits := UiTheme.label(tr("MENU_CREDITS"), 12, UiTheme.DIM)   # ODbL требует указания OSM
+	credits.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	credits.position = Vector2(80, -38)
+	root.add_child(credits)
 
 
 func _page_solo() -> void:
 	var v := _box("solo")
-	v.add_child(UiTheme.label(tr("SOLO_PICK_DOCTRINES"), 18, UiTheme.TEXT, true))
+	v.add_child(UiTheme.tape(tr("SOLO_PICK_DOCTRINES"), 14))
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
 	v.add_child(row)
 	for d in Config.keys_of("doctrines"):
 		row.add_child(_doctrine_card(d))
 	var diff := HBoxContainer.new()
-	diff.add_child(UiTheme.label(tr("SOLO_DIFFICULTY"), 15))
+	diff.add_theme_constant_override("separation", 8)
+	diff.add_child(UiTheme.caps(tr("SOLO_DIFFICULTY"), 15, UiTheme.TEXT))
 	for dk: String in ["normal", "hard"]:
 		var b := UiTheme.button(tr("DIFF_" + dk.to_upper()), func() -> void:
 			difficulty = dk
@@ -118,7 +130,11 @@ func _doctrine_card(d: String) -> Control:
 	var b := Button.new()
 	b.toggle_mode = true
 	b.focus_mode = Control.FOCUS_NONE
-	b.custom_minimum_size = Vector2(250, 170)
+	b.custom_minimum_size = Vector2(270, 190)
+	b.add_theme_stylebox_override("pressed", UiTheme.skin("btn_active", 12))
+	b.add_theme_stylebox_override("normal", UiTheme.skin("btn", 12))
+	b.add_theme_stylebox_override("hover", UiTheme.skin("btn_hover", 12))
+	b.add_theme_font_override("font", UiTheme.font_r)
 	var dd := Config.d("doctrines." + d)
 	var passive: PackedStringArray = []
 	for k: String in dd["passive"]:
@@ -127,7 +143,8 @@ func _doctrine_card(d: String) -> Control:
 	b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-	b.add_theme_font_size_override("font_size", 12)
+	b.add_theme_font_size_override("font_size", 13)
+	b.add_theme_color_override("font_pressed_color", UiTheme.TEXT)
 	b.icon = Look.icon("doc_" + d, 64)
 	b.pressed.connect(func() -> void:
 		if picked.has(d):

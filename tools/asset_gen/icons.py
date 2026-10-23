@@ -1,5 +1,7 @@
 """
-icons.py — набор UI-иконок в едином стиле: скруглённый бейдж цвета категории + белый глиф.
+icons.py — набор UI-иконок (D-12): глиф «цвета бумаги» с тенью без подложки — кнопкой служит стальная
+пластина интерфейса; ресурсы — своим цветом, способности — сигнальным оранжевым; статусы над юнитами —
+на гранёной тёмной бирке с кантом категории (читаются поверх 3D-мира).
 viewBox 64×64, глиф в безопасной зоне 12..52. Выход: assets/icons/svg/*.svg, png/64/*.png, png/128/*.png, previews/sheet_icons.png
 """
 from __future__ import annotations
@@ -221,12 +223,34 @@ def _dedupe(svg: str) -> str:
     return _TAG.sub(fix, svg)
 
 
-def svg_doc(cat, glyph):
-    glyph = _dedupe(glyph)
+PAPER = "#ECE6D6"
+TINT = {"res_food": "#E9B44C", "res_power": "#F2CC3A", "res_wood": "#C8955C", "res_iron": "#AEB6BE",
+        "res_people": "#8FB4E3", "res_morale": "#7CC86A", "abl": "#FF8A3D", "zmb": "#B9D99A"}
+CHAMFER = "M14 2H50L62 14V50L50 62H14L2 50V14Z"
+
+
+def svg_doc(id_, cat, glyph):
+    glyph = _dedupe(glyph).replace("#FFFFFF", TINT.get(cat, PAPER))
+    if id_.startswith("st_"):  # бирка статуса над юнитом
+        return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">'
+                f'<path d="{CHAMFER}" fill="#1b1e1b" stroke="{CAT[cat]}" stroke-width="3"/>'
+                f'<g transform="translate(32 32) scale(.8) translate(-32 -32)">{glyph}</g></svg>')
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">'
-            f'<rect x="2" y="2" width="60" height="60" rx="14" fill="{CAT[cat]}"/>'
-            f'<rect x="2" y="2" width="60" height="60" rx="14" fill="none" stroke="#000" stroke-opacity=".18" stroke-width="2"/>'
-            f'<g transform="translate(32 32) scale(.86) translate(-32 -32)">{glyph}</g></svg>')
+            f'<g transform="translate(32 32) scale(1.05) translate(-32 -32)">{glyph}</g></svg>')
+
+
+def _shadowed(png_path, sz):
+    """Тень под глифом: читается и на светлой земле, и на тёмной пластине."""
+    im = Image.open(png_path).convert("RGBA")
+    a = im.getchannel("A")
+    sh = Image.new("RGBA", im.size, (8, 9, 10, 0))
+    sh.putalpha(a.point(lambda v: int(v * 0.75)))
+    from PIL import ImageFilter
+    sh = sh.filter(ImageFilter.GaussianBlur(sz / 64))
+    out = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    out.alpha_composite(sh, (max(1, sz // 48), max(1, sz // 40)))
+    out.alpha_composite(im)
+    out.save(png_path)
 
 
 def glyph_only(glyph):
@@ -240,30 +264,35 @@ def main():
     for sz in (64, 128):
         (PNG_DIR / str(sz)).mkdir(parents=True, exist_ok=True)
     for id_, (cat, label, glyph) in ICONS.items():
-        doc = svg_doc(cat, glyph)
+        doc = svg_doc(id_, cat, glyph)
         (SVG_DIR / f"{id_}.svg").write_text(doc)
-        (SVG_DIR / "glyph" / f"{id_}.svg").write_text(glyph_only(glyph))  # без бейджа — для HUD/мини-карты
+        (SVG_DIR / "glyph" / f"{id_}.svg").write_text(glyph_only(glyph))  # чистый белый глиф — для мини-карты
         for sz in (64, 128):
             cairosvg.svg2png(bytestring=doc.encode(), write_to=str(PNG_DIR / str(sz) / f"{id_}.png"),
                              output_width=sz, output_height=sz)
+            if not id_.startswith("st_"):
+                _shadowed(PNG_DIR / str(sz) / f"{id_}.png", sz)
     # контакт-лист
-    F_B = str(ROOT / "assets" / "fonts" / "Inter-SemiBold.ttf"); F_R = str(ROOT / "assets" / "fonts" / "Inter-Regular.ttf")
+    F_B = str(ROOT / "assets" / "fonts" / "PT_Sans-Narrow-Web-Bold.ttf"); F_R = str(ROOT / "assets" / "fonts" / "PT_Sans-Web-Regular.ttf")
     cols, cell = 10, 150
     items = list(ICONS.items())
     rows = (len(items) + cols - 1) // cols
-    img = Image.new("RGB", (cols * cell + 48, rows * cell + 120), (238, 236, 230))
+    img = Image.new("RGB", (cols * cell + 48, rows * cell + 120), (28, 31, 28))
     d = ImageDraw.Draw(img)
-    d.text((24, 22), "UI-ИКОНКИ", font=ImageFont.truetype(F_B, 34), fill=(34, 38, 44))
-    d.text((24, 66), f"КАРАНТИН: МОСКВА · {len(items)} иконок · SVG + PNG 64/128 + глифы без бейджа",
-           font=ImageFont.truetype(F_R, 18), fill=(120, 124, 130))
+    d.text((24, 18), "UI-ИКОНКИ", font=ImageFont.truetype(F_B, 38), fill=(236, 230, 214))
+    d.text((24, 66), f"КАРАНТИН: МОСКВА · {len(items)} иконок · глифы на стальных пластинах, статусы — на бирках",
+           font=ImageFont.truetype(F_R, 18), fill=(163, 159, 146))
     d.rectangle((24, 96, 84, 100), fill=(255, 106, 31))
     fl = ImageFont.truetype(F_R, 13)
+    btn = Image.open(ROOT / "assets" / "ui" / "btn.png").convert("RGBA").resize((104, 104), Image.NEAREST)
     for i, (id_, (cat, label, _)) in enumerate(items):
         x, y = 24 + (i % cols) * cell, 116 + (i // cols) * cell
-        ic = Image.open(PNG_DIR / "128" / f"{id_}.png").convert("RGBA").resize((96, 96), Image.LANCZOS)
-        img.paste(ic, (x + (cell - 96) // 2, y), ic)
+        if not id_.startswith("st_"):
+            img.paste(btn, (x + (cell - 104) // 2, y - 4), btn)
+        ic = Image.open(PNG_DIR / "128" / f"{id_}.png").convert("RGBA").resize((88, 88), Image.LANCZOS)
+        img.paste(ic, (x + (cell - 88) // 2, y + 4), ic)
         tw = d.textlength(label, font=fl)
-        d.text((x + (cell - tw) / 2, y + 102), label, font=fl, fill=(34, 38, 44))
+        d.text((x + (cell - tw) / 2, y + 104), label, font=fl, fill=(200, 196, 184))
     img.save(ROOT / "previews" / "sheet_icons.png", optimize=True)
     print(len(ICONS), "icons")
 

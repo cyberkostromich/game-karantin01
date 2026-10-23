@@ -17,12 +17,11 @@ var _acc: float = 0.0
 func setup(g: Node) -> void:
 	game = g
 	set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	position = Vector2(8, 0)
-	custom_minimum_size = size_px + Vector2(12, 12)
+	add_theme_stylebox_override("panel", UiTheme.skin("inset", 6))
 	var w: World = g.world
 	base = load(w.map.dir.path_join("minimap.png"))
 	var asp := w.map.bounds.size.y / w.map.bounds.size.x
-	size_px = Vector2(270, 270 * asp)
+	size_px = Vector2(204 / asp, 204) if asp > 1.0 else Vector2(240, 240 * asp)
 	custom_minimum_size = size_px + Vector2(12, 12)
 	tex_rect.texture = base
 	tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -79,7 +78,7 @@ func _draw_overlay() -> void:
 		elif a.rescued:
 			canvas.draw_rect(Rect2(m - Vector2(1, 1), Vector2(2, 2)), Color(0.95, 0.95, 0.95))
 		elif a.revealed or w.fog.visible(a.pos):
-			canvas.draw_string(UiTheme.font_sb, m + Vector2(-3, 4), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, UiTheme.WARN)
+			canvas.draw_string(UiTheme.font_n, m + Vector2(-3, 4), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, UiTheme.WARN)
 	var z := w.zombies
 	for i in z.count:
 		if z.alive[i] != 0 and w.fog.visible(z.pos[i]):
@@ -88,11 +87,26 @@ func _draw_overlay() -> void:
 		if n.alive and w.fog.explored(n.pos):
 			var c := to_map(n.pos)
 			canvas.draw_colored_polygon(PackedVector2Array([c + Vector2(0, -5), c + Vector2(5, 0), c + Vector2(0, 5), c + Vector2(-5, 0)]), UiTheme.DANGER)
+	_grid()
 	_wave_arrows(w)
 	for p in pings:
 		var r := 4.0 + (4.0 - float(p["t"])) * 3.0
 		canvas.draw_arc(to_map(p["p"]), r, 0, TAU, 16, p["c"], 1.5)
 	_camera_rect()
+
+
+## Координатная сетка и стороны света — как на штабной карте (север вверху, GDD §11).
+func _grid() -> void:
+	var line := Color(0.93, 0.9, 0.84, 0.07)
+	for k in range(1, 4):
+		canvas.draw_line(Vector2(size_px.x * k / 4.0, 0), Vector2(size_px.x * k / 4.0, size_px.y), line)
+		canvas.draw_line(Vector2(0, size_px.y * k / 4.0), Vector2(size_px.x, size_px.y * k / 4.0), line)
+	var f := UiTheme.font_n
+	var c := Color(0.93, 0.9, 0.84, 0.7)
+	canvas.draw_string(f, Vector2(size_px.x * 0.5 - 4, 13), tr("COMPASS_N"), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, c)
+	canvas.draw_string(f, Vector2(size_px.x * 0.5 - 4, size_px.y - 4), tr("COMPASS_S"), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, c)
+	canvas.draw_string(f, Vector2(4, size_px.y * 0.5 + 4), tr("COMPASS_W"), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, c)
+	canvas.draw_string(f, Vector2(size_px.x - 12, size_px.y * 0.5 + 4), tr("COMPASS_E"), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, c)
 
 
 func _wave_arrows(w: World) -> void:

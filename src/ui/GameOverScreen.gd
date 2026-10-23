@@ -13,7 +13,7 @@ func setup(g: Node) -> void:
 	visible = false
 	set_anchors_preset(Control.PRESET_CENTER)
 	custom_minimum_size = Vector2(640, 520)
-	add_theme_stylebox_override("panel", UiTheme.box(Color(0.08, 0.09, 0.1, 0.97), 14, 22))
+	add_theme_stylebox_override("panel", UiTheme.skin("panel", 24))
 	add_child(body)
 	body.add_theme_constant_override("separation", 8)
 	Events.game_over.connect(show_result)

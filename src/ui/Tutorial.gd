@@ -17,21 +17,20 @@ func setup(g: Node) -> void:
 	game = g
 	set_anchors_preset(Control.PRESET_CENTER_TOP)
 	custom_minimum_size = Vector2(560, 0)
-	var sb := UiTheme.box(Color(0.12, 0.1, 0.08, 0.93), 10, 12)
-	sb.border_color = UiTheme.ACCENT
-	sb.border_width_bottom = 3
-	add_theme_stylebox_override("panel", sb)
+	add_theme_stylebox_override("panel", UiTheme.skin("panel", 14))
 	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 6)
 	add_child(v)
 	var h := HBoxContainer.new()
-	var cap := UiTheme.caps(tr("TUT_TITLE"), 11, UiTheme.ACCENT)
-	cap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	h.add_child(cap)
+	h.add_child(UiTheme.tape(tr("TUT_TITLE"), 12))
+	var sp := Control.new()
+	sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	h.add_child(sp)
 	h.add_child(UiTheme.button(tr("TUT_SKIP"), func() -> void:
 		enabled = false
 		visible = false))
 	v.add_child(h)
-	text_l = UiTheme.label("", 15)
+	text_l = UiTheme.label("", 16)
 	text_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text_l.custom_minimum_size = Vector2(530, 0)
 	v.add_child(text_l)
@@ -40,14 +39,14 @@ func setup(g: Node) -> void:
 
 func _show() -> void:
 	text_l.text = tr(STEPS[step])
-	position = Vector2((get_viewport_rect().size.x - custom_minimum_size.x) * 0.5, 64)
+	position = Vector2((get_viewport_rect().size.x - custom_minimum_size.x) * 0.5, 96)
 
 
 func show_help() -> void:
 	enabled = false
 	visible = true
 	text_l.text = tr("HELP_CONTROLS")
-	position = Vector2((get_viewport_rect().size.x - custom_minimum_size.x) * 0.5, 64)
+	position = Vector2((get_viewport_rect().size.x - custom_minimum_size.x) * 0.5, 96)
 
 
 func _process(delta: float) -> void:

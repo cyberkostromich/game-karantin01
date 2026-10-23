@@ -1,7 +1,8 @@
 extends Node
 ## Точка входа: главное меню → матч → обратно в меню.
 ## Отладка (аргументы после "--"): --autostart, --shot=путь.png, --shot-at=сек, --cam=x,z, --zoom=0..1,
-## --speed=N, --reveal, --select=тип — для скриншотов и смоук-прогонов из CI.
+## --speed=N, --reveal, --select=тип, --skip=сек, --nohud — для скриншотов и смоук-прогонов из CI.
+## Без --autostart --shot снимает главное меню.
 
 var menu: MainMenu
 var game: Game
@@ -49,9 +50,16 @@ func _start_game(opts: Dictionary) -> void:
 
 
 func _process(delta: float) -> void:
+	if args.has("shot") and not _shot_done and menu != null:
+		_t += delta
+		if _t >= float(args.get("shot-at", "3")):
+			_save_shot()
+		return
 	if not args.has("shot") or _shot_done or game == null or not game.ready_to_play:
 		return
 	_t += delta
+	if args.has("nohud"):
+		game.hud.visible = false
 	if args.has("cam"):
 		var c: PackedStringArray = String(args["cam"]).split(",")
 		game.cam.focus(Vector2(float(c[0]), float(c[1])))
@@ -65,8 +73,12 @@ func _process(delta: float) -> void:
 				ids.append(a.id)
 		game.selection.set_agents(ids, [])
 	if _t >= float(args.get("shot-at", "3")):
-		_shot_done = true
-		await RenderingServer.frame_post_draw
-		get_viewport().get_texture().get_image().save_png(String(args["shot"]))
-		print("SHOT saved ", args["shot"])
-		get_tree().quit()
+		_save_shot()
+
+
+func _save_shot() -> void:
+	_shot_done = true
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(String(args["shot"]))
+	print("SHOT saved ", args["shot"])
+	get_tree().quit()

@@ -15,17 +15,21 @@ var goals: Dictionary = {}   # id → state
 func setup(g: Node) -> void:
 	game = g
 	set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	position = Vector2(-380, 66)
+	position = Vector2(-380, 84)
 	custom_minimum_size = Vector2(370, 0)
 	add_theme_constant_override("separation", 6)
 	add_child(goals_box)
 	add_child(log_box)
 	report = PanelContainer.new()
-	report.add_theme_stylebox_override("panel", UiTheme.box(Color(0.1, 0.11, 0.13, 0.95), 10, 14))
-	report_l = UiTheme.label("", 16, UiTheme.TEXT, true)
+	report.add_theme_stylebox_override("panel", UiTheme.skin("panel", 18))
+	var rv := VBoxContainer.new()
+	rv.add_theme_constant_override("separation", 8)
+	report.add_child(rv)
+	rv.add_child(UiTheme.tape(tr("REPORT_TAPE"), 13))
+	report_l = UiTheme.label("", 16, UiTheme.TEXT)
 	report_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	report_l.custom_minimum_size = Vector2(520, 0)
-	report.add_child(report_l)
+	rv.add_child(report_l)
 	report.visible = false
 	Events.scenario_event.connect(_on_event)
 	Events.dawn_report.connect(_on_dawn)
@@ -47,14 +51,15 @@ func report_node() -> Control:
 
 func say(text: String, col: Color = UiTheme.TEXT) -> void:
 	var p := PanelContainer.new()
-	var sb := UiTheme.box(Color(0.1, 0.11, 0.13, 0.88), 8)
-	sb.border_color = UiTheme.ACCENT
-	sb.border_width_left = 3
-	p.add_theme_stylebox_override("panel", sb)
-	var l := UiTheme.label("📻 " + text, 13, col)
+	p.add_theme_stylebox_override("panel", UiTheme.skin("panel_dark", 10))
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 2)
+	p.add_child(v)
+	v.add_child(UiTheme.caps(tr("RADIO_HEADER"), 11, UiTheme.ACCENT))
+	var l := UiTheme.label(text, 14, col)
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	l.custom_minimum_size = Vector2(350, 0)
-	p.add_child(l)
+	v.add_child(l)
 	p.set_meta("t", 14.0)
 	log_box.add_child(p)
 	while log_box.get_child_count() > 3:
@@ -89,17 +94,26 @@ func _goals() -> void:
 	for c in goals_box.get_children():
 		c.queue_free()
 	var w: World = game.world
-	goals_box.add_child(UiTheme.caps(tr("GOALS_TITLE"), 11, UiTheme.ACCENT))
+	goals_box.add_child(UiTheme.tape(tr("GOALS_TITLE"), 12))
 	for id: String in goals:
 		var st := String(goals[id])
 		var text := tr("GOAL_" + id.to_upper())
 		if id == "quota":
 			var p := w.scenario.people_on_arena()
 			text = tr("GOAL_QUOTA") % [Config.i("rules.victory.evacuation_quota_people"), w.clock.total_days, int(p["civilians"]) + int(p["children"]) + int(p["soldiers"])]
-		var l := UiTheme.label(("✓ " if st == "done" else "• ") + text, 13, UiTheme.OK if st == "done" else UiTheme.TEXT)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		var box := Panel.new()   # квадрат чек-листа: пустой — в работе, зелёный — выполнено
+		box.custom_minimum_size = Vector2(11, 11)
+		box.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		box.position.y = 4
+		box.add_theme_stylebox_override("panel", UiTheme.check_box(st == "done"))
+		row.add_child(box)
+		var l := UiTheme.label(text, 14, UiTheme.OK if st == "done" else UiTheme.TEXT)
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size = Vector2(350, 0)
-		goals_box.add_child(l)
+		l.custom_minimum_size = Vector2(330, 0)
+		row.add_child(l)
+		goals_box.add_child(row)
 
 
 func _process(delta: float) -> void:
